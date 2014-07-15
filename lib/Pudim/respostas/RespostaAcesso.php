@@ -5,7 +5,7 @@ namespace Pudim\Respostas;
 /**
  * Classe RespostaAcesso.
  */
-class RespostaAcesso implements JsonSerializable
+class RespostaAcesso implements \JsonSerializable
 {
 
     private $_acessou = true;

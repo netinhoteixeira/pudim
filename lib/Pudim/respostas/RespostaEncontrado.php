@@ -5,7 +5,7 @@ namespace Pudim\Respostas;
 /**
  * Classe RespostaEncontrado.
  */
-class RespostaEncontrado implements JsonSerializable
+class RespostaEncontrado implements \JsonSerializable
 {
 
     private $_encontrou = true;

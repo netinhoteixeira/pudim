@@ -2,6 +2,8 @@
 
 namespace Pudim;
 
+use \Pudim\Excecoes\ArquivoNaoEncontradoExcecao as ArquivoNaoEncontradoExcecao;
+
 /**
  * Classe Modelo.
  */
@@ -24,7 +26,7 @@ class Modelo
         $file = __DIR__ . '/../../../../../templates/' . $nome . '.html';
 
         if (!file_exists($file)) {
-            throw new \Pudim\Excecoes\ArquivoNaoEncontradoExcecao('Modelo ' . $nome . ' não encontrado.');
+            throw new ArquivoNaoEncontradoExcecao('Modelo ' . $nome . ' não encontrado.');
         }
 
         $this->_content = file_get_contents($file);
@@ -40,7 +42,7 @@ class Modelo
             $styleFile = __DIR__ . '/../../../../../templates/' . $estilo . '.css';
 
             if (!file_exists($styleFile)) {
-                throw new \Pudim\Excecoes\ArquivoNaoEncontradoExcecao('Modelo ' . $styleFile . ' não encontrado.');
+                throw new ArquivoNaoEncontradoExcecao('Modelo ' . $styleFile . ' não encontrado.');
             }
 
             $this->_style = file_get_contents($styleFile);
@@ -115,6 +117,8 @@ class Modelo
         }
 
         if (!is_null($this->_style)) {
+            require_once(__DIR__ . '/auxiliar/CssToInlineStylesOverride.php');
+
             $cssParser = new CssToInlineStylesOverride($parsedData, $this->_style);
 
             return $cssParser->convert();

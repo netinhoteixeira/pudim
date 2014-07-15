@@ -5,7 +5,7 @@ namespace Pudim\Respostas;
 /**
  * Classe RespostaSalvo.
  */
-class RespostaSalvo implements JsonSerializable
+class RespostaSalvo implements \JsonSerializable
 {
 
     private $_salvo = true;

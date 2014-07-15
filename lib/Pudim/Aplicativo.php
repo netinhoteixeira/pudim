@@ -403,6 +403,7 @@ class Aplicativo
     {
 
         if ($this->_configuracao->get($this->_servidor . '.piwik_id')) {
+            require_once(__DIR__ . '/auxiliar/PiwikTracker.php');
 
             $piwikTracker = new PiwikTracker($this->_configuracao->get($this->_servidor . '.piwik_url'), $this->_configuracao->get($this->_servidor . '.piwik_id'));
 
@@ -578,16 +579,16 @@ class Aplicativo
     {
         header('Access-Control-Allow-Origin: *');
     }
-    
+
     /**
      * Carrega todos os controladores.
      */
-    private function carregarControladores() {
+    private function carregarControladores()
+    {
         $controladores = __DIR__ . '/../../../../../controllers/';
         if (file_exists($controladores)) {
             \Pudim\Arquivo::requererDiretorio($controladores);
         }
-
     }
 
 }

@@ -5,7 +5,7 @@ namespace Pudim\Respostas;
 /**
  * Classe RespostaFotoMudanca.
  */
-class RespostaMudancaFoto implements JsonSerializable
+class RespostaMudancaFoto implements \JsonSerializable
 {
 
     private $_mudou = false;

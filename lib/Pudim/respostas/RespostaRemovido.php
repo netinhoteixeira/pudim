@@ -5,7 +5,7 @@ namespace Pudim\Respostas;
 /**
  * Classe RespostaRemovido.
  */
-class RespostaRemovido implements JsonSerializable
+class RespostaRemovido implements \JsonSerializable
 {
 
     private $_removido = true;
