@@ -1,5 +1,6 @@
 {
     "name": "netinhoteixeira/pudim",
+    "type": "library",
     "description": "Framework para desenvolvimento rápido em PHP",
     "keywords": ["pudim", "php", "framework"],
     "homepage": "https://github.com/netinhoteixeira/pudim",
