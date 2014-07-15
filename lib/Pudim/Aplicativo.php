@@ -7,6 +7,9 @@ use Doctrine\MongoDB\Connection;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
+use Doctrine\Common\Cache\RedisCache;
+use Pudim\Excecoes\FuncaoNaoEncontradaExcecao;
+use Pudim\Arquivo;
 
 /**
  * Classe Aplicativo.
@@ -26,8 +29,10 @@ class Aplicativo
 
     public function __construct()
     {
+        define('__APPDIR__', __DIR__ . '/../../../../..');
+        
         $this->_servidor = 'servidor_' . str_replace('.', '_', $_SERVER['SERVER_NAME']);
-        $this->_configuracao = new Configuracao(__DIR__ . '/../../../../../configuracao.ini');
+        $this->_configuracao = new Configuracao(__APPDIR__ . '/configuracao.ini');
 
         define('PROJECT_STAGE', $this->_configuracao->get($this->_servidor . '.producao'));
 
@@ -114,7 +119,7 @@ class Aplicativo
      */
     public function protegerRota($nome)
     {
-        $arquivoSeguranca = __DIR__ . '/../../../../../HttpBasicAuthRouteDatabaseCustom.inc.php';
+        $arquivoSeguranca = __APPDIR__ . '/HttpBasicAuthRouteDatabaseCustom.inc.php';
         if (file_exists($arquivoSeguranca)) {
             require_once(__DIR__ . '/auxiliar/slim/HttpBasicAuthDatabase.php');
             require_once(__DIR__ . '/auxiliar/slim/HttpBasicAuthRouteDatabase.php');
@@ -141,7 +146,7 @@ class Aplicativo
     function definirRotaObter($nome, $funcao)
     {
         if (!function_exists($funcao)) {
-            throw new \Pudim\Excecoes\FuncaoNaoEncontradaExcecao('A função \'' . $funcao . '\' definida para a rota obter \'' . $nome . '\' não existe.');
+            throw new FuncaoNaoEncontradaExcecao('A função \'' . $funcao . '\' definida para a rota obter \'' . $nome . '\' não existe.');
         }
 
         $this->_slimApp->get($nome, $funcao);
@@ -150,7 +155,7 @@ class Aplicativo
     function definirRotaPostagem($nome, $funcao)
     {
         if (!function_exists($funcao)) {
-            throw new \Pudim\Excecoes\FuncaoNaoEncontradaExcecao('A função \'' . $funcao . '\' definida para a rota postagem \'' . $nome . '\' não existe.');
+            throw new FuncaoNaoEncontradaExcecao('A função \'' . $funcao . '\' definida para a rota postagem \'' . $nome . '\' não existe.');
         }
 
         $this->_slimApp->post($nome, $funcao);
@@ -330,7 +335,7 @@ class Aplicativo
         $mail->Body = $mensagem;
         $mail->AddAddress($para);
 
-        $emailLogoFilename = __DIR__ . '/../../../../../templates/email-logo.png';
+        $emailLogoFilename = __DIR__ . '/templates/email-logo.png';
         if (file_exists($emailLogoFilename)) {
             $mail->AddEmbeddedImage($emailLogoFilename, 'logo');
         }
@@ -351,33 +356,33 @@ class Aplicativo
     {
         AnnotationDriver::registerAnnotationClasses();
 
-        $classLoader = new ClassLoader('domain', __DIR__ . '/../../../../..');
+        $classLoader = new ClassLoader('domain', __APPDIR__);
         $classLoader->register();
 
         // cria os diretórios dos proxys e hydrators, caso não haja (necessários
         // para o Doctrine MongoDB)
         if (!PROJECT_STAGE) {
-            if (!file_exists(__DIR__ . '/../../../../../generate')) {
-                mkdir(__DIR__ . '/../../../../../generate', 0744, true);
+            if (!file_exists(__APPDIR__ . '/generate')) {
+                mkdir(__APPDIR__ . '/generate', 0744, true);
             }
 
-            if (!file_exists(__DIR__ . '/../../../../../generate/proxies')) {
-                mkdir(__DIR__ . '/../../../../../generate/proxies', 0744, true);
+            if (!file_exists(__APPDIR__ . '/generate/proxies')) {
+                mkdir(__APPDIR__ . '/generate/proxies', 0744, true);
             }
 
-            if (!file_exists(__DIR__ . '/../../../../../generate/hydrators')) {
-                mkdir(__DIR__ . '/../../../../../generate/hydrators', 0744, true);
+            if (!file_exists(__APPDIR__ . '/generate/hydrators')) {
+                mkdir(__APPDIR__ . '/generate/hydrators', 0744, true);
             }
         }
 
         $configuracao = new Configuration();
-        $metadata = AnnotationDriver::create(__DIR__ . '/../../../../../domain');
+        $metadata = AnnotationDriver::create(__APPDIR__ . '/domain');
         $configuracao->setMetadataDriverImpl($metadata);
         $configuracao->setAutoGenerateProxyClasses(!((boolean) PROJECT_STAGE));
-        $configuracao->setProxyDir(__DIR__ . '/../../../../../generate/proxies');
+        $configuracao->setProxyDir(__APPDIR__ . '/generate/proxies');
         $configuracao->setProxyNamespace('Proxies');
         $configuracao->setAutoGenerateHydratorClasses(!((boolean) PROJECT_STAGE));
-        $configuracao->setHydratorDir(__DIR__ . '/../../../../../generate/hydrators');
+        $configuracao->setHydratorDir(__APPDIR__ . '/generate/hydrators');
         $configuracao->setHydratorNamespace('Hydrators');
         $configuracao->setDefaultDB($this->_configuracao->get($this->_servidor . '.persistencia_banco'));
 
@@ -385,7 +390,7 @@ class Aplicativo
         if ((PROJECT_STAGE) && (class_exists('Redis'))) {
             $redis = new Redis();
             $redis->pconnect('127.0.0.1', 6379);
-            $metadataCache = new \Doctrine\Common\Cache\RedisCache();
+            $metadataCache = new RedisCache();
             $metadataCache->setRedis($redis);
             $configuracao->setMetadataCacheImpl($metadataCache);
         }
@@ -467,7 +472,7 @@ class Aplicativo
      */
     private function criarDiretorioTemporario()
     {
-        define('TMPDIR', __DIR__ . '/../../../../../tmp');
+        define('TMPDIR', __APPDIR__ . '/tmp');
         if (!file_exists(TMPDIR)) {
             mkdir(TMPDIR, 0744, true);
         }
@@ -585,9 +590,9 @@ class Aplicativo
      */
     private function carregarControladores()
     {
-        $controladores = __DIR__ . '/../../../../../controllers/';
+        $controladores = __APPDIR__ . '/controllers/';
         if (file_exists($controladores)) {
-            \Pudim\Arquivo::requererDiretorio($controladores);
+            Arquivo::requererDiretorio($controladores);
         }
     }
 

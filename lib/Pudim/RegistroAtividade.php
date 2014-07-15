@@ -179,7 +179,7 @@ class RegistroAtividade
                         if ($aplicativo->postExists('position')) {
                             $posicao = $aplicativo->post('position');
 
-                            $coordenadas = new coordenadas();
+                            $coordenadas = new \coordenadas();
                             $coordenadas->setX($posicao['longitude']);
                             $coordenadas->setY($posicao['latitude']);
                             $coordenadas->setAccuracy($posicao['accuracy']);

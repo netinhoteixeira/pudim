@@ -2,7 +2,7 @@
 
 namespace Pudim;
 
-use \Pudim\Excecoes\ArquivoNaoEncontradoExcecao as ArquivoNaoEncontradoExcecao;
+use \Pudim\Excecoes\ArquivoNaoEncontradoExcecao;
 
 /**
  * Classe Modelo.
