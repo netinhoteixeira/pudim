@@ -2,7 +2,7 @@
 
 namespace Pudim\Excecoes;
 
-class DataInvalidaExcecao extends Exception
+class DataInvalidaExcecao extends \Exception
 {
     
 }

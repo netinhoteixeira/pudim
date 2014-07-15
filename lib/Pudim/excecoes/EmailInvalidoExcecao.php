@@ -2,6 +2,7 @@
 
 namespace Pudim\Excecoes;
 
-class EmailInvalidoExcecao extends EmailExcecao {
+class EmailInvalidoExcecao extends \Pudim\Excecoes\EmailExcecao
+{
     
 }

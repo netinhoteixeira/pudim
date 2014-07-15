@@ -2,6 +2,6 @@
 
 namespace Pudim\Excecoes;
 
-class ArgumentosFaltandoExcecao extends Exception {
+class ArgumentosFaltandoExcecao extends \Exception {
     
 }

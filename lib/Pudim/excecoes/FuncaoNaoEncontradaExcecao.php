@@ -2,7 +2,7 @@
 
 namespace Pudim\Excecoes;
 
-class FuncaoNaoEncontradaExcecao extends Exception
+class FuncaoNaoEncontradaExcecao extends \Exception
 {
     
 }

@@ -53,6 +53,7 @@ class Aplicativo
         $this->iniciarSessao();
         $this->definirFusoHorario();
         $this->definirControleDeAcessoDaOrigemDaRequisicao();
+        $this->carregarControladores();
     }
 
     /**
@@ -113,7 +114,14 @@ class Aplicativo
      */
     public function protegerRota($nome)
     {
-        $this->_slimApp->add(new HttpBasicAuthRouteDatabaseCustom('/' . $nome));
+        $arquivoSeguranca = __DIR__ . '/../../../../../HttpBasicAuthRouteDatabaseCustom.inc.php';
+        if (file_exists($arquivoSeguranca)) {
+            require_once(__DIR__ . '/auxiliar/slim/HttpBasicAuthDatabase.php');
+            require_once(__DIR__ . '/auxiliar/slim/HttpBasicAuthRouteDatabase.php');
+            require_once($arquivoSeguranca);
+
+            $this->_slimApp->add(new \HttpBasicAuthRouteDatabaseCustom('/' . $nome));
+        }
     }
 
     /**
@@ -133,7 +141,7 @@ class Aplicativo
     function definirRotaObter($nome, $funcao)
     {
         if (!function_exists($funcao)) {
-            throw new FunctionNotFoundException('A função \'' . $funcao . '\' definida para a rota obter \'' . $nome . '\' não existe.');
+            throw new \Pudim\Excecoes\FuncaoNaoEncontradaExcecao('A função \'' . $funcao . '\' definida para a rota obter \'' . $nome . '\' não existe.');
         }
 
         $this->_slimApp->get($nome, $funcao);
@@ -142,7 +150,7 @@ class Aplicativo
     function definirRotaPostagem($nome, $funcao)
     {
         if (!function_exists($funcao)) {
-            throw new FunctionNotFoundException('A função \'' . $funcao . '\' definida para a rota postagem \'' . $nome . '\' não existe.');
+            throw new \Pudim\Excecoes\FuncaoNaoEncontradaExcecao('A função \'' . $funcao . '\' definida para a rota postagem \'' . $nome . '\' não existe.');
         }
 
         $this->_slimApp->post($nome, $funcao);
@@ -569,6 +577,17 @@ class Aplicativo
     private function definirControleDeAcessoDaOrigemDaRequisicao()
     {
         header('Access-Control-Allow-Origin: *');
+    }
+    
+    /**
+     * Carrega todos os controladores.
+     */
+    private function carregarControladores() {
+        $controladores = __DIR__ . '/../../../../../controllers/';
+        if (file_exists($controladores)) {
+            \Pudim\Arquivo::requererDiretorio($controladores);
+        }
+
     }
 
 }

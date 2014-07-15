@@ -24,7 +24,7 @@ class Modelo
         $file = __DIR__ . '/../../../../../templates/' . $nome . '.html';
 
         if (!file_exists($file)) {
-            throw new FileNotFoundException('Modelo ' . $nome . ' não encontrado.');
+            throw new \Pudim\Excecoes\ArquivoNaoEncontradoExcecao('Modelo ' . $nome . ' não encontrado.');
         }
 
         $this->_content = file_get_contents($file);
@@ -40,7 +40,7 @@ class Modelo
             $styleFile = __DIR__ . '/../../../../../templates/' . $estilo . '.css';
 
             if (!file_exists($styleFile)) {
-                throw new FileNotFoundException('Modelo ' . $styleFile . ' não encontrado.');
+                throw new \Pudim\Excecoes\ArquivoNaoEncontradoExcecao('Modelo ' . $styleFile . ' não encontrado.');
             }
 
             $this->_style = file_get_contents($styleFile);

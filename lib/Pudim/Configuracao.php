@@ -11,7 +11,7 @@ class Configuracao
     private $_arquivo;
     private $_propriedades = array();
 
-    function Configuracao($arquivo)
+    function __construct($arquivo)
     {
         $this->_arquivo = $arquivo;
         $this->_propriedades = $this->better_parse_ini_file($this->_arquivo, true);

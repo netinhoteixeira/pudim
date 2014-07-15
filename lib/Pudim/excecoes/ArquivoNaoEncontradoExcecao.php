@@ -2,7 +2,7 @@
 
 namespace Pudim\Excecoes;
 
-class ArquivoNaoEncontradoExcecao extends Exception {
+class ArquivoNaoEncontradoExcecao extends \Exception {
     
 }
 

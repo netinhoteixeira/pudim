@@ -1,5 +1,7 @@
 <?php
 
+namespace Pudim\jqGrid;
+
 /**
  * Classe jqGrid.
  */

@@ -2,6 +2,6 @@
 
 namespace Pudim\Excecoes;
 
-class IndiceNaoEncontradoExcecao extends Exception {
+class IndiceNaoEncontradoExcecao extends \Exception {
     
 }

@@ -2,6 +2,7 @@
 
 namespace Pudim\Excecoes;
 
-class VazioExcecao extends Exception {
+class VazioExcecao extends \Exception
+{
     
 }

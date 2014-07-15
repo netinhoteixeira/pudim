@@ -2,6 +2,6 @@
 
 namespace Pudim\Excecoes;
 
-class EmailExcecao extends Exception {
+class EmailExcecao extends \Exception {
     
 }
