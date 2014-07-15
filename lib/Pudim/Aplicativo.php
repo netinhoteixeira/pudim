@@ -405,7 +405,7 @@ class Aplicativo
         if ($this->_configuracao->get($this->_servidor . '.piwik_id')) {
             require_once(__DIR__ . '/auxiliar/PiwikTracker.php');
 
-            $piwikTracker = new PiwikTracker($this->_configuracao->get($this->_servidor . '.piwik_url'), $this->_configuracao->get($this->_servidor . '.piwik_id'));
+            $piwikTracker = new \PiwikTracker($this->_configuracao->get($this->_servidor . '.piwik_url'), $this->_configuracao->get($this->_servidor . '.piwik_id'));
 
             if ($this->_configuracao->get($this->_servidor . '.piwik_token_auth')) {
                 $piwikTracker->setTokenAuth($this->_configuracao->get($this->_servidor . '.piwik_token_auth'));
