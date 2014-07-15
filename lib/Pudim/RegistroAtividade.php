@@ -136,7 +136,7 @@ class RegistroAtividade
 
         if (!is_null($this->_constante)) {
 
-            $usuarioAtividade = new usuarioatividade();
+            $usuarioAtividade = new \usuarioatividade();
 
             if (!is_null($this->_usuario)) {
                 $usuarioAtividade->setUsuario($this->_usuario);

@@ -119,7 +119,7 @@ class Modelo
         if (!is_null($this->_style)) {
             require_once(__DIR__ . '/auxiliar/CssToInlineStylesOverride.php');
 
-            $cssParser = new CssToInlineStylesOverride($parsedData, $this->_style);
+            $cssParser = new \CssToInlineStylesOverride($parsedData, $this->_style);
 
             return $cssParser->convert();
         } else {

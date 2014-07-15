@@ -312,7 +312,7 @@ class Aplicativo
         $headers .= 'From: ' . $this->_nome . ' <' . $this->_email . '>' . "\r\n";
 
         // envia-o
-        $mail = new PHPMailer();
+        $mail = new \PHPMailer();
         $mail->Priority = 1; // Email priority (1 = High, 3 = Normal, 5 = low)
         $mail->CharSet = 'utf-8';
         $mail->IsSMTP();
