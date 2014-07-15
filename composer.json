@@ -1,0 +1,28 @@
+{
+    "name": "netinhoteixeira/pudim",
+    "description": "Framework para desenvolvimento rápido em PHP",
+    "keywords": ["pudim", "php", "framework"],
+    "homepage": "https://github.com/netinhoteixeira/pudim",
+    "license": "GPL-3.0+",
+    "authors": [
+        {
+            "name": "Francisco Ernesto Teixeira",
+            "email": "fco.ernesto@gmail.com",
+            "homepage": "http://francisco.pro"
+        }
+    ],
+    "require": {
+        "php": ">=5.5.0",
+        "slim/slim": "2.4.3",
+        "doctrine/mongodb-odm": "1.0.0-BETA11",
+        "sybio/image-workshop": "2.0.5",
+        "phpmailer/phpmailer": "v5.2.8",
+        "tijsverkoyen/css-to-inline-styles": "dev-master",
+        "thadafinser/piwik-tracker": "dev-master"
+    },
+    "autoload": {
+        "psr-0": {
+            "Pudim\\": "."
+        }
+    }
+}
