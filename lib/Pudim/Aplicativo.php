@@ -27,7 +27,7 @@ class Aplicativo
     public function __construct()
     {
         $this->_servidor = 'servidor_' . str_replace('.', '_', $_SERVER['SERVER_NAME']);
-        $this->_configuracao = new Configuracao(__DIR__ . '/../configuracao.ini');
+        $this->_configuracao = new Configuracao(__DIR__ . '/../../../../../configuracao.ini');
 
         define('PROJECT_STAGE', $this->_configuracao->get($this->_servidor . '.producao'));
 
@@ -343,33 +343,33 @@ class Aplicativo
     {
         AnnotationDriver::registerAnnotationClasses();
 
-        $classLoader = new ClassLoader('domain', __DIR__ . '/..');
+        $classLoader = new ClassLoader('domain', __DIR__ . '/../../../../..');
         $classLoader->register();
 
         // cria os diretórios dos proxys e hydrators, caso não haja (necessários
         // para o Doctrine MongoDB)
         if (!PROJECT_STAGE) {
-            if (!file_exists(__DIR__ . '/../generate')) {
-                mkdir(__DIR__ . '/../generate', 0744, true);
+            if (!file_exists(__DIR__ . '/../../../../../generate')) {
+                mkdir(__DIR__ . '/../../../../../generate', 0744, true);
             }
 
-            if (!file_exists(__DIR__ . '/../generate/proxies')) {
-                mkdir(__DIR__ . '/../generate/proxies', 0744, true);
+            if (!file_exists(__DIR__ . '/../../../../../generate/proxies')) {
+                mkdir(__DIR__ . '/../../../../../generate/proxies', 0744, true);
             }
 
-            if (!file_exists(__DIR__ . '/../generate/hydrators')) {
-                mkdir(__DIR__ . '/../generate/hydrators', 0744, true);
+            if (!file_exists(__DIR__ . '/../../../../../generate/hydrators')) {
+                mkdir(__DIR__ . '/../../../../../generate/hydrators', 0744, true);
             }
         }
 
         $configuracao = new Configuration();
-        $metadata = AnnotationDriver::create(__DIR__ . '/../domain');
+        $metadata = AnnotationDriver::create(__DIR__ . '/../../../../../domain');
         $configuracao->setMetadataDriverImpl($metadata);
         $configuracao->setAutoGenerateProxyClasses(!((boolean) PROJECT_STAGE));
-        $configuracao->setProxyDir(__DIR__ . '/../generate/proxies');
+        $configuracao->setProxyDir(__DIR__ . '/../../../../../generate/proxies');
         $configuracao->setProxyNamespace('Proxies');
         $configuracao->setAutoGenerateHydratorClasses(!((boolean) PROJECT_STAGE));
-        $configuracao->setHydratorDir(__DIR__ . '/../generate/hydrators');
+        $configuracao->setHydratorDir(__DIR__ . '/../../../../../generate/hydrators');
         $configuracao->setHydratorNamespace('Hydrators');
         $configuracao->setDefaultDB($this->_configuracao->get($this->_servidor . '.persistencia_banco'));
 
@@ -458,7 +458,7 @@ class Aplicativo
      */
     private function criarDiretorioTemporario()
     {
-        define('TMPDIR', __DIR__ . '/../tmp');
+        define('TMPDIR', __DIR__ . '/../../../../../tmp');
         if (!file_exists(TMPDIR)) {
             mkdir(TMPDIR, 0744, true);
         }
