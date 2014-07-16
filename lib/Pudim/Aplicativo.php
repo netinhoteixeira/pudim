@@ -125,7 +125,7 @@ class Aplicativo
             require_once(__DIR__ . '/auxiliar/slim/HttpBasicAuthRouteDatabase.php');
             require_once($arquivoSeguranca);
 
-            $this->_slimApp->add(new \HttpBasicAuthRouteDatabaseCustom('/' . $nome));
+            $this->_slimApp->add(new \HttpBasicAuthRouteDatabaseCustom($nome));
         }
     }
 
