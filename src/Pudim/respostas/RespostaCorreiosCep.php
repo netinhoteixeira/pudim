@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Pudim - Framework for agile development in PHP.
+ * Pudim - Framework para desenvolvimento rápido em PHP.
  * Copyright (C) 2014  Francisco Ernesto Teixeira <fco.ernesto@gmail.com>
  * 
  * This program is free software: you can redistribute it and/or modify
