@@ -139,8 +139,8 @@ class Aplicativo
     {
         $arquivoSeguranca = __APPDIR__ . '/HttpBasicAuthRouteDatabaseCustom.inc.php';
         if (file_exists($arquivoSeguranca)) {
-            require_once(__DIR__ . '../../lib/slim/HttpBasicAuthDatabase.php');
-            require_once(__DIR__ . '../../lib/slim/HttpBasicAuthRouteDatabase.php');
+            require_once(__DIR__ . '/../../lib/slim/HttpBasicAuthDatabase.php');
+            require_once(__DIR__ . '/../../lib/slim/HttpBasicAuthRouteDatabase.php');
             require_once($arquivoSeguranca);
 
             $this->_slimApp->add(new \HttpBasicAuthRouteDatabaseCustom($nome));
@@ -426,7 +426,7 @@ class Aplicativo
     {
 
         if ($this->_configuracao->get($this->_servidor . '.piwik_id')) {
-            require_once(__DIR__ . '../../lib/PiwikTracker.php');
+            require_once(__DIR__ . '/../../lib/PiwikTracker.php');
 
             $piwikTracker = new \PiwikTracker($this->_configuracao->get($this->_servidor . '.piwik_url'), $this->_configuracao->get($this->_servidor . '.piwik_id'));
 

@@ -28,8 +28,8 @@ if (!defined('RESPOSTA_CORREIOS_CEP_BAIRRO')) {
     define('RESPOSTA_CORREIOS_CEP_BAIRRO', 1);
 }
 
-if (!defined('RESPOSTA_CORREIOS_CEP_LOCALIDADE')) {
-    define('RESPOSTA_CORREIOS_CEP_LOCALIDADE', 2);
+if (!defined('RESPOSTA_CORREIOS_CEP_CIDADE')) {
+    define('RESPOSTA_CORREIOS_CEP_CIDADE', 2);
 }
 
 if (!defined('RESPOSTA_CORREIOS_CEP_UF')) {
@@ -49,7 +49,7 @@ class RespostaCorreiosCep implements \JsonSerializable
     private $_encontrou = false;
     private $_logradouro;
     private $_bairro;
-    private $_localidade;
+    private $_cidade;
     private $_uf;
     private $_cep;
 
@@ -68,9 +68,9 @@ class RespostaCorreiosCep implements \JsonSerializable
         return $this->_bairro;
     }
 
-    public function getLocalidade()
+    public function getCidade()
     {
-        return $this->_localidade;
+        return $this->_cidade;
     }
 
     public function getUf()
@@ -98,9 +98,9 @@ class RespostaCorreiosCep implements \JsonSerializable
         $this->_bairro = $bairro;
     }
 
-    public function setLocalidade($localidade)
+    public function setCidade($localidade)
     {
-        $this->_localidade = $localidade;
+        $this->_cidade = $localidade;
     }
 
     public function setUf($uf)
@@ -124,7 +124,7 @@ class RespostaCorreiosCep implements \JsonSerializable
             'encontrou' => $this->_encontrou,
             'logradouro' => $this->_logradouro,
             'bairro' => $this->_bairro,
-            'localidade' => $this->_localidade,
+            'cidade' => $this->_cidade,
             'uf' => $this->_uf,
             'cep' => $this->_cep
         );

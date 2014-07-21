@@ -86,4 +86,15 @@ class Texto
         return $retorno;
     }
 
+    /**
+     * Normaliza os espaços existentes em um texto.
+     * 
+     * @param string $texto Texto
+     * @return string
+     */
+    public static function normalizarEspacos($texto)
+    {
+        return trim(preg_replace('/[\s\t\n\r\s]+/', ' ', $texto));
+    }
+
 }

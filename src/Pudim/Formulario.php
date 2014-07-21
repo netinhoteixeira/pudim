@@ -30,7 +30,7 @@ class Formulario
      * @param type $variavel Foto em Base64
      * @return \RespostaMudancaFoto
      */
-    public static function setFoto($documento, $variavel = 'foto')
+    public static function setFoto($documento, $variavel = 'foto', $redimensionar = true)
     {
         $aplicativo = Aplicativo::getInstance();
 
@@ -48,9 +48,14 @@ class Formulario
             if ($data !== $foto) {
                 $data = base64_decode($data);
                 $imagemRecebida = imagecreatefromstring($data);
-                $layer = Formulario::imageLayerFromResource($imagemRecebida);
-                $layer->resizeInPixel(200, 200, true, 0, 0, 'MM');
-                $imagemFinal = $layer->getResult('FFFFFF');
+
+                if ($redimensionar) {
+                    $layer = Formulario::imageLayerFromResource($imagemRecebida);
+                    $layer->resizeInPixel(200, 200, true, 0, 0, 'MM');
+                    $imagemFinal = $layer->getResult('FFFFFF');
+                } else {
+                    $imagemFinal = $imagemRecebida;
+                }
 
                 $arquivoTemporario = tempnam(TMPDIR, 'foto');
                 imagepng($imagemFinal, $arquivoTemporario);
@@ -170,6 +175,30 @@ class Formulario
                 return true;
             }
         }
+    }
+
+    /**
+     * 
+     * @param type $cpf
+     * @return type
+     */
+    public static function validarCpf($cpf)
+    {
+        require_once(__DIR__ . '/../../lib/ValidarChaveFiscal.php');
+        $validador = new \ValidarChaveFiscal($cpf, 'cpf');
+        return $validador->isValido();
+    }
+
+    /**
+     * 
+     * @param type $cnpj
+     * @return type
+     */
+    public static function validarCnpj($cnpj)
+    {
+        require_once(__DIR__ . '/../../lib/ValidarChaveFiscal.php');
+        $validador = new \ValidarChaveFiscal($cnpj, 'cnpj');
+        return $validador->isValido();
     }
 
 }
