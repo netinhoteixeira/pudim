@@ -54,6 +54,7 @@ class Aplicativo
 
         define('PROJECT_STAGE', $this->_configuracao->get($this->_servidor . '.producao'));
 
+        $this->criarDiretorioTemporario();
         $this->_documentos = $this->iniciarDocumentos();
 
         $this->_slimApp = new \Slim\Slim();
@@ -70,7 +71,6 @@ class Aplicativo
         $this->corrigirRequisicaoVariaveisPostagem();
         $this->_analiseTrafego = $this->iniciarAnaliseTrafego();
 
-        $this->criarDiretorioTemporario();
         $this->verificarPrimeiroAcesso();
         $this->configurarSessaoNoRedis();
         $this->iniciarSessao();
@@ -380,16 +380,16 @@ class Aplicativo
         // cria os diretórios dos proxys e hydrators, caso não haja (necessários
         // para o Doctrine MongoDB)
         if (!PROJECT_STAGE) {
-            if (!file_exists(__APPDIR__ . '/generate')) {
-                mkdir(__APPDIR__ . '/generate', 0744, true);
+            if (!file_exists(__APPDIR__ . '/tmp/domain')) {
+                mkdir(__APPDIR__ . '/tmp/domain', 0744, true);
             }
 
-            if (!file_exists(__APPDIR__ . '/generate/proxies')) {
-                mkdir(__APPDIR__ . '/generate/proxies', 0744, true);
+            if (!file_exists(__APPDIR__ . '/tmp/domain/proxies')) {
+                mkdir(__APPDIR__ . '/tmp/domain/proxies', 0744, true);
             }
 
-            if (!file_exists(__APPDIR__ . '/generate/hydrators')) {
-                mkdir(__APPDIR__ . '/generate/hydrators', 0744, true);
+            if (!file_exists(__APPDIR__ . '/tmp/domain/hydrators')) {
+                mkdir(__APPDIR__ . '/tmp/domain/hydrators', 0744, true);
             }
         }
 
@@ -397,10 +397,10 @@ class Aplicativo
         $metadata = AnnotationDriver::create(__APPDIR__ . '/domain');
         $configuracao->setMetadataDriverImpl($metadata);
         $configuracao->setAutoGenerateProxyClasses(!((boolean) PROJECT_STAGE));
-        $configuracao->setProxyDir(__APPDIR__ . '/generate/proxies');
+        $configuracao->setProxyDir(__APPDIR__ . '/tmp/domain/proxies');
         $configuracao->setProxyNamespace('Proxies');
         $configuracao->setAutoGenerateHydratorClasses(!((boolean) PROJECT_STAGE));
-        $configuracao->setHydratorDir(__APPDIR__ . '/generate/hydrators');
+        $configuracao->setHydratorDir(__APPDIR__ . '/tmp/domain/hydrators');
         $configuracao->setHydratorNamespace('Hydrators');
         $configuracao->setDefaultDB($this->_configuracao->get($this->_servidor . '.persistencia_banco'));
 
