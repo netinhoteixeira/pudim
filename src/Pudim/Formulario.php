@@ -20,6 +20,8 @@
 
 namespace Pudim;
 
+use Pudim\Respostas\RespostaMudancaFoto;
+
 class Formulario
 {
 
