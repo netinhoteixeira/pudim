@@ -32,16 +32,22 @@ class Formulario
      * @param type $variavel Foto em Base64
      * @return \RespostaMudancaFoto
      */
-    public static function setFoto($documento, $variavel = 'foto', $redimensionar = true)
+    public static function setFoto($documento, $variavel = 'foto', $redimensionar = '200x200')
     {
         $aplicativo = Aplicativo::getInstance();
 
         $resposta = new RespostaMudancaFoto();
 
         if ($aplicativo->postExists($variavel, false)) {
+            $data = $aplicativo->post($variavel);
+
             // sanitiza os dados da foto recebida na $variavel
-            $prefix = 'data:image/png;base64,';
-            $data = str_replace($prefix, '', $aplicativo->post($variavel));
+            $prefixes = array('data:image/png;base64,');
+            foreach ($prefixes as $prefix) {
+                if (strpos($data, $prefix)) {
+                    $data = str_replace($prefix, '', $data);
+                }
+            }
 
             // obtém a foto do $documento
             $foto = Formulario::getFotoBase64($documento);
@@ -52,15 +58,22 @@ class Formulario
                 $imagemRecebida = imagecreatefromstring($data);
 
                 if ($redimensionar) {
-                    $layer = Formulario::imageLayerFromResource($imagemRecebida);
-                    $layer->resizeInPixel(200, 200, true, 0, 0, 'MM');
-                    $imagemFinal = $layer->getResult('FFFFFF');
-                } else {
+                    $dimensoes = explode('x', $redimensionar);
+                    if (count($dimensoes) === 2) {
+                        $layer = Formulario::imageLayerFromResource($imagemRecebida);
+                        $layer->resizeInPixel($dimensoes[0], $dimensoes[1], true, 0, 0, 'MM');
+                        $imagemFinal = $layer->getResult('FFFFFF');
+                    }
+                }
+
+                if (!isset($imagemFinal)) {
                     $imagemFinal = $imagemRecebida;
                 }
 
                 $arquivoTemporario = tempnam(TMPDIR, 'foto');
-                imagepng($imagemFinal, $arquivoTemporario);
+                //imagepng($imagemFinal, $arquivoTemporario);
+                // EXPERIMENTAL: Usando o WebP paa
+                imagewebp($imagemFinal, $arquivoTemporario);
 
                 if (is_null($documento->getFoto())) {
                     $foto = new foto();
@@ -100,7 +113,8 @@ class Formulario
                         $foto = $documento->getFoto();
                         $arquivo = base64_encode($foto->getFile()->getBytes());
                         if ($asImage) {
-                            $retorno = 'data:image/png;base64,' . $arquivo;
+                            // TODO: Tem que colocar um conversor
+                            $retorno = 'data:image/' . $imageType . ';base64,' . $arquivo;
                         } else {
                             $retorno = $arquivo;
                         }

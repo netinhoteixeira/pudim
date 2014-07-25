@@ -45,6 +45,9 @@ class Aplicativo
     private $_email;
     private $_analiseTrafego;
 
+    /**
+     * Construtor.
+     */
     public function __construct()
     {
         define('__APPDIR__', __DIR__ . '/../../../../..');
@@ -80,9 +83,10 @@ class Aplicativo
     }
 
     /**
+     * Obtém a instância do Aplicativo.
      * 
      * @global Aplicativo $aplicativo
-     * @return \Aplicativo
+     * @return \Pudim\Aplicativo
      */
     public static function getInstance()
     {
@@ -95,11 +99,20 @@ class Aplicativo
         return $aplicativo;
     }
 
+    /**
+     * Retorna a configuração do aplicativo.
+     * 
+     * @return \Pudim\Configuracao
+     */
     public function getConfiguracao()
     {
         return $this->_configuracao;
     }
 
+    /**
+     * 
+     * @return \Doctrine\ODM\MongoDB\DocumentManager
+     */
     public function getDocumentos()
     {
         return $this->_documentos;
@@ -133,7 +146,7 @@ class Aplicativo
     /**
      * Adiciona a segurança nos subdiretórios. Use asterisco (*) para todos.
      *
-     * @param type $nome
+     * @param string $nome Nome da rota a ser protegida. Ex.: /acessorestrito
      */
     public function protegerRota($nome)
     {
@@ -150,7 +163,7 @@ class Aplicativo
     /**
      * Define as rotas utilizadas em um cadastro.
      *
-     * @param type $nome Nome da Rota
+     * @param type $nome Nome da rota. Ex.: pessoa
      */
     function definirRotasParaCadastro($nome)
     {
@@ -161,6 +174,12 @@ class Aplicativo
         $this->_slimApp->delete('/cadastro/' . $nome . '/:id', $nome . 'Remover');
     }
 
+    /**
+     * 
+     * @param type $nome
+     * @param type $funcao
+     * @throws FuncaoNaoEncontradaExcecao
+     */
     function definirRotaObter($nome, $funcao)
     {
         if (!function_exists($funcao)) {
@@ -282,7 +301,7 @@ class Aplicativo
     function getUsuarioSessao()
     {
         if (Aplicativo::existeVariavelSessao('userid')) {
-            return $this->_documentos->createQueryBuilder('usuario')
+            return $this->_documentos->createQueryBuilder('Usuario')
                             ->field('_id')->equals(Aplicativo::obterVariavelSessao('userid'))
                             ->getQuery()
                             ->getSingleResult();
@@ -297,7 +316,7 @@ class Aplicativo
     function getEmpresaSessao()
     {
         if (Aplicativo::existeVariavelSessao('empresaid')) {
-            return $this->_documentos->createQueryBuilder('empresa')
+            return $this->_documentos->createQueryBuilder('Empresa')
                             ->field('_id')->equals(Aplicativo::obterVariavelSessao('empresaid'))
                             ->getQuery()
                             ->getSingleResult();
@@ -306,11 +325,16 @@ class Aplicativo
         }
     }
 
+    /**
+     * JSONfica e exibe a codificação do Objeto.
+     * 
+     * @param Object $jsonfy Objeto a ser codificado em JSON
+     */
     function saida($jsonfy = null)
     {
-        $this->_slimApp->contentType('application/json; charset=utf-8');
-
         if (!is_null($jsonfy)) {
+            $this->_slimApp->contentType('application/json; charset=utf-8');
+
             echo json_encode($jsonfy);
         }
     }
@@ -366,9 +390,9 @@ class Aplicativo
     }
 
     /**
-     * Conexão ao banco de dados.
+     * Acesso ao banco de documentos.
      * 
-     * @return DocumentManager
+     * @return \Doctrine\ODM\MongoDB\DocumentManager
      */
     private function iniciarDocumentos()
     {
@@ -422,6 +446,9 @@ class Aplicativo
         return $documentos;
     }
 
+    /**
+     * Inicia a análise de tráfego.
+     */
     private function iniciarAnaliseTrafego()
     {
 
@@ -468,7 +495,7 @@ class Aplicativo
     }
 
     /**
-     * Obtém a Análise de Tráfego.
+     * Obtém a análise de tráfego.
      * 
      * @return PiwikTracker
      */
@@ -588,7 +615,7 @@ class Aplicativo
     }
 
     /**
-     * Define o Fuso Horário.
+     * Define o fuso horário.
      */
     private function definirFusoHorario()
     {

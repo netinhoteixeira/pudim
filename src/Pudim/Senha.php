@@ -31,20 +31,20 @@ class Senha
      * uma letra maiúscula, um número e um caractere especial. Os caracteres
      * restante da senha são escolhidas de uma de quatro tipos.
      *
-     * Os caracteres disponíveis em casa tipo são amigáveis para o usuário - não há
-     * caracteres ambíguos como i, l, 1, o, O, etc. Estes, em conjunto da opção
-     * $add_dashes, são muito fáceis para os usuários digitarem ou falarem suas
-     * senhas.
+     * Os caracteres disponíveis em casa tipo são amigáveis para o usuário - não
+     * há caracteres ambíguos como i, l, 1, o, O, etc. Estes, em conjunto da
+     * opção $adicionarHifens, são muito fáceis para os usuários digitarem ou
+     * falarem suas senhas.
      *
-     * Nota: a opção $add_dashes irá aumentar o tamanho da senha por floor(sqrt(N))
+     * Nota: a opção $adicionarHifens irá aumentar o tamanho da senha por floor(sqrt(N))
      * caracteres.
      *
      * @param type $tamanho
-     * @param type $addDashes
+     * @param type $adicionarHifens
      * @param type $availableSets
      * @return type
      */
-    public static function gerar($tamanho = 9, $addDashes = false, $availableSets = 'luds')
+    public static function gerar($tamanho = 9, $adicionarHifens = false, $availableSets = 'luds')
     {
         $sets = array();
         if (strpos($availableSets, 'l') !== false) {
@@ -77,23 +77,26 @@ class Senha
 
         $password = str_shuffle($password);
 
-        if (!$addDashes) {
+        if (!$adicionarHifens) {
             return $password;
         }
 
         $dashLength = floor(sqrt($tamanho));
         $dashString = '';
+
         while (strlen($password) > $dashLength) {
             $dashString .= substr($password, 0, $dashLength) . '-';
             $password = substr($password, $dashLength);
         }
+
         $dashString .= $password;
+
         return $dashString;
     }
 
-    public static function gerarCriptografada($tamanho = 9, $addDashes = false, $availableSets = 'luds')
+    public static function gerarCriptografada($tamanho = 9, $adicionarHifens = false, $availableSets = 'luds')
     {
-        return sha1(Senha::gerar($tamanho, $addDashes, $availableSets));
+        return sha1(Senha::gerar($tamanho, $adicionarHifens, $availableSets));
     }
 
 }
