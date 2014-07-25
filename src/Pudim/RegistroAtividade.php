@@ -20,6 +20,7 @@
 
 namespace Pudim;
 
+
 /**
  * Registra as atividades do usuário no sistema.
  *
@@ -138,7 +139,7 @@ class RegistroAtividade
     {
         $aplicativo = Aplicativo::getInstance();
 
-        return $aplicativo->getDocumentos()->createQueryBuilder('usuarioatividade')
+        return $aplicativo->getDocumentos()->createQueryBuilder('Domain\UsuarioAtividade')
                         ->field('_id')->equals($id)
                         ->getQuery()
                         ->getSingleResult();
@@ -154,7 +155,7 @@ class RegistroAtividade
 
         if (!is_null($this->_constante)) {
 
-            $usuarioAtividade = new \usuarioatividade();
+            $usuarioAtividade = new \Domain\UsuarioAtividade();
 
             if (!is_null($this->_usuario)) {
                 $usuarioAtividade->setUsuario($this->_usuario);
@@ -197,7 +198,7 @@ class RegistroAtividade
                         if ($aplicativo->postExists('position')) {
                             $posicao = $aplicativo->post('position');
 
-                            $coordenadas = new \coordenadas();
+                            $coordenadas = new \Domain\Coordenadas();
                             $coordenadas->setX($posicao['longitude']);
                             $coordenadas->setY($posicao['latitude']);
                             $coordenadas->setAccuracy($posicao['accuracy']);

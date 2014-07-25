@@ -167,40 +167,74 @@ class Aplicativo
      */
     function definirRotasParaCadastro($nome)
     {
-        $this->_slimApp->get('/cadastro/' . $nome . '/', $nome . 'Listar');
-        $this->_slimApp->get('/cadastro/' . $nome . '/:id', $nome . 'Obter');
-        $this->_slimApp->post('/cadastro/' . $nome . '', $nome . 'Salvar');
-        $this->_slimApp->post('/cadastro/' . $nome . '/:id', $nome . 'Salvar');
-        $this->_slimApp->delete('/cadastro/' . $nome . '/:id', $nome . 'Remover');
+        $this->definirRotaObtencao('/cadastro/' . $nome . '/', $nome . 'Listar');
+        $this->definirRotaObtencao('/cadastro/' . $nome . '/:id', $nome . 'Obter');
+        $this->definirRotaPostagem('/cadastro/' . $nome . '', $nome . 'Salvar');
+        $this->definirRotaPostagem('/cadastro/' . $nome . '/:id', $nome . 'Salvar');
+        $this->definirRotaRemocao('/cadastro/' . $nome . '/:id', $nome . 'Remover');
     }
 
     /**
+     * Define a rota para a chamada GET.
      * 
-     * @param type $nome
-     * @param type $funcao
+     * @param string $caminho Caminho da rota
+     * @param function $funcao Função a ser chamada
      * @throws FuncaoNaoEncontradaExcecao
      */
-    function definirRotaObter($nome, $funcao)
+    function definirRotaObtencao($caminho, $funcao)
     {
         if (!function_exists($funcao)) {
-            throw new FuncaoNaoEncontradaExcecao('A função \'' . $funcao . '\' definida para a rota obter \'' . $nome . '\' não existe.');
+            throw new FuncaoNaoEncontradaExcecao('A função \'' . $funcao . '\' definida para a rota obter \'' . $caminho . '\' não existe.');
         }
 
-        $this->_slimApp->get($nome, $funcao);
+        $this->_slimApp->get($caminho, $funcao);
     }
 
-    function definirRotaPostagem($nome, $funcao)
+    /**
+     * Define a rota para a chamada POST.
+     * 
+     * @param string $caminho Caminho da rota
+     * @param function $funcao Função a ser chamada
+     * @throws FuncaoNaoEncontradaExcecao
+     */
+    function definirRotaPostagem($caminho, $funcao)
     {
         if (!function_exists($funcao)) {
-            throw new FuncaoNaoEncontradaExcecao('A função \'' . $funcao . '\' definida para a rota postagem \'' . $nome . '\' não existe.');
+            throw new FuncaoNaoEncontradaExcecao('A função \'' . $funcao . '\' definida para a rota postagem \'' . $caminho . '\' não existe.');
         }
 
-        $this->_slimApp->post($nome, $funcao);
+        $this->_slimApp->post($caminho, $funcao);
     }
 
-    function definirRotaNaoEncontrada($nome)
+    /**
+     * Define a rota para a chamada DELETE.
+     * 
+     * @param string $caminho Caminho da rota
+     * @param function $funcao Função a ser chamada
+     * @throws FuncaoNaoEncontradaExcecao
+     */
+    function definirRotaRemocao($caminho, $funcao)
     {
-        $this->_slimApp->notFound($nome);
+        if (!function_exists($funcao)) {
+            throw new FuncaoNaoEncontradaExcecao('A função \'' . $funcao . '\' definida para a rota postagem \'' . $caminho . '\' não existe.');
+        }
+
+        $this->_slimApp->delete($caminho, $funcao);
+    }
+
+    /**
+     * Chama a função fornecida caso não encontre a rota (Erro 404).
+     * 
+     * @param function $funcao Função a ser chamada
+     * @throws FuncaoNaoEncontradaExcecao
+     */
+    function seRotaNaoForEncontrada($funcao)
+    {
+        if (!function_exists($funcao)) {
+            throw new FuncaoNaoEncontradaExcecao('A função \'' . $funcao . '\' não existe.');
+        }
+
+        $this->_slimApp->notFound($funcao);
     }
 
     /**
@@ -301,7 +335,7 @@ class Aplicativo
     function getUsuarioSessao()
     {
         if (Aplicativo::existeVariavelSessao('userid')) {
-            return $this->_documentos->createQueryBuilder('Usuario')
+            return $this->_documentos->createQueryBuilder('Domain\Usuario')
                             ->field('_id')->equals(Aplicativo::obterVariavelSessao('userid'))
                             ->getQuery()
                             ->getSingleResult();
@@ -316,7 +350,7 @@ class Aplicativo
     function getEmpresaSessao()
     {
         if (Aplicativo::existeVariavelSessao('empresaid')) {
-            return $this->_documentos->createQueryBuilder('Empresa')
+            return $this->_documentos->createQueryBuilder('Domain\Empresa')
                             ->field('_id')->equals(Aplicativo::obterVariavelSessao('empresaid'))
                             ->getQuery()
                             ->getSingleResult();
@@ -340,12 +374,12 @@ class Aplicativo
     }
 
     /**
-     *
-     * @global array $config
-     * @param string $para
-     * @param string $assunto
-     * @param string $mensagem
-     * @return boolean
+     * Envia um e-mail do sistema para o endereço fornecido.
+     * 
+     * @param string $para Endereço de e-mail para qual deve ser enviado
+     * @param string $assunto Assunto
+     * @param string $mensagem Mensagem
+     * @return boolean Se foi enviado ou não
      */
     public function enviarEmail($para, $assunto, $mensagem)
     {
@@ -360,7 +394,7 @@ class Aplicativo
 
         // envia-o
         $mail = new \PHPMailer();
-        $mail->Priority = 1; // Email priority (1 = High, 3 = Normal, 5 = low)
+        $mail->Priority = 1; // Email priority (1 = High, 3 = Normal, 5 = Low)
         $mail->CharSet = 'utf-8';
         $mail->IsSMTP();
         $mail->SMTPAuth = true;
@@ -377,16 +411,12 @@ class Aplicativo
         $mail->Body = $mensagem;
         $mail->AddAddress($para);
 
-        $emailLogoFilename = __DIR__ . '/templates/email-logo.png';
+        $emailLogoFilename = __DIR__ . '/Templates/email-logo.png';
         if (file_exists($emailLogoFilename)) {
             $mail->AddEmbeddedImage($emailLogoFilename, 'logo');
         }
 
-        if (!$mail->Send()) {
-            return false;
-        } else {
-            return true;
-        }
+        return $mail->Send();
     }
 
     /**
@@ -398,43 +428,53 @@ class Aplicativo
     {
         AnnotationDriver::registerAnnotationClasses();
 
-        $classLoader = new ClassLoader('domain', __APPDIR__);
+        $classLoader = new ClassLoader('Domain', __APPDIR__);
         $classLoader->register();
 
         // cria os diretórios dos proxys e hydrators, caso não haja (necessários
         // para o Doctrine MongoDB)
         if (!PROJECT_STAGE) {
-            if (!file_exists(__APPDIR__ . '/tmp/domain')) {
-                mkdir(__APPDIR__ . '/tmp/domain', 0744, true);
-            }
-
-            if (!file_exists(__APPDIR__ . '/tmp/domain/proxies')) {
-                mkdir(__APPDIR__ . '/tmp/domain/proxies', 0744, true);
-            }
-
-            if (!file_exists(__APPDIR__ . '/tmp/domain/hydrators')) {
-                mkdir(__APPDIR__ . '/tmp/domain/hydrators', 0744, true);
-            }
+            Arquivo::criarDiretorio(__APPDIR__ . '/tmp/Domain/Proxies');
+            Arquivo::criarDiretorio(__APPDIR__ . '/tmp/Domain/Hydrators');
         }
 
         $configuracao = new Configuration();
-        $metadata = AnnotationDriver::create(__APPDIR__ . '/domain');
+        $metadata = AnnotationDriver::create(__APPDIR__ . '/Domain');
         $configuracao->setMetadataDriverImpl($metadata);
         $configuracao->setAutoGenerateProxyClasses(!((boolean) PROJECT_STAGE));
-        $configuracao->setProxyDir(__APPDIR__ . '/tmp/domain/proxies');
+        $configuracao->setProxyDir(__APPDIR__ . '/tmp/Domain/Proxies');
         $configuracao->setProxyNamespace('Proxies');
         $configuracao->setAutoGenerateHydratorClasses(!((boolean) PROJECT_STAGE));
-        $configuracao->setHydratorDir(__APPDIR__ . '/tmp/domain/hydrators');
+        $configuracao->setHydratorDir(__APPDIR__ . '/tmp/Domain/Hydrators');
         $configuracao->setHydratorNamespace('Hydrators');
         $configuracao->setDefaultDB($this->_configuracao->get($this->_servidor . '.persistencia_banco'));
 
         //$configuracao->setLoggerCallable(function (array $log) { print_r($log); });
-        if ((PROJECT_STAGE) && (class_exists('Redis'))) {
+        $cache_uri = $this->_configuracao->get($this->_servidor . '.cache_uri');
+        if ((PROJECT_STAGE) && (class_exists('Redis')) && ($cache_uri)) {
+            // trata o $cache_uri pois somente precisamos do servidor e a porta
+            if (strpos($cache_uri, '//')) {
+                $cache_uri_parts = explode('//', $cache_uri);
+                if (strpos($cache_uri_parts[1], ':')) {
+                    list($cache_server, $cache_port) = explode(':', $cache_uri_parts[1]);
+                } else {
+                    $cache_server = $cache_uri_parts[1];
+                    $cache_port = '6379';
+                }
+
+                unset($cache_uri_parts);
+            } else {
+                $cache_server = $cache_uri;
+                $cache_port = '6379';
+            }
+
             $redis = new Redis();
-            $redis->pconnect('127.0.0.1', 6379);
+            $redis->pconnect($cache_server, $cache_port);
             $metadataCache = new RedisCache();
             $metadataCache->setRedis($redis);
             $configuracao->setMetadataCacheImpl($metadataCache);
+
+            unset($cache_server, $cache_port, $redis, $metadataCache);
         }
 
         $conexao = new Connection($this->_configuracao->get($this->_servidor . '.persistencia_uri'));
@@ -518,9 +558,7 @@ class Aplicativo
     private function criarDiretorioTemporario()
     {
         define('TMPDIR', __APPDIR__ . '/tmp');
-        if (!file_exists(TMPDIR)) {
-            mkdir(TMPDIR, 0744, true);
-        }
+        Arquivo::criarDiretorio(TMPDIR);
         ini_set('sys_temp_dir', TMPDIR);
     }
 
@@ -551,7 +589,7 @@ class Aplicativo
      */
     private function criarPrimeiroUsuario()
     {
-        $usuario = new usuario();
+        $usuario = new \Domain\Usuario();
         $usuario->setApelido('Netinho');
         $usuario->setEmail('fco.ernesto@gmail.com');
         # Senha: 123456
@@ -600,9 +638,10 @@ class Aplicativo
      */
     private function configurarSessaoNoRedis()
     {
-        if ((PROJECT_STAGE) && (class_exists('Redis'))) {
+        $cache_uri = $this->_configuracao->get($this->_servidor . '.cache_uri');
+        if ((PROJECT_STAGE) && (class_exists('Redis')) && ($cache_uri)) {
             ini_set('session.save_handler', 'redis');
-            ini_set('session.save_path', 'tcp://127.0.0.1:6379');
+            ini_set('session.save_path', $cache_uri);
         }
     }
 
@@ -635,7 +674,7 @@ class Aplicativo
      */
     private function carregarControladores()
     {
-        $controladores = __APPDIR__ . '/controllers/';
+        $controladores = __APPDIR__ . '/Controllers/';
         if (file_exists($controladores)) {
             Arquivo::requererDiretorio($controladores);
         }

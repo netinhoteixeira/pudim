@@ -45,12 +45,24 @@ class Arquivo
     /**
      * Localiza e requisita todos os arquivos de um determinado diretório.
      *
-     * @param string $path Caminho que será requisitado os arquivos
+     * @param string $caminho Caminho que será requisitado os arquivos
      */
-    public static function requererDiretorio($path)
+    public static function requererDiretorio($caminho)
     {
-        foreach (glob($path . '*.php') as $filename) {
-            require_once $filename;
+        foreach (glob($caminho . '*.php') as $arquivo) {
+            require_once $arquivo;
+        }
+    }
+
+    /**
+     * Criar o diretório.
+     * 
+     * @param string $caminho Caminho a ser criado
+     */
+    public static function criarDiretorio($caminho)
+    {
+        if (!file_exists($caminho)) {
+            mkdir($caminho, 0744, true);
         }
     }
 
