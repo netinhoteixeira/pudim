@@ -110,6 +110,7 @@ class Aplicativo
     }
 
     /**
+     * Retorna o acesso aos documentos.
      * 
      * @return \Doctrine\ODM\MongoDB\DocumentManager
      */
@@ -123,21 +124,41 @@ class Aplicativo
         return $this->_slimApp;
     }
 
+    /**
+     * Retorna o nome do aplicativo.
+     * 
+     * @return string
+     */
     public function getNome()
     {
         return $this->_nome;
     }
 
+    /**
+     * Retorna o ícone do aplicativo.
+     * 
+     * @return string
+     */
     public function getIcone()
     {
         return $this->_icone;
     }
 
+    /**
+     * Retorna o endereço base.
+     * 
+     * @return string
+     */
     public function getEnderecoBase()
     {
         return $this->_enderecoBase;
     }
 
+    /**
+     * Retorna o e-mail.
+     * 
+     * @return string
+     */
     public function getEmail()
     {
         return $this->_email;
@@ -152,8 +173,8 @@ class Aplicativo
     {
         $arquivoSeguranca = __APPDIR__ . '/HttpBasicAuthRouteDatabaseCustom.inc.php';
         if (file_exists($arquivoSeguranca)) {
-            require_once(__DIR__ . '/../../lib/slim/HttpBasicAuthDatabase.php');
-            require_once(__DIR__ . '/../../lib/slim/HttpBasicAuthRouteDatabase.php');
+            require_once(__DIR__ . '/../../library/slim/HttpBasicAuthDatabase.php');
+            require_once(__DIR__ . '/../../library/slim/HttpBasicAuthRouteDatabase.php');
             require_once($arquivoSeguranca);
 
             $this->_slimApp->add(new \HttpBasicAuthRouteDatabaseCustom($nome));
@@ -184,7 +205,9 @@ class Aplicativo
     function definirRotaObtencao($caminho, $funcao)
     {
         if (!function_exists($funcao)) {
-            throw new FuncaoNaoEncontradaExcecao('A função \'' . $funcao . '\' definida para a rota obter \'' . $caminho . '\' não existe.');
+            throw new FuncaoNaoEncontradaExcecao('A função \'' . $funcao .
+            '\' definida para a rota obter \'' . $caminho .
+            '\' não existe.');
         }
 
         $this->_slimApp->get($caminho, $funcao);
@@ -200,7 +223,9 @@ class Aplicativo
     function definirRotaPostagem($caminho, $funcao)
     {
         if (!function_exists($funcao)) {
-            throw new FuncaoNaoEncontradaExcecao('A função \'' . $funcao . '\' definida para a rota postagem \'' . $caminho . '\' não existe.');
+            throw new FuncaoNaoEncontradaExcecao('A função \'' . $funcao .
+            '\' definida para a rota postagem \'' . $caminho .
+            '\' não existe.');
         }
 
         $this->_slimApp->post($caminho, $funcao);
@@ -216,7 +241,9 @@ class Aplicativo
     function definirRotaRemocao($caminho, $funcao)
     {
         if (!function_exists($funcao)) {
-            throw new FuncaoNaoEncontradaExcecao('A função \'' . $funcao . '\' definida para a rota postagem \'' . $caminho . '\' não existe.');
+            throw new FuncaoNaoEncontradaExcecao('A função \'' . $funcao .
+            '\' definida para a rota postagem \'' . $caminho .
+            '\' não existe.');
         }
 
         $this->_slimApp->delete($caminho, $funcao);
@@ -231,7 +258,8 @@ class Aplicativo
     function seRotaNaoForEncontrada($funcao)
     {
         if (!function_exists($funcao)) {
-            throw new FuncaoNaoEncontradaExcecao('A função \'' . $funcao . '\' não existe.');
+            throw new FuncaoNaoEncontradaExcecao('A função \'' .
+            $funcao . '\' não existe.');
         }
 
         $this->_slimApp->notFound($funcao);
@@ -324,7 +352,7 @@ class Aplicativo
 
     public static function removerVariavelSessao($variavel)
     {
-        if (Aplicativo::existeVariavelSessao($variavel)) {
+        if (self::existeVariavelSessao($variavel)) {
             unset($_SESSION[$variavel]);
         }
     }
@@ -334,9 +362,10 @@ class Aplicativo
      */
     function getUsuarioSessao()
     {
-        if (Aplicativo::existeVariavelSessao('userid')) {
+        if (self::existeVariavelSessao('userid')) {
             return $this->_documentos->createQueryBuilder('Domain\Usuario')
-                            ->field('_id')->equals(Aplicativo::obterVariavelSessao('userid'))
+                            ->field('_id')
+                            ->equals(self::obterVariavelSessao('userid'))
                             ->getQuery()
                             ->getSingleResult();
         } else {
@@ -349,9 +378,10 @@ class Aplicativo
      */
     function getEmpresaSessao()
     {
-        if (Aplicativo::existeVariavelSessao('empresaid')) {
+        if (self::existeVariavelSessao('empresaid')) {
             return $this->_documentos->createQueryBuilder('Domain\Empresa')
-                            ->field('_id')->equals(Aplicativo::obterVariavelSessao('empresaid'))
+                            ->field('_id')
+                            ->equals(self::obterVariavelSessao('empresaid'))
                             ->getQuery()
                             ->getSingleResult();
         } else {
@@ -390,7 +420,8 @@ class Aplicativo
 
         // cabeçalhos adicionais
         $headers .= 'To: ' . $para . "\r\n";
-        $headers .= 'From: ' . $this->_nome . ' <' . $this->_email . '>' . "\r\n";
+        $headers .= 'From: ' . $this->_nome . ' <' .
+                $this->_email . '>' . "\r\n";
 
         // envia-o
         $mail = new \PHPMailer();
@@ -444,10 +475,13 @@ class Aplicativo
         $configuracao->setAutoGenerateProxyClasses(!((boolean) PROJECT_STAGE));
         $configuracao->setProxyDir(__APPDIR__ . '/tmp/Domain/Proxies');
         $configuracao->setProxyNamespace('Proxies');
-        $configuracao->setAutoGenerateHydratorClasses(!((boolean) PROJECT_STAGE));
+        $configuracao->setAutoGenerateHydratorClasses(
+                !((boolean) PROJECT_STAGE));
         $configuracao->setHydratorDir(__APPDIR__ . '/tmp/Domain/Hydrators');
         $configuracao->setHydratorNamespace('Hydrators');
-        $configuracao->setDefaultDB($this->_configuracao->get($this->_servidor . '.persistencia_banco'));
+        $configuracao->setDefaultDB(
+                $this->_configuracao->get(
+                        $this->_servidor . '.persistencia_banco'));
 
         //$configuracao->setLoggerCallable(function (array $log) { print_r($log); });
         $cache_uri = $this->_configuracao->get($this->_servidor . '.cache_uri');
@@ -456,7 +490,8 @@ class Aplicativo
             if (strpos($cache_uri, '//')) {
                 $cache_uri_parts = explode('//', $cache_uri);
                 if (strpos($cache_uri_parts[1], ':')) {
-                    list($cache_server, $cache_port) = explode(':', $cache_uri_parts[1]);
+                    list($cache_server,
+                            $cache_port) = explode(':', $cache_uri_parts[1]);
                 } else {
                     $cache_server = $cache_uri_parts[1];
                     $cache_port = '6379';
@@ -477,7 +512,8 @@ class Aplicativo
             unset($cache_server, $cache_port, $redis, $metadataCache);
         }
 
-        $conexao = new Connection($this->_configuracao->get($this->_servidor . '.persistencia_uri'));
+        $conexao = new Connection($this->_configuracao->get(
+                        $this->_servidor . '.persistencia_uri'));
         $documentos = DocumentManager::create($conexao, $configuracao);
 
         // FIX: Muito importante pois força a criação dos índices no aplicativo
@@ -493,12 +529,16 @@ class Aplicativo
     {
 
         if ($this->_configuracao->get($this->_servidor . '.piwik_id')) {
-            require_once(__DIR__ . '/../../lib/PiwikTracker.php');
+            require_once(__DIR__ . '/../../library/PiwikTracker.php');
 
-            $piwikTracker = new \PiwikTracker($this->_configuracao->get($this->_servidor . '.piwik_url'), $this->_configuracao->get($this->_servidor . '.piwik_id'));
+            $piwikTracker = new \PiwikTracker(
+                    $this->_configuracao->get($this->_servidor . '.piwik_url')
+                    , $this->_configuracao->get($this->_servidor . '.piwik_id'));
 
             if ($this->_configuracao->get($this->_servidor . '.piwik_token_auth')) {
-                $piwikTracker->setTokenAuth($this->_configuracao->get($this->_servidor . '.piwik_token_auth'));
+                $piwikTracker->setTokenAuth(
+                        $this->_configuracao->get(
+                                $this->_servidor . '.piwik_token_auth'));
             }
 
             if (isset($_SERVER['HTTP_REFERER'])) {
@@ -515,8 +555,10 @@ class Aplicativo
                 $piwikTracker->setLocalTime($this->post('localTime'));
             }
 
-            if (($this->postExists('screenWidth')) && ($this->postExists('screenHeight'))) {
-                $piwikTracker->setResolution($this->post('screenWidth'), $this->post('screenHeight'));
+            if (($this->postExists('screenWidth')) &&
+                    ($this->postExists('screenHeight'))) {
+                $piwikTracker->setResolution(
+                        $this->post('screenWidth'), $this->post('screenHeight'));
             }
 
             if ($this->postExists('position')) {
@@ -658,7 +700,8 @@ class Aplicativo
      */
     private function definirFusoHorario()
     {
-        date_default_timezone_set($this->_configuracao->get('aplicativo.fuso_horario'));
+        date_default_timezone_set(
+                $this->_configuracao->get('aplicativo.fuso_horario'));
     }
 
     /**

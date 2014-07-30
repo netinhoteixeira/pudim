@@ -42,8 +42,9 @@ class Formulario
             $data = $aplicativo->post($variavel);
 
             // sanitiza os dados da foto recebida na $variavel
-            $prefixes = array('data:image/png;base64,');
+            $prefixes = array('png');
             foreach ($prefixes as $prefix) {
+                $prefix = 'data:image/' . $prefix . ';base64,';
                 if (strpos($data, $prefix)) {
                     $data = str_replace($prefix, '', $data);
                 }
@@ -200,7 +201,7 @@ class Formulario
      */
     public static function validarCpf($cpf)
     {
-        require_once(__DIR__ . '/../../lib/ValidarChaveFiscal.php');
+        require_once(__DIR__ . '/../../library/ValidarChaveFiscal.php');
         $validador = new \ValidarChaveFiscal($cpf, 'cpf');
         return $validador->isValido();
     }
@@ -212,7 +213,7 @@ class Formulario
      */
     public static function validarCnpj($cnpj)
     {
-        require_once(__DIR__ . '/../../lib/ValidarChaveFiscal.php');
+        require_once(__DIR__ . '/../../library/ValidarChaveFiscal.php');
         $validador = new \ValidarChaveFiscal($cnpj, 'cnpj');
         return $validador->isValido();
     }

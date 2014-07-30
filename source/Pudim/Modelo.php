@@ -135,7 +135,7 @@ class Modelo
         }
 
         if (!is_null($this->_style)) {
-            require_once(__DIR__ . '/../../lib/CssToInlineStylesOverride.php');
+            require_once(__DIR__ . '/../../library/CssToInlineStylesOverride.php');
 
             $cssParser = new \CssToInlineStylesOverride($parsedData, $this->_style);
 

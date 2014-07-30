@@ -84,6 +84,7 @@ class Correios
 
         // processa o retorno
         $regex = '/(rowspan=([0-9])>(.*?)<\/td><td>(.*?)<.*>(.*?)<\/font)|(colspan=([0-9])>(.*?)<)/i';
+        $match = null;
         preg_match_all($regex, $response, $match);
 
         $historicos = array();

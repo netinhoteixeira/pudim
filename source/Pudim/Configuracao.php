@@ -108,10 +108,11 @@ class Configuracao
 
     private function safefilerewrite($fileName, $dataToSave)
     {
-        if ($fp = fopen($fileName, 'w')) {
+        $handle = fopen($fileName, 'w');
+        if ($handle) {
             $startTime = microtime();
             do {
-                $canWrite = flock($fp, LOCK_EX);
+                $canWrite = flock($handle, LOCK_EX);
                 // If lock not obtained sleep for 0 - 100 milliseconds, to avoid collision and CPU load 
                 if (!$canWrite) {
                     usleep(round(rand(0, 100) * 1000));
@@ -120,10 +121,11 @@ class Configuracao
 
             //file was locked so now we can store information 
             if ($canWrite) {
-                fwrite($fp, $dataToSave);
-                flock($fp, LOCK_UN);
+                fwrite($handle, $dataToSave);
+                flock($handle, LOCK_UN);
             }
-            fclose($fp);
+
+            fclose($handle);
         }
     }
 
@@ -148,6 +150,7 @@ class Configuracao
         $ini_array = array();
         $sec_name = '';
         $lines = file($filename);
+
         foreach ($lines as $line) {
             $line = trim($line);
 

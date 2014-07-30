@@ -17,6 +17,7 @@ class CorreiosTest extends PHPUnit_Framework_TestCase
     public function testConsultarCep()
     {
         print_r(Correios::consultarCep('70750999'));
+        print_r(Correios::consultarCep('70750516'));
     }
 
     public function testConsultarEncomenda()
