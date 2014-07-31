@@ -20,7 +20,8 @@
 
 namespace Pudim;
 
-use \Pudim\Excecoes\ArquivoNaoEncontradoExcecao;
+use Pudim\Excecoes\ArquivoNaoEncontradoExcecao;
+use TijsVerkoyen\CssToInlineStyles\CssToInlineStyles;
 
 /**
  * Classe Modelo.
@@ -135,9 +136,7 @@ class Modelo
         }
 
         if (!is_null($this->_style)) {
-            require_once(__DIR__ . '/../../library/CssToInlineStylesOverride.php');
-
-            $cssParser = new \CssToInlineStylesOverride($parsedData, $this->_style);
+            $cssParser = new CssToInlineStyles($parsedData, $this->_style);
 
             return $cssParser->convert();
         } else {
