@@ -58,7 +58,7 @@ class Modelo
         $this->_values = array();
 
         if (!is_null($estilo)) {
-            $styleFile = __DIR__ . '/../../../../../Templates/' . $estilo . '.css';
+            $styleFile = __DIR__ . '/../../../../../Templates/assets/css/' . $estilo . '.css';
 
             if (!file_exists($styleFile)) {
                 throw new ArquivoNaoEncontradoExcecao('Modelo ' . $styleFile . ' não encontrado.');

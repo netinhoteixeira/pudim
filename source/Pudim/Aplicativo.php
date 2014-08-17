@@ -442,7 +442,7 @@ class Aplicativo
         $mail->Body = $mensagem;
         $mail->AddAddress($para);
 
-        $emailLogoFilename = __DIR__ . '/Templates/email-logo.png';
+        $emailLogoFilename = __DIR__ . '/Templates/assets/img/email-logo.png';
         if (file_exists($emailLogoFilename)) {
             $mail->AddEmbeddedImage($emailLogoFilename, 'logo');
         }
