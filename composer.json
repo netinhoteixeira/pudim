@@ -18,8 +18,7 @@
         "doctrine/mongodb": "dev-master",
         "sybio/image-workshop": "2.0.5",
         "phpmailer/phpmailer": "v5.2.8",
-        "tijsverkoyen/css-to-inline-styles": "1.5.2",
-        "united-prototype/php-ga": "dev-master"
+        "tijsverkoyen/css-to-inline-styles": "1.5.2"
     },
     "autoload": {
         "psr-0": {
