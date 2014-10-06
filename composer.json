@@ -15,11 +15,11 @@
     "require": {
         "php": ">=5.5.0",
         "slim/slim": "2.4.3",
-        "doctrine/mongodb-odm": "dev-master",
+        "doctrine/mongodb": "1.2.*@dev",
         "sybio/image-workshop": "2.0.5",
         "phpmailer/phpmailer": "v5.2.8",
-        "thadafinser/piwik-tracker": "dev-master",
-        "tijsverkoyen/css-to-inline-styles": "dev-master"
+        "tijsverkoyen/css-to-inline-styles": "dev-master",
+        "united-prototype/php-ga": "dev-composer"
     },
     "autoload": {
         "psr-0": {
