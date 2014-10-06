@@ -20,28 +20,28 @@
 
 namespace Pudim;
 
-use Pudim\Respostas\RespostaMudancaFoto;
+use Pudim\Respostas\RespostaMudancaImagem;
 
 class Formulario
 {
 
     /**
-     * Define a foto do $documento.
+     * Define a imagem do $documento.
      * 
      * @param type $documento Documento
-     * @param type $variavel Foto em Base64
-     * @return \RespostaMudancaFoto
+     * @param type $variavel Imagem em Base64
+     * @return \RespostaMudancaImagem
      */
-    public static function setFoto($documento, $variavel = 'foto', $redimensionar = '200x200')
+    public static function setImagem($documento, $variavel = 'imagem', $redimensionar = '200x200')
     {
         $aplicativo = Aplicativo::getInstance();
 
-        $resposta = new RespostaMudancaFoto();
+        $resposta = new RespostaMudancaImagem();
 
         if ($aplicativo->postExists($variavel, false)) {
             $data = $aplicativo->post($variavel);
 
-            // sanitiza os dados da foto recebida na $variavel
+            // sanitiza os dados da imagem recebida na $variavel
             $prefixes = array('png');
             foreach ($prefixes as $prefix) {
                 $prefix = 'data:image/' . $prefix . ';base64,';
@@ -50,11 +50,11 @@ class Formulario
                 }
             }
 
-            // obtém a foto do $documento
-            $foto = Formulario::getFotoBase64($documento);
+            // obtém a imagem do $documento
+            $imagem = Formulario::getImagemBase64($documento);
 
             // processa a imagem somente se for diferente
-            if ($data !== $foto) {
+            if ($data !== $imagem) {
                 $data = base64_decode($data);
                 $imagemRecebida = imagecreatefromstring($data);
 
@@ -71,18 +71,18 @@ class Formulario
                     $imagemFinal = $imagemRecebida;
                 }
 
-                $arquivoTemporario = tempnam(TMPDIR, 'foto');
+                $arquivoTemporario = tempnam(TMPDIR, 'imagem');
                 //imagepng($imagemFinal, $arquivoTemporario);
                 // EXPERIMENTAL: Usando o WebP paa
                 imagewebp($imagemFinal, $arquivoTemporario);
 
-                if (is_null($documento->getFoto())) {
-                    $foto = new foto();
-                    $foto->setFilename(basename($arquivoTemporario));
-                    $foto->setFile($arquivoTemporario);
-                    $documento->setFoto($foto);
+                if (is_null($documento->getImagem())) {
+                    $imagem = new imagem();
+                    $imagem->setFilename(basename($arquivoTemporario));
+                    $imagem->setFile($arquivoTemporario);
+                    $documento->setImagem($imagem);
                 } else {
-                    $documento->getFoto()->setFile($arquivoTemporario);
+                    $documento->getImagem()->setFile($arquivoTemporario);
                 }
 
                 imagedestroy($imagemFinal);
@@ -96,23 +96,23 @@ class Formulario
     }
 
     /**
-     * Extrai a foto do sistema codificado com Bas64. Caso seja como imagem
+     * Extrai a imagem do sistema codificado com Bas64. Caso seja como imagem
      * estará pronto para inserir na tag img.
      * 
      * @param type $documento Documento
      * @param type $asImage Se pronto para imagem
      * @return string
      */
-    public static function getFotoBase64($documento, $asImage = false)
+    public static function getImagemBase64($documento, $asImage = false)
     {
         $retorno = null;
 
         try {
-            if (!is_null($documento->getFoto())) {
-                if (!is_null($documento->getFoto()->getFile())) {
-                    if (!is_null($documento->getFoto()->getFile()->getBytes())) {
-                        $foto = $documento->getFoto();
-                        $arquivo = base64_encode($foto->getFile()->getBytes());
+            if (!is_null($documento->getImagem())) {
+                if (!is_null($documento->getImagem()->getFile())) {
+                    if (!is_null($documento->getImagem()->getFile()->getBytes())) {
+                        $imagem = $documento->getImagem();
+                        $arquivo = base64_encode($imagem->getFile()->getBytes());
                         if ($asImage) {
                             // TODO: Tem que colocar um conversor
                             $retorno = 'data:image/' . $imageType . ';base64,' . $arquivo;

@@ -28,7 +28,7 @@ class RespostaSalvoPerfil implements \JsonSerializable
 
     private $_salvo = true;
     private $_mensagem = null;
-    private $_foto = null;
+    private $_imagem = null;
     private $_renovarAcesso = false;
 
     /**
@@ -52,13 +52,13 @@ class RespostaSalvoPerfil implements \JsonSerializable
     }
 
     /**
-     * Obtém a foto em Base64.
+     * Obtém a imagem em Base64.
      * 
      * @return string
      */
-    public function getFoto()
+    public function getImagem()
     {
-        return $this->_foto;
+        return $this->_imagem;
     }
 
     /**
@@ -92,13 +92,13 @@ class RespostaSalvoPerfil implements \JsonSerializable
     }
 
     /**
-     * Define a foto.
+     * Define a imagem.
      * 
-     * @param string $foto Foto
+     * @param string $imagem Imagem
      */
-    public function setFoto($foto)
+    public function setImagem($imagem)
     {
-        $this->_foto = $foto;
+        $this->_imagem = $imagem;
     }
 
     /**
@@ -121,7 +121,7 @@ class RespostaSalvoPerfil implements \JsonSerializable
         return array(
             'salvo' => $this->_salvo,
             'mensagem' => $this->_mensagem,
-            'foto' => $this->_foto,
+            'imagem' => $this->_imagem,
             'renovarAcesso' => $this->_renovarAcesso
         );
     }
