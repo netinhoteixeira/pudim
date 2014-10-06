@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../src/Pudim/Arquivo.php';
+require_once __DIR__ . '/../source/Pudim/Arquivo.php';
 
 use Pudim\Correios;
 
@@ -9,9 +9,9 @@ class CorreiosTest extends PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        Pudim\Arquivo::requererDiretorio(__DIR__ . '/../src/Pudim/');
-        Pudim\Arquivo::requererDiretorio(__DIR__ . '/../src/Pudim/respostas/');
-        Pudim\Arquivo::requererDiretorio(__DIR__ . '/../src/Pudim/excecoes/');
+        Pudim\Arquivo::requererDiretorio(__DIR__ . '/../source/Pudim/');
+        Pudim\Arquivo::requererDiretorio(__DIR__ . '/../source/Pudim/respostas/');
+        Pudim\Arquivo::requererDiretorio(__DIR__ . '/../source/Pudim/excecoes/');
     }
 
     public function testConsultarCep()
