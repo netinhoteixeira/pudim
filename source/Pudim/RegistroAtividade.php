@@ -20,7 +20,6 @@
 
 namespace Pudim;
 
-
 /**
  * Registra as atividades do usuário no sistema.
  *
@@ -153,66 +152,22 @@ class RegistroAtividade
             $aplicativo->getAnaliseTrafego()->doTrackPageView($this->_nome);
         }
 
-        if (!is_null($this->_constante)) {
+        if ((!is_null($this->_constante)) && (!is_null($this->_usuario))) {
+            $atividade = new \Domain\UsuarioAtividade();
 
-            $usuarioAtividade = new \Domain\UsuarioAtividade();
+            $atividade->setUsuario($this->_usuario);
+            $atividade->setTipo($this->_constante);
+            $this->definirDescricao($atividade);
+            $this->definirDocumento($atividade);
+            $this->definirRelacionada($aplicativo, $atividade);
+            $this->definirToken($atividade);
+            $this->definirUsado($atividade);
+            $this->processarConstante($aplicativo, $atividade);
 
-            if (!is_null($this->_usuario)) {
-                $usuarioAtividade->setUsuario($this->_usuario);
+            $aplicativo->getDocumentos()->persist($atividade);
+            $aplicativo->getDocumentos()->flush();
 
-                $usuarioAtividade->setTipo($this->_constante);
-
-                if (!is_null($this->_descricao)) {
-                    $usuarioAtividade->setDescricao($this->_descricao);
-                }
-
-                if (!is_null($this->_documento)) {
-                    $usuarioAtividade->setDocumento($this->_documento);
-                }
-
-                if ($aplicativo->getExists('acessoid')) {
-                    $atividadeRelacionada = RegistroAtividade::obter($aplicativo->get('acessoid'));
-                    if (!is_null($atividadeRelacionada)) {
-                        $usuarioAtividade->setAtividadeRelacionada($atividadeRelacionada);
-                    }
-                }
-
-                if (!is_null($this->_documento)) {
-                    $usuarioAtividade->setDocumento($this->_documento);
-                }
-
-                if (!is_null($this->_token)) {
-                    $usuarioAtividade->setToken($this->_token);
-                }
-
-                if (!is_null($this->_usado)) {
-                    $usuarioAtividade->setUsado($this->_usado);
-                }
-
-                switch ($this->_constante) {
-
-                    case 'ACESSAR':
-                        $usuarioAtividade->setIp($_SERVER['REMOTE_ADDR']);
-                        $usuarioAtividade->setNavegador($_SERVER['HTTP_USER_AGENT']);
-
-                        if ($aplicativo->postExists('position')) {
-                            $posicao = $aplicativo->post('position');
-
-                            $coordenadas = new \Domain\Coordenadas();
-                            $coordenadas->setX($posicao['longitude']);
-                            $coordenadas->setY($posicao['latitude']);
-                            $coordenadas->setAccuracy($posicao['accuracy']);
-
-                            $usuarioAtividade->setCoordenadas($coordenadas);
-                        }
-                        break;
-                }
-
-                $aplicativo->getDocumentos()->persist($usuarioAtividade);
-                $aplicativo->getDocumentos()->flush();
-
-                return $usuarioAtividade;
-            }
+            return $atividade;
         }
 
         return null;
@@ -222,6 +177,108 @@ class RegistroAtividade
     {
         $registroAtividade = new RegistroAtividade($nome, $constante);
         $registroAtividade->gravar();
+    }
+
+    private function definirDescricao(&$atividade)
+    {
+        if (!is_null($this->_descricao)) {
+            $atividade->setDescricao($this->_descricao);
+        }
+    }
+
+    private function definirDocumento(&$atividade)
+    {
+        if (!is_null($this->_documento)) {
+            $atividade->setDocumento($this->_documento);
+        }
+    }
+
+    private function definirRelacionada($aplicativo, &$atividade)
+    {
+        if ($aplicativo->getExists('acessoid')) {
+            $relacionada = RegistroAtividade::obter($aplicativo->get('acessoid'));
+            if (!is_null($relacionada)) {
+                $atividade->setRelacionada($relacionada);
+            }
+        }
+    }
+
+    private function definirToken(&$atividade)
+    {
+        if (!is_null($this->_token)) {
+            $atividade->setToken($this->_token);
+        }
+    }
+
+    private function definirUsado(&$atividade)
+    {
+        if (!is_null($this->_usado)) {
+            $atividade->setUsado($this->_usado);
+        }
+    }
+
+    private function processarConstante($aplicativo, &$atividade)
+    {
+        if ($this->_constante === 'ACESSAR') {
+            $atividade->setIp(filter_input(INPUT_SERVER, 'REMOTE_ADDR'));
+            $atividade->setNavegador(filter_input(INPUT_SERVER, 'HTTP_USER_AGENT'));
+
+            if ($aplicativo->postExists('posicao')) {
+                $_posicao = $aplicativo->post('posicaos');
+
+                $posicao = new \Domain\Posicao();
+                $this->__definirPosicaoLatitude($posicao, $_posicao);
+                $this->__definirPosicaoLongitude($posicao, $_posicao);
+                $this->__definirPosicaoAltitude($posicao, $_posicao);
+                $this->__definirPosicaoPrecisao($posicao, $_posicao);
+                $this->__definirPosicaoVelocidade($posicao, $_posicao);
+                $this->__definirPosicaoRumo($posicao, $_posicao);
+
+                $atividade->setPosicao($posicao);
+            }
+        }
+    }
+
+    private function __definirPosicaoLatitude(&$posicao, $_posicao)
+    {
+        if (isset($_posicao['latitude'])) {
+            $posicao->setLatitude($_posicao['latitude']);
+        }
+    }
+
+    private function __definirPosicaoLongitude(&$posicao, $_posicao)
+    {
+        if (isset($_posicao['longitude'])) {
+            $posicao->setLongitude($_posicao['longitude']);
+        }
+    }
+
+    private function __definirPosicaoAltitude(&$posicao, $_posicao)
+    {
+        if (isset($_posicao['altitude'])) {
+            $posicao->setAltitude($_posicao['altitude']);
+        }
+    }
+
+    private function __definirPosicaoPrecisao(&$posicao, $_posicao)
+    {
+        if (isset($_posicao['precisao'])) {
+            $posicao->setPrecisao($_posicao['precisao']);
+        }
+    }
+
+    private function __definirPosicaoVelocidade(&$posicao, $_posicao)
+    {
+        if (isset($_posicao['velocidade'])) {
+            $posicao->setVelocidade($_posicao['velocidade']);
+        }
+    }
+
+    private function __definirPosicaoRumo(&$posicao, $_posicao)
+    {
+        if (isset($_posicao['rumo'])) {
+            $posicao->setRumo($_posicao['rumo']);
+        }
     }
 
 }
