@@ -37,6 +37,8 @@ class Configuracao
 
     function get($nome)
     {
+        $propriedades = null;
+
         if (strpos($nome, '.')) {
             list($nomeSessao, $propriedade) = explode('.', $nome);
             $secao = &$this->_propriedades[$nomeSessao];
@@ -54,6 +56,8 @@ class Configuracao
 
     function set($nome, $valor)
     {
+        $propriedades = null;
+
         if (strpos($nome, '.')) {
             list($nomeSessao, $propriedade) = explode('.', $nome);
             $secao = &$this->_propriedades[$nomeSessao];
