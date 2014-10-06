@@ -15,11 +15,11 @@
     "require": {
         "php": ">=5.6.0",
         "slim/slim": "2.4.3",
-        "doctrine/mongodb": "dev-master",
+        "doctrine/mongodb": "1.2.x-dev",
         "sybio/image-workshop": "2.0.5",
         "phpmailer/phpmailer": "v5.2.8",
         "tijsverkoyen/css-to-inline-styles": "1.5.2",
-        "united-prototype/php-ga": "dev-master"
+        "united-prototype/php-ga": "dev-composer"
     },
     "autoload": {
         "psr-0": {
