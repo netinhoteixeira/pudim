@@ -15,7 +15,7 @@
     "require": {
         "php": ">=5.5.0",
         "slim/slim": "2.4.3",
-        "doctrine/mongodb": "1.2.*@dev",
+        "doctrine/mongodb": "1.2.x-dev",
         "sybio/image-workshop": "2.0.5",
         "phpmailer/phpmailer": "v5.2.8",
         "tijsverkoyen/css-to-inline-styles": "1.5.2",
