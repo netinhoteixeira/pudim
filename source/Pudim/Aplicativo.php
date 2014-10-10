@@ -50,10 +50,10 @@ class Aplicativo
      */
     public function __construct()
     {
-        define('__APPDIR__', __DIR__ . '/../../../../..');
+        define('__APPDIR__', __DIR__  . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..');
 
         $this->_servidor = 'servidor_' . str_replace('.', '_', $_SERVER['SERVER_NAME']);
-        $this->_configuracao = new Configuracao(__APPDIR__ . '/configuracao.ini');
+        $this->_configuracao = new Configuracao(__APPDIR__  . DIRECTORY_SEPARATOR . 'configuracao.ini');
 
         define('PROJECT_STAGE', $this->_configuracao->get($this->_servidor . '.producao'));
 
@@ -171,10 +171,10 @@ class Aplicativo
      */
     public function protegerRota($nome)
     {
-        $arquivoSeguranca = __APPDIR__ . '/HttpBasicAuthRouteDatabaseCustom.inc.php';
+        $arquivoSeguranca = __APPDIR__  . DIRECTORY_SEPARATOR . 'HttpBasicAuthRouteDatabaseCustom.inc.php';
         if (file_exists($arquivoSeguranca)) {
-            require_once(__DIR__ . '/../../library/slim/HttpBasicAuthDatabase.php');
-            require_once(__DIR__ . '/../../library/slim/HttpBasicAuthRouteDatabase.php');
+            require_once(__DIR__  . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'library' . DIRECTORY_SEPARATOR . 'slim' . DIRECTORY_SEPARATOR . 'HttpBasicAuthDatabase.php');
+            require_once(__DIR__  . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'library' . DIRECTORY_SEPARATOR . 'slim' . DIRECTORY_SEPARATOR . 'HttpBasicAuthRouteDatabase.php');
             require_once($arquivoSeguranca);
 
             $this->_slimApp->add(new \HttpBasicAuthRouteDatabaseCustom($nome));
@@ -442,7 +442,7 @@ class Aplicativo
         $mail->Body = $mensagem;
         $mail->AddAddress($para);
 
-        $emailLogoFilename = __DIR__ . '/Templates/assets/img/email-logo.png';
+        $emailLogoFilename = __DIR__  . DIRECTORY_SEPARATOR . 'Templates' . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . 'email-logo.png';
         if (file_exists($emailLogoFilename)) {
             $mail->AddEmbeddedImage($emailLogoFilename, 'logo');
         }
@@ -599,7 +599,7 @@ class Aplicativo
      */
     private function criarDiretorioTemporario()
     {
-        define('TMPDIR', __APPDIR__ . '/tmp');
+        define('TMPDIR', __APPDIR__  . DIRECTORY_SEPARATOR . 'tmp');
         Arquivo::criarDiretorio(TMPDIR);
         ini_set('sys_temp_dir', TMPDIR);
     }
@@ -717,7 +717,7 @@ class Aplicativo
      */
     private function carregarControladores()
     {
-        $controladores = __APPDIR__ . '/Controllers/';
+        $controladores = __APPDIR__  . DIRECTORY_SEPARATOR . 'Controllers' . DIRECTORY_SEPARATOR;
         if (file_exists($controladores)) {
             Arquivo::requererDiretorio($controladores);
         }
