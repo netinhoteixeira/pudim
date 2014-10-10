@@ -138,7 +138,7 @@ class RegistroAtividade
     {
         $aplicativo = Aplicativo::getInstance();
 
-        return $aplicativo->getDocumentos()->createQueryBuilder('Domain\UsuarioAtividade')
+        return $aplicativo->getDocumentos()->createQueryBuilder('Domain\Entity\UsuarioAtividade')
                         ->field('_id')->equals($id)
                         ->getQuery()
                         ->getSingleResult();
@@ -153,7 +153,7 @@ class RegistroAtividade
         }
 
         if ((!is_null($this->_constante)) && (!is_null($this->_usuario))) {
-            $atividade = new \Domain\UsuarioAtividade();
+            $atividade = new \Domain\Entity\UsuarioAtividade();
 
             $atividade->setUsuario($this->_usuario);
             $atividade->setTipo($this->_constante);
@@ -226,7 +226,7 @@ class RegistroAtividade
             if ($aplicativo->postExists('posicao')) {
                 $_posicao = $aplicativo->post('posicaos');
 
-                $posicao = new \Domain\Posicao();
+                $posicao = new \Domain\Entity\Posicao();
                 $this->__definirPosicaoLatitude($posicao, $_posicao);
                 $this->__definirPosicaoLongitude($posicao, $_posicao);
                 $this->__definirPosicaoAltitude($posicao, $_posicao);

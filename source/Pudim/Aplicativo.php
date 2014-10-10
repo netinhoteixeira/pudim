@@ -363,7 +363,7 @@ class Aplicativo
     function getUsuarioSessao()
     {
         if (self::existeVariavelSessao('userid')) {
-            return $this->_documentos->createQueryBuilder('Domain\Usuario')
+            return $this->_documentos->createQueryBuilder('Domain\Entity\Usuario')
                             ->field('_id')
                             ->equals(self::obterVariavelSessao('userid'))
                             ->getQuery()
@@ -379,7 +379,7 @@ class Aplicativo
     function getEmpresaSessao()
     {
         if (self::existeVariavelSessao('empresaid')) {
-            return $this->_documentos->createQueryBuilder('Domain\Empresa')
+            return $this->_documentos->createQueryBuilder('Domain\Entity\Empresa')
                             ->field('_id')
                             ->equals(self::obterVariavelSessao('empresaid'))
                             ->getQuery()
@@ -459,25 +459,25 @@ class Aplicativo
     {
         AnnotationDriver::registerAnnotationClasses();
 
-        $classLoader = new ClassLoader('Domain', __APPDIR__);
+        $classLoader = new ClassLoader('Entity', __APPDIR__ . DIRECTORY_SEPARATOR . 'Domain');
         $classLoader->register();
 
         // cria os diretórios dos proxys e hydrators, caso não haja (necessários
         // para o Doctrine MongoDB)
         if (!PROJECT_STAGE) {
-            Arquivo::criarDiretorio(__APPDIR__ . '/tmp/Domain/Proxies');
-            Arquivo::criarDiretorio(__APPDIR__ . '/tmp/Domain/Hydrators');
+            Arquivo::criarDiretorio(__APPDIR__ . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR . 'Domain' . DIRECTORY_SEPARATOR . 'Entity' . DIRECTORY_SEPARATOR . 'Proxies');
+            Arquivo::criarDiretorio(__APPDIR__ . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR . 'Domain' . DIRECTORY_SEPARATOR . 'Entity' . DIRECTORY_SEPARATOR . 'Hydrators');
         }
 
         $configuracao = new Configuration();
-        $metadata = AnnotationDriver::create(__APPDIR__ . '/Domain');
+        $metadata = AnnotationDriver::create(__APPDIR__ . DIRECTORY_SEPARATOR . 'Domain' . DIRECTORY_SEPARATOR . 'Entity');
         $configuracao->setMetadataDriverImpl($metadata);
         $configuracao->setAutoGenerateProxyClasses(!((boolean) PROJECT_STAGE));
-        $configuracao->setProxyDir(__APPDIR__ . '/tmp/Domain/Proxies');
+        $configuracao->setProxyDir(__APPDIR__ . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR . 'Domain' . DIRECTORY_SEPARATOR . 'Entity' . DIRECTORY_SEPARATOR . 'Proxies');
         $configuracao->setProxyNamespace('Proxies');
         $configuracao->setAutoGenerateHydratorClasses(
                 !((boolean) PROJECT_STAGE));
-        $configuracao->setHydratorDir(__APPDIR__ . '/tmp/Domain/Hydrators');
+        $configuracao->setHydratorDir(__APPDIR__ . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR . 'Domain' . DIRECTORY_SEPARATOR . 'Entity' . DIRECTORY_SEPARATOR . 'Hydrators');
         $configuracao->setHydratorNamespace('Hydrators');
         $configuracao->setDefaultDB(
                 $this->_configuracao->get(
@@ -631,7 +631,7 @@ class Aplicativo
      */
     private function criarPrimeiroUsuario()
     {
-        $usuario = new \Domain\Usuario();
+        $usuario = new \Domain\Entity\Usuario();
         $usuario->setApelido('Netinho');
         $usuario->setEmail('fco.ernesto@gmail.com');
         # Senha: 123456
