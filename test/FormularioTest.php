@@ -43,6 +43,10 @@ class FormularioTest extends PHPUnit_Framework_TestCase
 
         print_r($imagem);
         print_r($resposta);
+
+        if (file_exists($resposta->getArquivoTemporario())) {
+            unlink($resposta->getArquivoTemporario());
+        }
     }
 
 }
