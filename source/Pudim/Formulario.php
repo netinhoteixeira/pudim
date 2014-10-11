@@ -32,7 +32,7 @@ class Formulario
      * @param string $imagemBase64 Imagem em Base64
      * @return \RespostaMudancaImagem
      */
-    public static function setImagem(&$imagem, $imagemBase64, $redimensionar)
+    public static function setImagem(&$imagem, $imagemBase64, $redimensionar = false)
     {
         $resposta = new RespostaMudancaImagem();
 
