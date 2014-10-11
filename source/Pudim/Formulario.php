@@ -39,13 +39,20 @@ class Formulario
         Formulario::imagemSanitizarPrefixo($imagemBase64);
 
         // processa a imagem somente se for diferente
-        if ($imagemBase64 === Formulario::getImagemBase64($imagem)) {
+        if ($imagemBase64 !== Formulario::getImagemBase64($imagem)) {
 
             $imagemRecebida = imagecreatefromstring(base64_decode($imagemBase64));
             $imagemFinal = Formulario::imagemRedimensionar($imagemRecebida, $redimensionar);
 
             $arquivoTemporario = tempnam(TMPDIR, 'imagem');
-            imagewebp($imagemFinal, $arquivoTemporario);
+
+            // formato WEBP que utiliza menor tamanho e preserva a qualidade
+            if (function_exists('imagewebp')) {
+                imagewebp($imagemFinal, $arquivoTemporario);
+            } else {
+                // do contrário coloca em JPEG mantendo a qualidade (muito grande)
+                imagejpeg($imagemFinal, $arquivoTemporario, 100);
+            }
 
             if (is_null($imagem)) {
                 $imagem = new imagem();
@@ -69,11 +76,11 @@ class Formulario
      */
     private static function imagemSanitizarPrefixo(&$imagemBase64)
     {
-        $prefixes = array('png', 'jpeg');
+        $prefixes = ['png', 'jpeg'];
         foreach ($prefixes as $prefix) {
             $prefix = 'data:image/' . $prefix . ';base64,';
 
-            if (strpos($imagemBase64, $prefix)) {
+            if (strpos($imagemBase64, $prefix) !== false) {
                 $imagemBase64 = str_replace($prefix, '', $imagemBase64);
             }
         }
