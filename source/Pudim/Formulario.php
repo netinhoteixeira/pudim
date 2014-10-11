@@ -36,36 +36,13 @@ class Formulario
     {
         $resposta = new RespostaMudancaImagem();
 
-        // sanitiza os dados da imagem recebida em $imagemBase64
-        $prefixes = array('png', 'jpeg');
-        foreach ($prefixes as $prefix) {
-            $prefix = 'data:image/' . $prefix . ';base64,';
-
-            if (strpos($imagemBase64, $prefix)) {
-                $imagemBase64 = str_replace($prefix, '', $imagemBase64);
-            }
-        }
+        Formulario::imagemSanitizarPrefixo($imagemBase64);
 
         // processa a imagem somente se for diferente
         if ($imagemBase64 === Formulario::getImagemBase64($imagem)) {
+
             $imagemRecebida = imagecreatefromstring(base64_decode($imagemBase64));
-
-            // caso a imagem venha a ser redimensionada. Ex.: '200x200'
-            if ($redimensionar) {
-                $dimensoes = explode('x', $redimensionar);
-
-                if (count($dimensoes) === 2) {
-                    $layer = Formulario::imageLayerFromResource($imagemRecebida);
-                    $layer->resizeInPixel($dimensoes[0], $dimensoes[1], true, 0, 0, 'MM');
-                    $imagemFinal = $layer->getResult('FFFFFF');
-                }
-            }
-
-            // caso a imagem não tenha sido redimensionada, não existir
-            if (!isset($imagemFinal)) {
-                // define a $imagemRecebido para a $imagemFinal
-                $imagemFinal = $imagemRecebida;
-            }
+            $imagemFinal = Formulario::imagemRedimensionar($imagemRecebida, $redimensionar);
 
             $arquivoTemporario = tempnam(TMPDIR, 'imagem');
             imagewebp($imagemFinal, $arquivoTemporario);
@@ -85,6 +62,49 @@ class Formulario
         }
 
         return $resposta;
+    }
+
+    /**
+     * Sanitiza os dados da imagem recebida em $imagemBase64
+     */
+    private static function imagemSanitizarPrefixo(&$imagemBase64)
+    {
+        $prefixes = array('png', 'jpeg');
+        foreach ($prefixes as $prefix) {
+            $prefix = 'data:image/' . $prefix . ';base64,';
+
+            if (strpos($imagemBase64, $prefix)) {
+                $imagemBase64 = str_replace($prefix, '', $imagemBase64);
+            }
+        }
+    }
+
+    /**
+     * 
+     * @param type $imagem
+     * @param type $redimensionar
+     * @return type
+     */
+    private static function imagemRedimensionar($imagem, $redimensionar)
+    {
+        // caso a imagem venha a ser redimensionada. Ex.: '200x200'
+        if ($redimensionar) {
+            $dimensoes = explode('x', $redimensionar);
+
+            if (count($dimensoes) === 2) {
+                $layer = Formulario::imageLayerFromResource($imagem);
+                $layer->resizeInPixel($dimensoes[0], $dimensoes[1], true, 0, 0, 'MM');
+                $imagemFinal = $layer->getResult('FFFFFF');
+            }
+        }
+
+        // caso a imagem não tenha sido redimensionada, não existir
+        if (!isset($imagemFinal)) {
+            // define a $imagemRecebido para a $imagemFinal
+            $imagemFinal = $imagem;
+        }
+
+        return $imagemFinal;
     }
 
     /**
@@ -118,6 +138,11 @@ class Formulario
         return $retorno;
     }
 
+    /**
+     * 
+     * @param type $image
+     * @return type
+     */
     private static function imageLayerFromResource($image)
     {
         return PHPImageWorkshop\ImageWorkshop::initFromResourceVar($image);
