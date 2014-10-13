@@ -102,7 +102,7 @@ class Aplicativo
         $this->_email = $this->_configuracao->get('email.conta');
     }
 
-    private function getServidor()
+    private function obterServidor()
     {
         if (is_null($this->_servidor)) {
             $servidor = filter_input(INPUT_SERVER, 'SERVER_NAME');
