@@ -52,28 +52,14 @@ class Aplicativo
     {
         define('__APPDIR__', __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..');
 
-        $this->_servidor = 'servidor_' . str_replace('.', '_', $_SERVER['SERVER_NAME']);
+        $this->obterServidor();
         $this->_configuracao = new Configuracao(__APPDIR__ . DIRECTORY_SEPARATOR . 'configuracao.ini');
 
         define('PROJECT_STAGE', $this->_configuracao->get($this->_servidor . '.producao'));
 
-        $this->criarDiretorioTemporario();
-        $this->_documentos = $this->iniciarDocumentos();
-
-        $this->_slimApp = new \Slim\Slim();
-        $this->_slimApp->hook('slim.before.router', function() {
-            $GLOBALS['usuarioSessao'] = Aplicativo::getUsuarioSessao();
-        });
-
-        $this->_nome = $this->_configuracao->get('aplicativo.nome');
-        $this->_icone = $this->_configuracao->get('aplicativo.icone');
-        $this->_enderecoBase = sprintf('%s://%s:%s%s', isset($_SERVER['HTTPS']) &&
-                $_SERVER['HTTPS'] != 'off' ? 'https' : 'http', $_SERVER['SERVER_NAME'], $_SERVER['SERVER_PORT'], $this->_configuracao->get($this->_servidor . '.contexto'));
-        $this->_email = $this->_configuracao->get('email.conta');
-
+        $this->inicializarVariaveis();
         $this->corrigirRequisicaoVariaveisPostagem();
         $this->_analiseTrafego = $this->iniciarAnaliseTrafego();
-
         $this->verificarPrimeiroAcesso();
         $this->configurarSessaoNoRedis();
         $this->iniciarSessao();
@@ -97,6 +83,39 @@ class Aplicativo
         }
 
         return $aplicativo;
+    }
+
+    private function inicializarVariaveis()
+    {
+        $this->criarDiretorioTemporario();
+        $this->_documentos = $this->iniciarDocumentos();
+
+        $this->_slimApp = new \Slim\Slim();
+        $this->_slimApp->hook('slim.before.router', function() {
+            $GLOBALS['usuarioSessao'] = Aplicativo::getUsuarioSessao();
+        });
+
+        $this->_nome = $this->_configuracao->get('aplicativo.nome');
+        $this->_icone = $this->_configuracao->get('aplicativo.icone');
+        $this->_enderecoBase = sprintf('%s://%s:%s%s', isset($_SERVER['HTTPS']) &&
+                $_SERVER['HTTPS'] != 'off' ? 'https' : 'http', $_SERVER['SERVER_NAME'], $_SERVER['SERVER_PORT'], $this->_configuracao->get($this->_servidor . '.contexto'));
+        $this->_email = $this->_configuracao->get('email.conta');
+    }
+
+    private function getServidor()
+    {
+        if (is_null($this->_servidor)) {
+            $servidor = filter_input(INPUT_SERVER, 'SERVER_NAME');
+            if (($servidor === '127.0.0.1') || ($servidor === '0.0.0.0')) {
+                $servidor = 'localhost';
+            } else {
+                $servidor = str_replace('.', '_', $servidor);
+            }
+
+            $this->_servidor = 'servidor_' . $servidor;
+        }
+
+        return $this->_servidor;
     }
 
     /**
