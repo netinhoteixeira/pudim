@@ -88,12 +88,8 @@ class Aplicativo
     private function inicializarVariaveis()
     {
         $this->criarDiretorioTemporario();
+        $this->iniciarSlimApp();
         $this->_documentos = $this->iniciarDocumentos();
-
-        $this->_slimApp = new \Slim\Slim();
-        $this->_slimApp->hook('slim.before.router', function() {
-            $GLOBALS['usuarioSessao'] = Aplicativo::getUsuarioSessao();
-        });
 
         $this->_nome = $this->_configuracao->get('aplicativo.nome');
         $this->_icone = $this->_configuracao->get('aplicativo.icone');
@@ -420,6 +416,32 @@ class Aplicativo
 
             echo json_encode($jsonfy);
         }
+    }
+
+    private function iniciarSlimApp()
+    {
+
+        $config = [];
+
+        $logfile = $this->_configuracao->get('aplicativo.log');
+        if (!is_null($logfile)) {
+            $config['log.enabled'] = true;
+            $log = new \Slim\LogWriter(fopen(TMPDIR . DIRECTORY_SEPARATOR . $logfile, 'a'));
+            $config['log.writer'] = $log;
+        }
+
+        $config['debug'] = ($this->_configuracao->get('aplicativo.debug') === TRUE);
+        if ($config['debug']) {
+            $config['log.level'] = \Slim\Log::DEBUG;
+        } else {
+            $config['log.level'] = \Slim\Log::WARN;
+        }
+
+        $this->_slimApp = new \Slim\Slim($config);
+
+        $this->_slimApp->hook('slim.before.router', function() {
+            $GLOBALS['usuarioSessao'] = Aplicativo::getUsuarioSessao();
+        });
     }
 
     /**
