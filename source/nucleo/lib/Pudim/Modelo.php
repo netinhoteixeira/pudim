@@ -42,7 +42,7 @@ class Modelo
      */
     function __construct($nome, $estilo = null)
     {
-        $file = __DIR__ . '/../../../../../Templates/' . $nome . '.html';
+        $file = __APPDIR__ . DIRECTORY_SEPARATOR . 'Templates' . DIRECTORY_SEPARATOR . $nome . '.html';
 
         if (!file_exists($file)) {
             throw new ArquivoNaoEncontradoExcecao('Modelo ' . $nome . ' não encontrado.');
@@ -58,7 +58,7 @@ class Modelo
         $this->_values = array();
 
         if (!is_null($estilo)) {
-            $styleFile = __DIR__ . '/../../../../../Templates/assets/css/' . $estilo . '.css';
+            $styleFile = __APPDIR__ . DIRECTORY_SEPARATOR . 'Templates' . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . $estilo . '.css';
 
             if (!file_exists($styleFile)) {
                 throw new ArquivoNaoEncontradoExcecao('Modelo ' . $styleFile . ' não encontrado.');
