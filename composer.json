@@ -23,10 +23,10 @@
     },
     "autoload": {
         "psr-0": {
-            "Pudim\\": "source/Pudim/",
-            "Pudim\\Excecoes\\": "source/Pudim/excecoes/",
-            "Pudim\\jqGrid\\": "source/Pudim/jqgrid/",
-            "Pudim\\Respostas\\": "source/Pudim/respostas/"
+            "Pudim\\": "source/",
+            "Pudim\\Excecoes\\": "source/Pudim/",
+            "Pudim\\jqGrid\\": "source/Pudim/",
+            "Pudim\\Respostas\\": "source/Pudim/"
         }
     }
 }
