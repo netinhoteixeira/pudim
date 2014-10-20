@@ -128,7 +128,7 @@ class Formulario
 
         try {
             if ((!is_null($imagem)) && (!is_null($imagem->getFile())) && (!is_null($imagem->getFile()->getBytes()))) {
-                $retorno = $this->getImagemBase64ComPrefixo($imagem->getFile()->getBytes(), $imagem->getMimeType(), $saidaBase64);
+                $retorno = Formulario::getImagemBase64ComPrefixo($imagem->getFile()->getBytes(), $imagem->getMimeType(), $saidaBase64);
             }
         } catch (MongoGridFSException $ex) {
             error_log(json_encode($ex));
@@ -139,7 +139,7 @@ class Formulario
 
     /**
      * 
-     * @param type $arquivo
+     * @param type $bytes
      * @param type $mimeType
      * @param type $saidaBase64
      * @return string
