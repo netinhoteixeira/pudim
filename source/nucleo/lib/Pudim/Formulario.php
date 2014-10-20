@@ -41,28 +41,9 @@ class Formulario
         // processa a imagem somente se for diferente
         if ($imagemBase64 !== Formulario::getImagemBase64($imagem)) {
 
-            $imagemRecebida = imagecreatefromstring(base64_decode($imagemBase64));
-            $imagemFinal = Formulario::imagemRedimensionar($imagemRecebida, $redimensionar);
+            $arquivoTemporario = Formulario::imagemCriarArquivoTemporario($imagem, $imagemBase64, $redimensionar);
 
-            $arquivoTemporario = tempnam(TMPDIR, 'imagem');
-
-            // formato WEBP que utiliza menor tamanho e preserva a qualidade
-            if (function_exists('imagewebp')) {
-                imagewebp($imagemFinal, $arquivoTemporario);
-            } else {
-                // do contrário coloca em JPEG mantendo a qualidade (muito grande)
-                imagejpeg($imagemFinal, $arquivoTemporario, 100);
-            }
-
-            if (is_null($imagem)) {
-                $imagem = new imagem();
-                $imagem->setFilename(basename($arquivoTemporario));
-                $imagem->setFile($arquivoTemporario);
-            } else {
-                $imagem->setFile($arquivoTemporario);
-            }
-
-            imagedestroy($imagemFinal);
+            $imagem->setFile($arquivoTemporario);
 
             $resposta->setMudou(true);
             $resposta->setArquivoTemporario($arquivoTemporario);
@@ -87,6 +68,39 @@ class Formulario
     }
 
     /**
+     * 
+     * @param \Domain\Entity\Imagem $imagem
+     * @param type $imagemBase64
+     * @param type $redimensionar
+     * @return type
+     */
+    private static function imagemCriarArquivoTemporario(&$imagem, $imagemBase64, $redimensionar)
+    {
+        $imagemFinal = Formulario::imagemRedimensionar(imagecreatefromstring(base64_decode($imagemBase64)), $redimensionar);
+
+        $arquivoTemporario = tempnam(TMPDIR, 'imagem');
+
+        // formato WEBP que utiliza menor tamanho e preserva a qualidade
+        if (function_exists('imagewebp')) {
+            imagewebp($imagemFinal, $arquivoTemporario);
+            $mimeType = 'image/webp';
+        } else {
+            // do contrário coloca em JPEG mantendo a qualidade (muito grande)
+            imagejpeg($imagemFinal, $arquivoTemporario, 100);
+            $mimeType = 'image/jpeg';
+        }
+
+        if (is_null($imagem)) {
+            $imagem = new \Domain\Entity\Imagem();
+            $imagem->setFilename(basename($arquivoTemporario));
+        }
+        $imagem->setMimeType($mimeType);
+        imagedestroy($imagemFinal);
+
+        return $arquivoTemporario;
+    }
+
+    /**
      *
      * @param type $imagem
      * @param type $redimensionar
@@ -99,7 +113,7 @@ class Formulario
             $dimensoes = explode('x', $redimensionar);
 
             if (count($dimensoes) === 2) {
-                $layer = Formulario::imageLayerFromResource($imagem);
+                $layer = Formulario::imagemExtrairCamadaDoRecurso($imagem);
                 $layer->resizeInPixel($dimensoes[0], $dimensoes[1], true, 0, 0, 'MM');
                 $imagemFinal = $layer->getResult('FFFFFF');
             }
@@ -163,7 +177,7 @@ class Formulario
      * @param type $image
      * @return type
      */
-    private static function imageLayerFromResource($image)
+    private static function imagemExtrairCamadaDoRecurso($image)
     {
         return PHPImageWorkshop\ImageWorkshop::initFromResourceVar($image);
     }
