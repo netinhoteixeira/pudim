@@ -88,6 +88,7 @@ class Aplicativo
     private function inicializarVariaveis()
     {
         $this->criarDiretorioTemporario();
+        $this->criarDiretorioLog();
         $this->iniciarSlimApp();
         $this->_documentos = $this->iniciarDocumentos();
 
@@ -425,8 +426,9 @@ class Aplicativo
 
         $logfile = $this->_configuracao->get('aplicativo.log');
         if (!is_null($logfile)) {
+            $logfile .= '-slim.log';
             $config['log.enabled'] = true;
-            $log = new \Slim\LogWriter(fopen(TMPDIR . DIRECTORY_SEPARATOR . $logfile, 'a'));
+            $log = new \Slim\LogWriter(fopen(LOGDIR . DIRECTORY_SEPARATOR . $logfile, 'a'));
             $config['log.writer'] = $log;
         }
 
@@ -643,6 +645,20 @@ class Aplicativo
         define('TMPDIR', __APPDIR__ . DIRECTORY_SEPARATOR . 'tmp');
         Arquivo::criarDiretorio(TMPDIR);
         ini_set('sys_temp_dir', TMPDIR);
+    }
+
+    /**
+     * Cria o diretório de log.
+     */
+    private function criarDiretorioLog()
+    {
+        $logfile = $this->_configuracao->get('aplicativo.log');
+        if (!is_null($logfile)) {
+            define('LOGDIR', __APPDIR__ . DIRECTORY_SEPARATOR . 'log');
+            Arquivo::criarDiretorio(LOGDIR);
+            ini_set('log_errors', 1);
+            ini_set('error_log', LOGDIR . DIRECTORY_SEPARATOR . $logfile . '-php.log');
+        }
     }
 
     /**
