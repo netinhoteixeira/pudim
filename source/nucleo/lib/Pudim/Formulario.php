@@ -133,16 +133,16 @@ class Formulario
      * estará pronto para inserir na tag img.
      *
      * @param \Domain\Entity\Imagem $imagem Imagem
-     * @param boolean $saidaBase64 Se pronto para imagem
+     * @param boolean $comPrefixo Se pronto para imagem
      * @return string
      */
-    public static function getImagemBase64($imagem, $saidaBase64 = false)
+    public static function getImagemBase64($imagem, $comPrefixo = false)
     {
         $retorno = null;
 
         try {
             if ((!is_null($imagem)) && (!is_null($imagem->getFile())) && (!is_null($imagem->getFile()->getBytes()))) {
-                $retorno = Formulario::getImagemBase64ComPrefixo($imagem->getFile()->getBytes(), $imagem->getMimeType(), $saidaBase64);
+                $retorno = Formulario::getImagemBase64ComPrefixo($imagem->getFile()->getBytes(), $imagem->getMimeType(), $comPrefixo);
             }
         } catch (MongoGridFSException $ex) {
             error_log(json_encode($ex));
@@ -155,15 +155,14 @@ class Formulario
      * 
      * @param type $bytes
      * @param type $mimeType
-     * @param type $saidaBase64
+     * @param type $comPrefixo
      * @return string
      */
-    private static function getImagemBase64ComPrefixo($bytes, $mimeType, $saidaBase64 = false)
+    private static function getImagemBase64ComPrefixo($bytes, $mimeType, $comPrefixo = false)
     {
         $arquivo = base64_encode($bytes);
 
-        if ($saidaBase64) {
-            // TODO: Tem que colocar um conversor
+        if ($comPrefixo) {
             $retorno = 'data:' . $mimeType . ';base64,' . $arquivo;
         } else {
             $retorno = $arquivo;
