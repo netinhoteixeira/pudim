@@ -24,9 +24,9 @@
     "autoload": {
         "psr-0": {
             "Pudim\\": "source/",
-            "Pudim\\Excecoes\\": "source/excecoes",
-            "Pudim\\jqGrid\\": "source/jqgrid",
-            "Pudim\\Respostas\\": "source/respostas"
+            "Pudim\\Excecoes\\": "source/excecoes/",
+            "Pudim\\jqGrid\\": "source/jqgrid/",
+            "Pudim\\Respostas\\": "source/respostas/"
         }
     }
 }
