@@ -3,17 +3,17 @@
 /**
  * Pudim - Framework para desenvolvimento rápido em PHP.
  * Copyright (C) 2014  Francisco Ernesto Teixeira <fco.ernesto@gmail.com>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -27,7 +27,7 @@ class Formulario
 
     /**
      * Define a imagem de $imagem.
-     * 
+     *
      * @param \Domain\Entity\Imagem $imagem Imagem
      * @param string $imagemBase64 Imagem em Base64
      * @return \RespostaMudancaImagem
@@ -87,7 +87,7 @@ class Formulario
     }
 
     /**
-     * 
+     *
      * @param type $imagem
      * @param type $redimensionar
      * @return type
@@ -117,7 +117,7 @@ class Formulario
     /**
      * Extrai a imagem do sistema codificado com Base64. Caso seja como imagem
      * estará pronto para inserir na tag img.
-     * 
+     *
      * @param \Domain\Entity\Imagem $imagem Imagem
      * @param boolean $saidaBase64 Se pronto para imagem
      * @return string
@@ -128,18 +128,10 @@ class Formulario
 
         try {
             if ((!is_null($imagem)) && (!is_null($imagem->getFile())) && (!is_null($imagem->getFile()->getBytes()))) {
-                $arquivo = base64_encode($imagem->getFile()->getBytes());
-
-                if ($saidaBase64) {
-                    // TODO: Tem que colocar um conversor
-                    $retorno = 'data:' . $imagem->getMimeType() . ';base64,' . $arquivo;
-                } else {
-                    $retorno = $arquivo;
-                }
+                $retorno = $this->getImagemBase64ComPrefixo($imagem->getFile()->getBytes(), $imagem->getMimeType(), $saidaBase64);
             }
         } catch (MongoGridFSException $ex) {
-            // ignora caso haja erro
-            // TODO: Criar um log para o Aplicativo
+            error_log(json_encode($ex));
         }
 
         return $retorno;
@@ -147,6 +139,27 @@ class Formulario
 
     /**
      * 
+     * @param type $arquivo
+     * @param type $mimeType
+     * @param type $saidaBase64
+     * @return string
+     */
+    private static function getImagemBase64ComPrefixo($bytes, $mimeType, $saidaBase64 = false)
+    {
+        $arquivo = base64_encode($bytes);
+
+        if ($saidaBase64) {
+            // TODO: Tem que colocar um conversor
+            $retorno = 'data:' . $mimeType . ';base64,' . $arquivo;
+        } else {
+            $retorno = $arquivo;
+        }
+
+        return $retorno;
+    }
+
+    /**
+     *
      * @param type $image
      * @return type
      */
@@ -157,7 +170,7 @@ class Formulario
 
     /**
      * Trata as mensagens de erro do MongoCursorException
-     * 
+     *
      * @param \MongoCursorException $exception
      * @return string Mensagem tratada
      */
@@ -216,7 +229,7 @@ class Formulario
     }
 
     /**
-     * 
+     *
      * @param type $cpf
      * @return type
      */
@@ -228,7 +241,7 @@ class Formulario
     }
 
     /**
-     * 
+     *
      * @param type $cnpj
      * @return type
      */
