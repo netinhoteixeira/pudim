@@ -50,7 +50,7 @@ class Aplicativo
      */
     public function __construct()
     {
-        define('__APPDIR__', __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..');
+        define('__APPDIR__', __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..');
 
         $this->obterServidor();
         $this->_configuracao = new Configuracao(__APPDIR__ . DIRECTORY_SEPARATOR . 'configuracao.ini');
