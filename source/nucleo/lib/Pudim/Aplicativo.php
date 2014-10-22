@@ -194,9 +194,9 @@ class Aplicativo
     {
         $arquivoSeguranca = __APPDIR__ . DIRECTORY_SEPARATOR . 'HttpBasicAuthRouteDatabaseCustom.inc.php';
         if (file_exists($arquivoSeguranca)) {
-            require_once(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'library' . DIRECTORY_SEPARATOR . 'slim' . DIRECTORY_SEPARATOR . 'HttpBasicAuthDatabase.php');
-            require_once(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'library' . DIRECTORY_SEPARATOR . 'slim' . DIRECTORY_SEPARATOR . 'HttpBasicAuthRouteDatabase.php');
-            require_once($arquivoSeguranca);
+            require_once implode(DIRECTORY_SEPARATOR, __DIR__, '..', '..', '..', 'library', 'slim', 'HttpBasicAuthDatabase.php');
+            require_once implode(DIRECTORY_SEPARATOR, __DIR__, '..', '..', '..', 'library', 'slim', 'HttpBasicAuthRouteDatabase.php');
+            require_once $arquivoSeguranca;
 
             $this->_slimApp->add(new \HttpBasicAuthRouteDatabaseCustom($nome));
         }
