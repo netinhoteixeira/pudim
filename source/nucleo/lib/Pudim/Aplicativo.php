@@ -140,6 +140,11 @@ class Aplicativo
         return $this->_slimApp;
     }
 
+    public function getLog()
+    {
+        return $this->_slimApp->getLog();
+    }
+
     /**
      * Retorna o nome do aplicativo.
      * 

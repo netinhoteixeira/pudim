@@ -20,6 +20,8 @@
 
 namespace Pudim;
 
+use Pudim\Aplicativo;
+
 /**
  * Classe Arquivo.
  */
@@ -33,12 +35,13 @@ class Arquivo
      */
     public static function remover($arquivo)
     {
+        $aplicativo = Aplicativo::getInstance();
         try {
             if ((isset($arquivo)) && (!is_null($arquivo)) && (file_exists($arquivo))) {
                 unlink($arquivo);
             }
         } catch (Exception $ex) {
-            // ignora
+            $aplicativo->getLog()->error(json_encode($ex));
         }
     }
 
@@ -49,6 +52,10 @@ class Arquivo
      */
     public static function requererDiretorio($caminho)
     {
+        if ($caminho{strlen($caminho) - strlen(DIRECTORY_SEPARATOR)} !== DIRECTORY_SEPARATOR) {
+            $caminho .= DIRECTORY_SEPARATOR;
+        }
+
         foreach (glob($caminho . '*.php') as $arquivo) {
             require_once $arquivo;
         }
