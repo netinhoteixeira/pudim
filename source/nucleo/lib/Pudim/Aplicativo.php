@@ -384,7 +384,7 @@ class Aplicativo
     function getUsuarioSessao()
     {
         if (self::existeVariavelSessao('userid')) {
-            return $this->_documentos->createQueryBuilder('\Domain\Entity\Usuario')
+            return $this->_documentos->createQueryBuilder('Domain\Entity\Usuario')
                             ->field('_id')
                             ->equals(self::obterVariavelSessao('userid'))
                             ->getQuery()
@@ -491,7 +491,7 @@ class Aplicativo
     {
         AnnotationDriver::registerAnnotationClasses();
 
-        $classLoader = new ClassLoader('\Domain\Entity', __APPDIR__);
+        $classLoader = new ClassLoader('Domain\Entity', __APPDIR__);
         $classLoader->register();
 
         // cria os diretórios dos proxys e hydrators, caso não haja (necessários
