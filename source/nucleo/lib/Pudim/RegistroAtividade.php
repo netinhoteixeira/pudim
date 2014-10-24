@@ -36,109 +36,25 @@ namespace Pudim;
 class RegistroAtividade
 {
 
-    private $_id;
+    private $_aplicativo;
+    private $_atividade;
     private $_nome;
-    private $_constante;
-    private $_usuario;
-    private $_descricao;
-    private $_documento;
-    private $_token;
-    private $_usado;
 
     function __construct($nome, $constante = null)
     {
-        $aplicativo = Aplicativo::getInstance();
+        $this->_aplicativo = Aplicativo::getInstance();
 
         $this->_nome = $nome;
-        $this->_constante = $constante;
-        $this->_usuario = $aplicativo->getUsuarioSessao();
-    }
-
-    public function getId()
-    {
-        return $this->_id;
-    }
-
-    public function getNome()
-    {
-        return $this->_nome;
-    }
-
-    public function getConstante()
-    {
-        return $this->_constante;
-    }
-
-    public function getUsuario()
-    {
-        return $this->_usuario;
-    }
-
-    public function getDescricao()
-    {
-        return $this->_descricao;
-    }
-
-    public function getDocumento()
-    {
-        return $this->_documento;
-    }
-
-    public function getToken()
-    {
-        return $this->_token;
-    }
-
-    public function getUsado()
-    {
-        return $this->_usado;
-    }
-
-    public function setId($id)
-    {
-        $this->_id = $id;
-    }
-
-    public function setNome($nome)
-    {
-        $this->_nome = $nome;
-    }
-
-    public function setConstante($constante)
-    {
-        $this->_constante = $constante;
-    }
-
-    public function setUsuario($usuario)
-    {
-        $this->_usuario = $usuario;
-    }
-
-    public function setDescricao($descricao)
-    {
-        $this->_descricao = $descricao;
-    }
-
-    public function setDocumento($documento)
-    {
-        $this->_documento = $documento;
-    }
-
-    public function setToken($token)
-    {
-        $this->_token = $token;
-    }
-
-    public function setUsado($usado)
-    {
-        $this->_usado = $usado;
+        $this->_atividade = new \Domain\Entity\Atividade();
+        $this->_atividade->setTipo($constante);
+        $this->_atividade->setUsuario($this->_aplicativo->getUsuarioSessao());
     }
 
     public static function obter($id)
     {
         $aplicativo = Aplicativo::getInstance();
 
-        return $aplicativo->getDocumentos()->createQueryBuilder('Domain\Entity\UsuarioAtividade')
+        return $aplicativo->getDocumentos()->createQueryBuilder('Domain\Entity\Atividade')
                         ->field('_id')->equals($id)
                         ->getQuery()
                         ->getSingleResult();
@@ -146,139 +62,23 @@ class RegistroAtividade
 
     public function gravar()
     {
-        $aplicativo = Aplicativo::getInstance();
-
-        if (!is_null($aplicativo->getAnaliseTrafego())) {
-            $aplicativo->getAnaliseTrafego()->doTrackPageView($this->_nome);
+        if (!is_null($this->_aplicativo->getAnaliseTrafego())) {
+            $this->_aplicativo->getAnaliseTrafego()->doTrackPageView($this->_nome);
         }
 
-        if ((!is_null($this->_constante)) && (!is_null($this->_usuario))) {
-            $atividade = new \Domain\Entity\UsuarioAtividade();
+        if (!is_null($this->_atividade->getTipo())) {
 
-            $atividade->setUsuario($this->_usuario);
-            $atividade->setTipo($this->_constante);
-            $this->definirDescricao($atividade);
-            $this->definirDocumento($atividade);
-            $this->definirRelacionada($aplicativo, $atividade);
-            $this->definirToken($atividade);
-            $this->definirUsado($atividade);
-            $this->processarConstante($aplicativo, $atividade);
+            if ($this->_aplicativo->getExists('acessoid')) {
+                $this->_atividade->setAtividade(RegistroAtividade::obter($this->_aplicativo->get('acessoid')));
+            }
 
-            $aplicativo->getDocumentos()->persist($atividade);
-            $aplicativo->getDocumentos()->flush();
+            $this->_aplicativo->getDocumentos()->persist($this->_atividade);
+            $this->_aplicativo->getDocumentos()->flush();
 
-            return $atividade;
+            return $this->_atividade;
         }
 
         return null;
-    }
-
-    public static function gravarSimples($nome, $constante = null)
-    {
-        $registroAtividade = new RegistroAtividade($nome, $constante);
-        $registroAtividade->gravar();
-    }
-
-    private function definirDescricao(&$atividade)
-    {
-        if (!is_null($this->_descricao)) {
-            $atividade->setDescricao($this->_descricao);
-        }
-    }
-
-    private function definirDocumento(&$atividade)
-    {
-        if (!is_null($this->_documento)) {
-            $atividade->setDocumento($this->_documento);
-        }
-    }
-
-    private function definirRelacionada($aplicativo, &$atividade)
-    {
-        if ($aplicativo->getExists('acessoid')) {
-            $relacionada = RegistroAtividade::obter($aplicativo->get('acessoid'));
-            if (!is_null($relacionada)) {
-                $atividade->setRelacionada($relacionada);
-            }
-        }
-    }
-
-    private function definirToken(&$atividade)
-    {
-        if (!is_null($this->_token)) {
-            $atividade->setToken($this->_token);
-        }
-    }
-
-    private function definirUsado(&$atividade)
-    {
-        if (!is_null($this->_usado)) {
-            $atividade->setUsado($this->_usado);
-        }
-    }
-
-    private function processarConstante($aplicativo, &$atividade)
-    {
-        if ($this->_constante === 'ACESSAR') {
-            $atividade->setIp(filter_input(INPUT_SERVER, 'REMOTE_ADDR'));
-            $atividade->setNavegador(filter_input(INPUT_SERVER, 'HTTP_USER_AGENT'));
-
-            if ($aplicativo->postExists('posicao')) {
-                $_posicao = $aplicativo->post('posicaos');
-
-                $posicao = new \Domain\Entity\Posicao();
-                $this->__definirPosicaoLatitude($posicao, $_posicao);
-                $this->__definirPosicaoLongitude($posicao, $_posicao);
-                $this->__definirPosicaoAltitude($posicao, $_posicao);
-                $this->__definirPosicaoPrecisao($posicao, $_posicao);
-                $this->__definirPosicaoVelocidade($posicao, $_posicao);
-                $this->__definirPosicaoRumo($posicao, $_posicao);
-
-                $atividade->setPosicao($posicao);
-            }
-        }
-    }
-
-    private function __definirPosicaoLatitude(&$posicao, $_posicao)
-    {
-        if (isset($_posicao['latitude'])) {
-            $posicao->setLatitude($_posicao['latitude']);
-        }
-    }
-
-    private function __definirPosicaoLongitude(&$posicao, $_posicao)
-    {
-        if (isset($_posicao['longitude'])) {
-            $posicao->setLongitude($_posicao['longitude']);
-        }
-    }
-
-    private function __definirPosicaoAltitude(&$posicao, $_posicao)
-    {
-        if (isset($_posicao['altitude'])) {
-            $posicao->setAltitude($_posicao['altitude']);
-        }
-    }
-
-    private function __definirPosicaoPrecisao(&$posicao, $_posicao)
-    {
-        if (isset($_posicao['precisao'])) {
-            $posicao->setPrecisao($_posicao['precisao']);
-        }
-    }
-
-    private function __definirPosicaoVelocidade(&$posicao, $_posicao)
-    {
-        if (isset($_posicao['velocidade'])) {
-            $posicao->setVelocidade($_posicao['velocidade']);
-        }
-    }
-
-    private function __definirPosicaoRumo(&$posicao, $_posicao)
-    {
-        if (isset($_posicao['rumo'])) {
-            $posicao->setRumo($_posicao['rumo']);
-        }
     }
 
 }
