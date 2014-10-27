@@ -50,7 +50,7 @@ class Aplicativo
      */
     public function __construct()
     {
-        define('__APPDIR__', __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..');
+        define('__APPDIR__', implode(DIRECTORY_SEPARATOR, [__DIR__, '..', '..', '..', '..', '..', '..', '..']));
 
         $this->obterServidor();
         $this->_configuracao = new Configuracao(__APPDIR__ . DIRECTORY_SEPARATOR . 'configuracao.ini');
@@ -94,8 +94,10 @@ class Aplicativo
 
         $this->_nome = $this->_configuracao->get('aplicativo.nome');
         $this->_icone = $this->_configuracao->get('aplicativo.icone');
-        $this->_enderecoBase = sprintf('%s://%s:%s%s', isset($_SERVER['HTTPS']) &&
-                $_SERVER['HTTPS'] != 'off' ? 'https' : 'http', $_SERVER['SERVER_NAME'], $_SERVER['SERVER_PORT'], $this->_configuracao->get($this->_servidor . '.contexto'));
+        if (isset($_SERVER['SERVER_NAME'])) {
+            $this->_enderecoBase = sprintf('%s://%s:%s%s', isset($_SERVER['HTTPS']) &&
+                    $_SERVER['HTTPS'] != 'off' ? 'https' : 'http', $_SERVER['SERVER_NAME'], $_SERVER['SERVER_PORT'], $this->_configuracao->get($this->_servidor . '.contexto'));
+        }
         $this->_email = $this->_configuracao->get('email.conta');
     }
 
@@ -738,7 +740,9 @@ class Aplicativo
      */
     private function iniciarSessao()
     {
-        session_start();
+        if (!headers_sent()) {
+            session_start();
+        }
     }
 
     /**
@@ -755,7 +759,9 @@ class Aplicativo
      */
     private function definirControleDeAcessoDaOrigemDaRequisicao()
     {
-        header('Access-Control-Allow-Origin: *');
+        if (!headers_sent()) {
+            header('Access-Control-Allow-Origin: *');
+        }
     }
 
     /**
