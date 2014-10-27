@@ -50,6 +50,11 @@ class RegistroAtividade
         $this->_atividade->setUsuario($this->_aplicativo->getUsuarioSessao());
     }
 
+    function getAtividade()
+    {
+        return $this->_atividade;
+    }
+
     public static function obter($id)
     {
         $aplicativo = Aplicativo::getInstance();
