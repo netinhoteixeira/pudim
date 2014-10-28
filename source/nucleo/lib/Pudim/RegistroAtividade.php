@@ -31,7 +31,7 @@ namespace Pudim;
  * @param string $descricao Descrição da Atividade
  * @param object $documento Registro relacionado com a Atividade (ex.:
  * exclusão, alteração)
- * @return usuarioatividade Atividade do Usuário
+ * @return atividade Atividade do Usuário
  */
 class RegistroAtividade
 {
