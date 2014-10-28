@@ -714,9 +714,11 @@ class Aplicativo
                 $_POST = json_decode(file_get_contents('php://input'), true);
 
                 // varre os valores do tipo texto, fazendo um trim
-                foreach ($_POST as $key => $value) {
-                    if (gettype($value) === 'string') {
-                        $_POST[$key] = trim($value);
+                if (is_array($_POST)) {
+                    foreach ($_POST as $key => $value) {
+                        if (gettype($value) === 'string') {
+                            $_POST[$key] = trim($value);
+                        }
                     }
                 }
             }
