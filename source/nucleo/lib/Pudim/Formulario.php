@@ -81,14 +81,14 @@ class Formulario
         $arquivoTemporario = tempnam(TMPDIR, 'imagem');
 
         // formato WEBP que utiliza menor tamanho e preserva a qualidade
-        if (function_exists('imagewebp')) {
-            imagewebp($imagemFinal, $arquivoTemporario);
-            $mimeType = 'image/webp';
-        } else {
+        //if (function_exists('imagewebp')) {
+        //    imagewebp($imagemFinal, $arquivoTemporario);
+        //    $mimeType = 'image/webp';
+        //} else {
             // do contrário coloca em JPEG mantendo a qualidade (muito grande)
             imagejpeg($imagemFinal, $arquivoTemporario, 100);
             $mimeType = 'image/jpeg';
-        }
+        //}
 
         if (is_null($imagem)) {
             $imagem = new \Domain\Entity\Imagem();
