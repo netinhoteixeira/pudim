@@ -563,7 +563,7 @@ class Aplicativo
     {
 
         if ($this->_configuracao->get($this->_servidor . '.piwik_id')) {
-            require_once(__DIR__ . '/../../library/PiwikTracker.php');
+            require_once(implode(DIRECTORY_SEPARATOR, [__DIR__, '..', '..', '..', '..', 'library', 'PiwikTracker.php']));
 
             $piwikTracker = new \PiwikTracker(
                     $this->_configuracao->get($this->_servidor . '.piwik_url')
