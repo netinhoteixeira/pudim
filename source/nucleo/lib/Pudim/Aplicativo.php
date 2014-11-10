@@ -566,8 +566,8 @@ class Aplicativo
             require_once(implode(DIRECTORY_SEPARATOR, [__DIR__, '..', '..', '..', '..', 'library', 'PiwikTracker.php']));
 
             $piwikTracker = new \PiwikTracker(
-                    $this->_configuracao->get($this->_servidor . '.piwik_url')
-                    , $this->_configuracao->get($this->_servidor . '.piwik_id'));
+                    $this->_configuracao->get($this->_servidor . '.piwik_id')
+                    , $this->_configuracao->get($this->_servidor . '.piwik_url'));
 
             if ($this->_configuracao->get($this->_servidor . '.piwik_token_auth')) {
                 $piwikTracker->setTokenAuth(
@@ -579,7 +579,23 @@ class Aplicativo
                 $piwikTracker->setReferrer($_SERVER['HTTP_REFERER']);
             }
 
-            $piwikTracker->setIp($_SERVER['REMOTE_ADDR']);
+            // detecta o endereço da internet do cliente
+            if (isset($_SERVER['HTTP_CLIENT_IP'])) {
+                $piwikTracker->setIp($_SERVER['HTTP_CLIENT_IP']);
+            } else if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+                $piwikTracker->setIp($_SERVER['HTTP_X_FORWARDED_FOR']);
+            } else if (isset($_SERVER['HTTP_X_FORWARDED'])) {
+                $piwikTracker->setIp($_SERVER['HTTP_X_FORWARDED']);
+            } else if (isset($_SERVER['HTTP_FORWARDED_FOR'])) {
+                $piwikTracker->setIp($_SERVER['HTTP_FORWARDED_FOR']);
+            } else if (isset($_SERVER['HTTP_FORWARDED'])) {
+                $piwikTracker->setIp($_SERVER['HTTP_FORWARDED']);
+            } else if (isset($_SERVER['REMOTE_ADDR'])) {
+                $piwikTracker->setIp($_SERVER['REMOTE_ADDR']);
+            } else {
+                $piwikTracker->setIp('DESCONHECIDO');
+            }
+
             $piwikTracker->setUserAgent($_SERVER['HTTP_USER_AGENT']);
             $idioma = explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
             $piwikTracker->setLanguage($idioma[0]);
