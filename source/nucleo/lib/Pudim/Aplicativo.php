@@ -537,7 +537,7 @@ class Aplicativo
                 $cache_port = '6379';
             }
 
-            $redis = new Redis();
+            $redis = new \Redis();
             $redis->pconnect($cache_server, $cache_port);
             $metadataCache = new RedisCache();
             $metadataCache->setRedis($redis);
