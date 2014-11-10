@@ -597,9 +597,11 @@ class Aplicativo
             }
 
             $piwikTracker->setUserAgent($_SERVER['HTTP_USER_AGENT']);
-            $idioma = explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
-            $piwikTracker->setLanguage($idioma[0]);
-            unset($idioma);
+            if (!empty($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
+                $idioma = explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
+                $piwikTracker->setBrowserLanguage($idioma[0]);
+                unset($idioma);
+            }
 
             if ($this->postExists('localTime')) {
                 $piwikTracker->setLocalTime($this->post('localTime'));
