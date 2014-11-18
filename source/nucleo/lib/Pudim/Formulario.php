@@ -57,7 +57,7 @@ class Formulario
      */
     private static function imagemSanitizarPrefixo(&$imagemBase64)
     {
-        $prefixes = ['png', 'jpeg'];
+        $prefixes = ['png', 'jpeg', 'webp'];
         foreach ($prefixes as $prefix) {
             $prefix = 'data:image/' . $prefix . ';base64,';
 
@@ -81,14 +81,14 @@ class Formulario
         $arquivoTemporario = tempnam(TMPDIR, 'imagem');
 
         // formato WEBP que utiliza menor tamanho e preserva a qualidade
-        //if (function_exists('imagewebp')) {
-        //    imagewebp($imagemFinal, $arquivoTemporario);
-        //    $mimeType = 'image/webp';
-        //} else {
+        if (function_exists('imagewebp')) {
+            imagewebp($imagemFinal, $arquivoTemporario);
+            $mimeType = 'image/webp';
+        } else {
             // do contrário coloca em JPEG mantendo a qualidade (muito grande)
             imagejpeg($imagemFinal, $arquivoTemporario, 100);
             $mimeType = 'image/jpeg';
-        //}
+        }
 
         if (is_null($imagem)) {
             $imagem = new \Domain\Entity\Imagem();
@@ -136,13 +136,13 @@ class Formulario
      * @param boolean $comPrefixo Se pronto para imagem
      * @return string
      */
-    public static function getImagemBase64($imagem, $comPrefixo = false)
+    public static function getImagemBase64($imagem, $comPrefixo = false, $tipo = 'image/webp')
     {
         $retorno = null;
 
         try {
             if ((!is_null($imagem)) && (!is_null($imagem->getFile())) && (!is_null($imagem->getFile()->getBytes()))) {
-                $retorno = Formulario::getImagemBase64ComPrefixo($imagem->getFile()->getBytes(), $imagem->getMimeType(), $comPrefixo);
+                $retorno = Formulario::getImagemBase64ComPrefixo($imagem->getFile()->getBytes(), $imagem->getMimeType(), $comPrefixo, $tipo);
             }
         } catch (MongoGridFSException $ex) {
             error_log(json_encode($ex));
@@ -158,12 +158,36 @@ class Formulario
      * @param type $comPrefixo
      * @return string
      */
-    private static function getImagemBase64ComPrefixo($bytes, $mimeType, $comPrefixo = false)
+    private static function getImagemBase64ComPrefixo($bytes, $mimeType, $comPrefixo = false, $tipo = 'image/webp')
     {
+        // converte a imagem
+        if ($mimeType !== 'image/webp') {
+            $data = imagecreatefromstring($bytes);
+
+            ob_start();
+
+            if (function_exists('imagewebp') && ($tipo === 'image/webp')) {
+                imagewebp($data);
+            } elseif (function_exists('imagegif') && ($tipo === 'image/gif')) {
+                imagegif($data);
+            } elseif (function_exists('imagepng') && ($tipo === 'image/png')) {
+                // sem compressão
+                imagepng($data, null, 0);
+            } else {
+                $tipo = 'image/jpeg';
+                // melhor qualidade
+                imagejpeg($data, null, 100);
+            }
+
+            $bytes = ob_get_contents();
+
+            ob_end_clean();
+        }
+
         $arquivo = base64_encode($bytes);
 
         if ($comPrefixo) {
-            $retorno = 'data:' . $mimeType . ';base64,' . $arquivo;
+            $retorno = 'data:' . $tipo . ';base64,' . $arquivo;
         } else {
             $retorno = $arquivo;
         }
