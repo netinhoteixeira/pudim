@@ -81,7 +81,7 @@ class Formulario
         if (strpos($imagemDecodificada, 'WEBP') !== false) {
             $temp = tempnam(TMPDIR, 'imagemwebp');
             $fp = fopen($temp, 'w');
-            fwrite($temp, $imagemDecodificada);
+            fwrite($fp, $imagemDecodificada);
             fclose($fp);
             
             $imagemParaRedimensionar = imagecreatefromwebp($temp);
