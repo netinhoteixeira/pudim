@@ -76,7 +76,22 @@ class Formulario
      */
     private static function imagemCriarArquivoTemporario(&$imagem, $imagemBase64, $redimensionar)
     {
-        $imagemFinal = Formulario::imagemRedimensionar(imagecreatefromstring(base64_decode($imagemBase64)), $redimensionar);
+        $imagemDecodificada = base64_decode($imagemBase64);
+
+        if (pos($imagemDecodificada, 'WEBP') !== false) {
+            $temp = tempnam(TMPDIR, 'imagemwebp');
+            $fp = fopen($temp, 'w');
+            fwrite($temp, $imagemDecodificada);
+            fclose($fp);
+            
+            $imagemParaRedimensionar = imagecreatefromwebp($temp);
+            
+            unlink($temp);
+        } else {
+            $imagemParaRedimensionar = imagecreatefromstring($imagemDecodificada);
+        }
+
+        $imagemFinal = Formulario::imagemRedimensionar($imagemParaRedimensionar, $redimensionar);
 
         $arquivoTemporario = tempnam(TMPDIR, 'imagem');
 
