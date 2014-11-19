@@ -78,7 +78,7 @@ class Formulario
     {
         $imagemDecodificada = base64_decode($imagemBase64);
 
-        if (pos($imagemDecodificada, 'WEBP') !== false) {
+        if (strpos($imagemDecodificada, 'WEBP') !== false) {
             $temp = tempnam(TMPDIR, 'imagemwebp');
             $fp = fopen($temp, 'w');
             fwrite($temp, $imagemDecodificada);
