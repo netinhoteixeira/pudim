@@ -430,6 +430,15 @@ class Aplicativo
             $config['log.level'] = \Slim\Log::WARN;
         }
 
+        // define an error handler
+        function exception_error_handler($errno, $errstr, $errfile, $errline)
+        {
+            throw new ErrorException($errstr, $errno, 0, $errfile, $errline);
+        }
+
+        // set our error handle
+        set_error_handler('exception_error_handler');
+
         $this->_slimApp = new \Slim\Slim($config);
 
         $this->_slimApp->hook('slim.before.router', function() {
