@@ -29,6 +29,15 @@ use Doctrine\Common\Cache\RedisCache;
 use Pudim\Excecoes\FuncaoNaoEncontradaExcecao;
 use Pudim\Arquivo;
 
+// define an error handler
+function exception_error_handler($errno, $errstr, $errfile, $errline)
+{
+    throw new ErrorException($errstr, $errno, 0, $errfile, $errline);
+}
+
+// set our error handle
+set_error_handler('exception_error_handler');
+
 /**
  * Classe Aplicativo.
  */
@@ -429,15 +438,6 @@ class Aplicativo
         } else {
             $config['log.level'] = \Slim\Log::WARN;
         }
-
-        // define an error handler
-        function exception_error_handler($errno, $errstr, $errfile, $errline)
-        {
-            throw new ErrorException($errstr, $errno, 0, $errfile, $errline);
-        }
-
-        // set our error handle
-        set_error_handler('exception_error_handler');
 
         $this->_slimApp = new \Slim\Slim($config);
 
