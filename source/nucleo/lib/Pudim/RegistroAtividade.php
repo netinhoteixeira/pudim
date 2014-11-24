@@ -68,7 +68,11 @@ class RegistroAtividade
     public function gravar()
     {
         if (!is_null($this->_aplicativo->getAnaliseTrafego())) {
-            $this->_aplicativo->getAnaliseTrafego()->doTrackPageView($this->_nome);
+            try {
+                $this->_aplicativo->getAnaliseTrafego()->doTrackPageView($this->_nome);
+            } catch (\ErrorException $e) {
+                $this->_aplicativo->getSlimApp()->getLog()->error($e->getMessage());
+            }
         }
 
         if (!is_null($this->_atividade->getTipo())) {
