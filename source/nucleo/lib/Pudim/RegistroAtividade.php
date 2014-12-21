@@ -55,6 +55,15 @@ class RegistroAtividade
         return $this->_atividade;
     }
 
+    function setAtividade($atividade)
+    {
+        if (!is_null($atividade)) {
+            $atividade->setTipo($this->_atividade->getTipo());
+            $atividade->setUsuario($this->_atividade->getUsuario());
+            $this->_atividade = $atividade;
+        }
+    }
+
     public static function obter($id)
     {
         $aplicativo = Aplicativo::getInstance();
