@@ -52,8 +52,12 @@ class Modelo
 
         $match = null;
         preg_match("/<title>(.*?)<\\/title>/si", $this->_content, $match);
-        $titulo = explode('-', $match[1]);
-        $this->_title = trim($titulo[0]);
+        if (isset($match[1])) {
+            $titulo = explode('-', $match[1]);
+            $this->_title = trim($titulo[0]);
+        } else {
+            $this->_title = '';
+        }
 
         $this->_values = array();
 
