@@ -42,7 +42,7 @@ class Modelo
      */
     function __construct($nome, $estilo = null)
     {
-        $file = __APPDIR__ . DIRECTORY_SEPARATOR . 'Templates' . DIRECTORY_SEPARATOR . $nome . '.html';
+        $file = implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'app', 'views', $nome . '.html']);
 
         if (!file_exists($file)) {
             throw new ArquivoNaoEncontradoExcecao('Modelo ' . $nome . ' não encontrado.');

@@ -53,7 +53,7 @@ class Aplicativo
         define('__APPDIR__', implode(DIRECTORY_SEPARATOR, [__DIR__, '..', '..', '..', '..', '..', '..', '..']));
 
         $this->obterServidor();
-        $this->_configuracao = new Configuracao(__APPDIR__ . DIRECTORY_SEPARATOR . 'configuracao.ini');
+        $this->_configuracao = new Configuracao(implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'config', 'configuracao.ini']));
 
         define('PROJECT_STAGE', $this->_configuracao->get($this->_servidor . '.producao'));
 
@@ -254,7 +254,7 @@ class Aplicativo
 
         $this->_slimApp->post($caminho, $funcao);
     }
-    
+
     /**
      * Define a rota para a chamada PUT.
      * 
@@ -431,7 +431,6 @@ class Aplicativo
 
     private function iniciarSlimApp()
     {
-
         $config = [];
 
         $logfile = $this->_configuracao->get('aplicativo.log');
@@ -495,7 +494,8 @@ class Aplicativo
         $mail->Body = $mensagem;
         $mail->AddAddress($para);
 
-        $emailLogoFilename = __DIR__ . DIRECTORY_SEPARATOR . 'Templates' . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . 'email-logo.png';
+        $emailLogoFilename = implode(DIRECTORY_SEPARATOR, [__DIR__, 'app',
+            'views', 'email-logo.png']);
         if (file_exists($emailLogoFilename)) {
             $mail->AddEmbeddedImage($emailLogoFilename, 'logo');
         }
@@ -512,25 +512,25 @@ class Aplicativo
     {
         AnnotationDriver::registerAnnotationClasses();
 
-        $classLoader = new ClassLoader('Domain\Entity', __APPDIR__);
+        $classLoader = new ClassLoader('Domain\Entity', implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'app', 'models']));
         $classLoader->register();
 
         // cria os diretórios dos proxys e hydrators, caso não haja (necessários
         // para o Doctrine MongoDB)
         if (!PROJECT_STAGE) {
-            Arquivo::criarDiretorio(__APPDIR__ . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR . 'Domain' . DIRECTORY_SEPARATOR . 'Entity' . DIRECTORY_SEPARATOR . 'Proxies');
-            Arquivo::criarDiretorio(__APPDIR__ . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR . 'Domain' . DIRECTORY_SEPARATOR . 'Entity' . DIRECTORY_SEPARATOR . 'Hydrators');
+            Arquivo::criarDiretorio(implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'tmp', 'models', 'Domain', 'Entity', 'Proxies']));
+            Arquivo::criarDiretorio(implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'tmp', 'models', 'Domain', 'Entity', 'Hydrators']));
         }
 
         $configuracao = new Configuration();
-        $metadata = AnnotationDriver::create(__APPDIR__ . DIRECTORY_SEPARATOR . 'Domain' . DIRECTORY_SEPARATOR . 'Entity');
+        $metadata = AnnotationDriver::create(implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'app', 'models', 'Domain', 'Entity']));
         $configuracao->setMetadataDriverImpl($metadata);
         $configuracao->setAutoGenerateProxyClasses(!((boolean) PROJECT_STAGE));
-        $configuracao->setProxyDir(__APPDIR__ . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR . 'Domain' . DIRECTORY_SEPARATOR . 'Entity' . DIRECTORY_SEPARATOR . 'Proxies');
+        $configuracao->setProxyDir(implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'tmp', 'models', 'Domain', 'Entity', 'Proxies']));
         $configuracao->setProxyNamespace('Proxies');
         $configuracao->setAutoGenerateHydratorClasses(
                 !((boolean) PROJECT_STAGE));
-        $configuracao->setHydratorDir(__APPDIR__ . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR . 'Domain' . DIRECTORY_SEPARATOR . 'Entity' . DIRECTORY_SEPARATOR . 'Hydrators');
+        $configuracao->setHydratorDir(implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'tmp', 'models', 'Domain', 'Entity', 'Hydrators']));
         $configuracao->setHydratorNamespace('Hydrators');
         $configuracao->setDefaultDB(
                 $this->_configuracao->get(
@@ -808,7 +808,7 @@ class Aplicativo
      */
     private function carregarControladores()
     {
-        $controladores = __APPDIR__ . DIRECTORY_SEPARATOR . 'Controllers' . DIRECTORY_SEPARATOR;
+        $controladores = implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'app', 'controllers']);
         if (file_exists($controladores)) {
             Arquivo::requererDiretorio($controladores);
         }
