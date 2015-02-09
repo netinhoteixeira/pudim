@@ -47,7 +47,7 @@ class ModeloSmarty
             throw new ArquivoNaoEncontradoExcecao('Modelo ' . $nome . ' não encontrado.');
         }
 
-        $this->_smarty = new Smarty();
+        $this->_smarty = new \Smarty();
 
         $this->_smarty->setTemplateDir(implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'app', 'views']));
         Arquivo::criarDiretorio(implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'tmp', 'views', 'compiled']));
