@@ -215,6 +215,7 @@ class Aplicativo
         $this->definirRotaObtencao('/cadastro/' . $nome . '/:id', $nome . 'Obter');
         $this->definirRotaPostagem('/cadastro/' . $nome . '', $nome . 'Salvar');
         $this->definirRotaPostagem('/cadastro/' . $nome . '/:id', $nome . 'Salvar');
+        $this->definirRotaSubstituicao('/cadastro/' . $nome . '/:id', $nome . 'Salvar');
         $this->definirRotaRemocao('/cadastro/' . $nome . '/:id', $nome . 'Remover');
     }
 
@@ -252,6 +253,24 @@ class Aplicativo
         }
 
         $this->_slimApp->post($caminho, $funcao);
+    }
+    
+    /**
+     * Define a rota para a chamada PUT.
+     * 
+     * @param string $caminho Caminho da rota
+     * @param function $funcao Função a ser chamada
+     * @throws FuncaoNaoEncontradaExcecao
+     */
+    function definirRotaSubstituicao($caminho, $funcao)
+    {
+        if (!function_exists($funcao)) {
+            throw new FuncaoNaoEncontradaExcecao('A função \'' . $funcao .
+            '\' definida para a rota substituição \'' . $caminho .
+            '\' não existe.');
+        }
+
+        $this->_slimApp->put($caminho, $funcao);
     }
 
     /**
