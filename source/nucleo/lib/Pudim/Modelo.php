@@ -49,17 +49,8 @@ class Modelo
         }
 
         $this->_content = file_get_contents($file);
-
-        $match = null;
-        preg_match("/<title>(.*?)<\\/title>/si", $this->_content, $match);
-        if (isset($match[1])) {
-            $titulo = explode('-', $match[1]);
-            $this->_title = trim($titulo[0]);
-        } else {
-            $this->_title = '';
-        }
-
-        $this->_values = array();
+        $this->setTitulo();
+        $this->_values = [];
 
         if (!is_null($estilo)) {
             $styleFile = __APPDIR__ . DIRECTORY_SEPARATOR . 'Templates' . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . $estilo . '.css';
@@ -124,6 +115,21 @@ class Modelo
     function getTitulo()
     {
         return $this->_title;
+    }
+
+    /**
+     * Set title.
+     */
+    function setTitulo()
+    {
+        $match = null;
+        preg_match("/<title>(.*?)<\\/title>/si", $this->_content, $match);
+        if (isset($match[1])) {
+            $titulo = explode('-', $match[1]);
+            $this->_title = trim($titulo[0]);
+        } else {
+            $this->_title = '';
+        }
     }
 
     /**
