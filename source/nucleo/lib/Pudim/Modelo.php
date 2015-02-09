@@ -49,8 +49,15 @@ class Modelo
         }
 
         $this->_content = file_get_contents($file);
-        
-        $this->setTitulo();
+
+        $match = null;
+        preg_match("/<title>(.*?)<\\/title>/si", $this->_content, $match);
+        if (isset($match[1])) {
+            $titulo = explode('-', $match[1]);
+            $this->_title = trim($titulo[0]);
+        } else {
+            $this->_title = '';
+        }
 
         $this->_values = array();
 
@@ -117,21 +124,6 @@ class Modelo
     function getTitulo()
     {
         return $this->_title;
-    }
-
-    /**
-     * Set title.
-     */
-    private function setTitulo()
-    {
-        $match = null;
-        preg_match("/<title>(.*?)<\\/title>/si", $this->_content, $match);
-        if (isset($match[1])) {
-            $titulo = explode('-', $match[1]);
-            $this->_title = trim($titulo[0]);
-        } else {
-            $this->_title = '';
-        }
     }
 
     /**
