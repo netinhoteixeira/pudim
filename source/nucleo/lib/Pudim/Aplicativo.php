@@ -211,6 +211,8 @@ class Aplicativo
      */
     function definirRotasParaCadastro($nome)
     {
+        $nome = ucfirst($nome);
+
         $this->definirRotaObtencao('/cadastro/' . $nome . '/', $nome . 'Listar');
         $this->definirRotaObtencao('/cadastro/' . $nome . '/:id', $nome . 'Obter');
         $this->definirRotaPostagem('/cadastro/' . $nome . '', $nome . 'Salvar');
