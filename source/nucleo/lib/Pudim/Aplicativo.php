@@ -41,6 +41,7 @@ class Aplicativo
     private $_slimApp;
     private $_nome;
     private $_icone;
+    private $_versao;
     private $_enderecoBase;
     private $_email;
     private $_analiseTrafego;
@@ -93,6 +94,7 @@ class Aplicativo
         $this->_documentos = $this->iniciarDocumentos();
 
         $this->_nome = $this->_configuracao->get('aplicativo.nome');
+        $this->_versao = $this->_configuracao->get('aplicativo.versao');
         $this->_icone = $this->_configuracao->get('aplicativo.icone');
         if (isset($_SERVER['SERVER_NAME'])) {
             $this->_enderecoBase = sprintf('%s://%s:%s%s', isset($_SERVER['HTTPS']) &&
@@ -115,6 +117,16 @@ class Aplicativo
         }
 
         return $this->_servidor;
+    }
+
+    /**
+     * Retorna a versão do aplicativo.
+     * 
+     * @return string
+     */
+    public function getVersao()
+    {
+        return $this->_versao;
     }
 
     /**
