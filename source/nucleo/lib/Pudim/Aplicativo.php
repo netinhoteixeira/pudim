@@ -223,14 +223,14 @@ class Aplicativo
      */
     function definirRotasParaCadastro($nome)
     {
-        $nome = ucfirst($nome);
+        $nomeFuncao = ucfirst($nome);
 
-        $this->definirRotaObtencao('/cadastro/' . $nome . '/', $nome . 'Listar');
-        $this->definirRotaObtencao('/cadastro/' . $nome . '/:id', $nome . 'Obter');
-        $this->definirRotaPostagem('/cadastro/' . $nome . '', $nome . 'Salvar');
-        $this->definirRotaPostagem('/cadastro/' . $nome . '/:id', $nome . 'Salvar');
-        $this->definirRotaSubstituicao('/cadastro/' . $nome . '/:id', $nome . 'Salvar');
-        $this->definirRotaRemocao('/cadastro/' . $nome . '/:id', $nome . 'Remover');
+        $this->definirRotaObtencao('/cadastro/' . $nome . '/', $nomeFuncao . 'Listar');
+        $this->definirRotaObtencao('/cadastro/' . $nome . '/:id', $nomeFuncao . 'Obter');
+        $this->definirRotaPostagem('/cadastro/' . $nome . '', $nomeFuncao . 'Salvar');
+        $this->definirRotaPostagem('/cadastro/' . $nome . '/:id', $nomeFuncao . 'Salvar');
+        $this->definirRotaSubstituicao('/cadastro/' . $nome . '/:id', $nomeFuncao . 'Salvar');
+        $this->definirRotaRemocao('/cadastro/' . $nome . '/:id', $nomeFuncao . 'Remover');
     }
 
     /**
