@@ -53,7 +53,7 @@ class Correios
 
         $resultado = $matches[1];
 
-        if (!empty($resultado[RESPOSTA_CORREIOS_CEP_UF])) {
+        if (!empty($resultado[RESPOSTA_CORREIOS_CEP_UF])) {            
             $resposta->setEncontrou(true);
             $resposta->setLogradouro($resultado[RESPOSTA_CORREIOS_CEP_LOGRADOURO]);
             $resposta->setBairro($resultado[RESPOSTA_CORREIOS_CEP_BAIRRO]);
@@ -95,7 +95,7 @@ class Correios
                 $x++;
                 $historicos[$x]['data'] = $match[3][$i];
                 $historicos[$x]['local'] = str_replace(' /', '/', Texto::normalizarEspacos($match[4][$i]));
-                $historicos[$x]['situacao'] = utf8_encode($match[5][$i]);
+                $historicos[$x]['situacao'] = $match[5][$i];
             } else {
                 $historicos[$x]['detalhe'] = $match[8][$i];
             }

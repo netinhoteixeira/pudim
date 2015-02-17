@@ -20,11 +20,12 @@ class CorreiosTest extends PHPUnit_Framework_TestCase
 
     public function testConsultarEncomenda()
     {
-        //print_r(Correios::consultarEncomenda('JG426220557BR'));
-        //print_r(Correios::consultarEncomenda('JG710091345BR'));
-        //print_r(Correios::consultarEncomenda('JG877967260BR'));
+        print_r(Correios::consultarEncomenda('JG426220557BR'));
+        print_r(Correios::consultarEncomenda('JG710091345BR'));
+        print_r(Correios::consultarEncomenda('JG877967260BR'));
         print_r(Correios::consultarEncomenda('JG490873977BR'));
-        //print_r(Correios::consultarEncomenda('RB201375950HK'));
+        print_r(Correios::consultarEncomenda('RB201375950HK'));
+        print_r(Correios::consultarEncomenda('PG805326978BR'));
     }
 
 }
