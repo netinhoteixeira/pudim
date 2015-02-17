@@ -713,7 +713,7 @@ class Aplicativo
             try {
                 $this->criarPrimeiroUsuario();
                 $this->saida('Usuário cadastrado. Recarregue a página.');
-            } catch (MongoCursorException $ex) {
+            } catch (\MongoCursorException $ex) {
                 $this->saida('Usuário já cadastrado. Recarregue a página.');
             }
 

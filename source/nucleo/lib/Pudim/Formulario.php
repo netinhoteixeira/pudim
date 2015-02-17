@@ -221,7 +221,7 @@ class Formulario
     }
 
     /**
-     * Trata as mensagens de erro do MongoCursorException
+     * Trata as mensagens de erro do \MongoCursorException
      *
      * @param \MongoCursorException $exception
      * @return string Mensagem tratada
