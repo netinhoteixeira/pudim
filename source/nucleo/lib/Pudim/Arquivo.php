@@ -56,8 +56,13 @@ class Arquivo
             $caminho .= DIRECTORY_SEPARATOR;
         }
 
-        foreach (glob($caminho . '*.php') as $arquivo) {
-            require_once $arquivo;
+        $diretorio = new \RecursiveDirectoryIterator($caminho, \RecursiveDirectoryIterator::SKIP_DOTS);
+        $iterator = new \RecursiveIteratorIterator($diretorio, \RecursiveIteratorIterator::LEAVES_ONLY);
+
+        foreach ($iterator as $fileinfo) {
+            if ($fileinfo->getExtension() === 'php') {
+                require_once $fileinfo->getPathname();
+            }
         }
     }
 

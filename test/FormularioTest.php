@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../source/Pudim/Arquivo.php';
+require_once implode(DIRECTORY_SEPARATOR, [__DIR__, '..', 'source', 'nucleo', 'lib', 'Pudim', 'Arquivo.php']);
 
 use Pudim\Formulario;
 
@@ -9,10 +9,8 @@ class FormularioTest extends PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        Pudim\Arquivo::requererDiretorio(__DIR__ . '/../source/Pudim/');
-        Pudim\Arquivo::requererDiretorio(__DIR__ . '/../source/Pudim/respostas/');
-        Pudim\Arquivo::requererDiretorio(__DIR__ . '/../source/Pudim/excecoes/');
-        Pudim\Arquivo::requererDiretorio(__DIR__ . '/../example/Domain/Entity/');
+        Pudim\Arquivo::requererDiretorio(implode(DIRECTORY_SEPARATOR, [__DIR__, '..', 'source']));
+        Pudim\Arquivo::requererDiretorio(implode(DIRECTORY_SEPARATOR, [__DIR__, '..', 'example', 'Domain', 'Entity']));
 
         if (!defined('TMPDIR')) {
             define('TMPDIR', __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'tmp');
@@ -43,7 +41,7 @@ class FormularioTest extends PHPUnit_Framework_TestCase
 
         print_r($imagem);
         print_r($resposta);
- 
+
         if (file_exists($resposta->getArquivoTemporario())) {
             unlink($resposta->getArquivoTemporario());
         }
