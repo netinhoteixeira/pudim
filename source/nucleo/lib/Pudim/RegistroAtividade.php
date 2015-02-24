@@ -79,8 +79,8 @@ class RegistroAtividade
         if (!is_null($this->_aplicativo->getAnaliseTrafego())) {
             try {
                 $this->_aplicativo->getAnaliseTrafego()->doTrackPageView($this->_nome);
-            } catch (\ErrorException $e) {
-                $this->_aplicativo->getSlimApp()->getLog()->error($e->getMessage());
+            } catch (\ErrorException $ex) {
+                $this->_aplicativo->getLog()->error($ex->getLine() . ' - ' . $ex->getFile() . ': ' . $ex->getMessage());
             }
         }
 
@@ -91,9 +91,14 @@ class RegistroAtividade
             }
 
             $this->_aplicativo->getDocumentos()->persist($this->_atividade);
-            $this->_aplicativo->getDocumentos()->flush();
+            try {
+                $this->_aplicativo->getDocumentos()->flush();
 
-            return $this->_atividade;
+                return $this->_atividade;
+            } catch (\ErrorException $ex) {
+                $this->_aplicativo->getLog()->error($ex->getLine() . ' - ' . $ex->getFile() . ': ' . $ex->getMessage());
+                $this->_aplicativo->getLog()->error(json_encode($this->_atividade));
+            }
         }
 
         return null;

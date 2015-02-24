@@ -40,8 +40,8 @@ class Arquivo
             if ((isset($arquivo)) && (!is_null($arquivo)) && (file_exists($arquivo))) {
                 unlink($arquivo);
             }
-        } catch (Exception $ex) {
-            $aplicativo->getLog()->error(json_encode($ex));
+        } catch (\Exception $ex) {
+            $aplicativo->getLog()->error($ex->getLine() . ' - ' . $ex->getFile() . ': ' . $ex->getMessage());
         }
     }
 

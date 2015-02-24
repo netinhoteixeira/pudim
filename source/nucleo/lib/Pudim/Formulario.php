@@ -20,6 +20,7 @@
 
 namespace Pudim;
 
+use Pudim\Aplicativo;
 use Pudim\Respostas\RespostaMudancaImagem;
 
 class Formulario
@@ -83,9 +84,9 @@ class Formulario
             $fp = fopen($temp, 'w');
             fwrite($fp, $imagemDecodificada);
             fclose($fp);
-            
+
             $imagemParaRedimensionar = imagecreatefromwebp($temp);
-            
+
             unlink($temp);
         } else {
             $imagemParaRedimensionar = imagecreatefromstring($imagemDecodificada);
@@ -153,14 +154,15 @@ class Formulario
      */
     public static function getImagemBase64($imagem, $comPrefixo = false, $tipo = 'image/webp')
     {
+        $aplicativo = Aplicativo::getInstance();
         $retorno = null;
 
         try {
             if ((!is_null($imagem)) && (!is_null($imagem->getFile())) && (!is_null($imagem->getFile()->getBytes()))) {
                 $retorno = Formulario::getImagemBase64ComPrefixo($imagem->getFile()->getBytes(), $imagem->getMimeType(), $comPrefixo, $tipo);
             }
-        } catch (MongoGridFSException $ex) {
-            error_log(json_encode($ex));
+        } catch (\MongoGridFSException $ex) {
+            $aplicativo->getLog()->error($ex->getLine() . ' - ' . $ex->getFile() . ': ' . $ex->getMessage());
         }
 
         return $retorno;
@@ -288,7 +290,9 @@ class Formulario
     public static function validarCpf($cpf)
     {
         require_once(__DIR__ . '/../../library/ValidarChaveFiscal.php');
+
         $validador = new \ValidarChaveFiscal($cpf, 'cpf');
+
         return $validador->isValido();
     }
 
@@ -300,7 +304,9 @@ class Formulario
     public static function validarCnpj($cnpj)
     {
         require_once(__DIR__ . '/../../library/ValidarChaveFiscal.php');
+
         $validador = new \ValidarChaveFiscal($cnpj, 'cnpj');
+
         return $validador->isValido();
     }
 
