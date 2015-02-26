@@ -22,27 +22,64 @@ namespace Pudim;
 
 /**
  * Classe Configuracao.
+ * Lê/Salva um arquivo de configuração no formato INI. Exemplo:
+ * 
+ * [secao]
+ * propriedade = valor
+ * ; esse é um comentário
+ * propriedade = valor
  */
 class Configuracao
 {
 
     private $_arquivo;
-    private $_propriedades = array();
+    private $_propriedades = [];
 
-    function __construct($arquivo)
+    /**
+     * Construtor da classe.
+     * 
+     * @param string $arquivo Caminho do arquivo
+     */
+    public function __construct($arquivo)
     {
         $this->_arquivo = $arquivo;
-        $this->_propriedades = $this->better_parse_ini_file($this->_arquivo, true);
+        $this->abrirArquivo($this->_arquivo);
     }
 
-    function get($nome)
+    /**
+     * Retorna o caminho do arquivo.
+     * 
+     * @return string
+     */
+    public function getArquivo()
+    {
+        return $this->_arquivo;
+    }
+
+    /**
+     * Retorna as propriedades e valores para o arquivo.
+     * 
+     * @return array
+     */
+    public function getPropriedades()
+    {
+        return $this->_propriedades;
+    }
+
+    /**
+     * Obtém o valor de uma propriedade.
+     * 
+     * @param type $nome Nome da propriedade
+     * @return null | anytype | boolean
+     */
+    public function get($nome)
     {
         $propriedades = null;
 
         if (strpos($nome, '.')) {
-            list($nomeSessao, $propriedade) = explode('.', $nome);
-            $secao = &$this->_propriedades[$nomeSessao];
-            $nome = $propriedade;
+            $propriedade = explode('.', $nome);
+            $secao = &$this->_propriedades[$propriedade[0]];
+            $nome = $propriedade[1];
         } else {
             $secao = &$propriedades;
         }
@@ -54,140 +91,153 @@ class Configuracao
         return false;
     }
 
-    function set($nome, $valor)
+    /**
+     * Define um valor para a propriedade.
+     * 
+     * @param string $nome Nome
+     * @param anytype $valor Valor
+     */
+    public function set($nome, $valor)
     {
-        $propriedades = null;
-
         if (strpos($nome, '.')) {
-            list($nomeSessao, $propriedade) = explode('.', $nome);
-            $secao = &$this->_propriedades[$nomeSessao];
-            $nome = $propriedade;
+            $comSecao = explode('.', $nome);
+            $this->_propriedades[$comSecao[0]][$comSecao[1]] = $valor;
         } else {
-            $secao = &$propriedades;
-        }
-
-        if (is_array($secao) && isset($secao[$nome])) {
-            $secao[$nome] = $valor;
-        }
-    }
-
-    function persist()
-    {
-        $resultado = array();
-        foreach ($this->_propriedades as $chave => $valor) {
-            if (is_array($valor)) {
-                $resultado[] = "[$chave]";
-                foreach ($valor as $schave => $svalor) {
-                    $recurso = "$schave = ";
-
-                    if (is_numeric($svalor)) {
-                        $recurso .= $svalor;
-                    } elseif (is_bool($svalor)) {
-                        $recurso .= $svalor ? 'true' : 'false';
-                    } else {
-                        $recurso .= $svalor;
-                    }
-
-                    $resultado[] = $recurso;
-                }
-
-                // blank line
-                $resultado[] = '';
-            } else {
-                $resultado[] = "$chave = ";
-
-                if (is_numeric($svalor)) {
-                    $recurso .= $svalor;
-                } elseif (is_bool($svalor)) {
-                    $recurso .= $svalor ? 'true' : 'false';
-                } else {
-                    $recurso .= '"' . $svalor . '"';
-                }
-
-                $resultado[] = $recurso;
-            }
-        }
-        $this->safefilerewrite($this->_arquivo, implode("\r\n", $resultado));
-    }
-
-    private function safefilerewrite($fileName, $dataToSave)
-    {
-        $handle = fopen($fileName, 'w');
-        if ($handle) {
-            $startTime = microtime();
-            do {
-                $canWrite = flock($handle, LOCK_EX);
-                // If lock not obtained sleep for 0 - 100 milliseconds, to avoid collision and CPU load 
-                if (!$canWrite) {
-                    usleep(round(rand(0, 100) * 1000));
-                }
-            } while ((!$canWrite)and ( (microtime() - $startTime) < 1000));
-
-            //file was locked so now we can store information 
-            if ($canWrite) {
-                fwrite($handle, $dataToSave);
-                flock($handle, LOCK_UN);
-            }
-
-            fclose($handle);
+            $this->_propriedades[$nome] = $valor;
         }
     }
 
     /**
-     * array better_parse_ini_file (string $filename [, boolean $process_sections] )
-     *
-     * Purpose: Load in the ini file specified in filename, and return
-     *          the settings in an associative array. By setting the
-     *          last $process_sections parameter to true, you get a
-     *          multidimensional array, with the section names and
-     *          settings included. The default for process_sections is
-     *          false.
-     *
-     * Return: - An associative array containing the data
-     *        - false if any error occured
-     *
-     * Author: Sebastien Cevey <seb@cine7.net>
-     *        Original Code base : <info@megaman.nl>
+     * Abre o arquivo de configuração.
+     * 
+     * @param string $arquivo Arquivo de Configuração
      */
-    private function better_parse_ini_file($filename, $process_sections = false)
+    private function abrirArquivo($arquivo)
     {
-        $ini_array = array();
-        $sec_name = '';
-        $lines = file($filename);
+        if (file_exists($arquivo)) {
+            $secao = '';
+            $linhas = file($arquivo);
 
-        foreach ($lines as $line) {
-            $line = trim($line);
+            foreach ($linhas as $linha) {
+                $linha = trim($linha);
 
-            if (empty($line)) {
-                continue;
-            }
-
-            if (($line[0] === '[') && ($line[strlen($line) - 1] === ']')) {
-                $sec_name = substr($line, 1, strlen($line) - 2);
-            } else {
-                $pos = strpos($line, '=');
-                $property = trim(substr($line, 0, $pos));
-                $value = trim(substr($line, $pos + 1));
-
-                switch ($value) {
-                    case 'true':
-                        $value = true;
-                        break;
-
-                    case 'false':
-                        $value = false;
-                        break;
+                // caso a linha for em branco, não há seção
+                if (empty($linha)) {
+                    $secao = '';
+                    continue;
                 }
 
-                if ($process_sections) {
-                    $ini_array[$sec_name][$property] = $value;
-                } else {
-                    $ini_array[$property] = $value;
+                // caso a linha for um comentário
+                else if ($linha[0] === ';') {
+                    continue;
+                }
+
+                // caso seja uma seção
+                else if (($linha[0] === '[') && ($linha[strlen($linha) - 1] === ']')) {
+                    $secao = substr($linha, 1, strlen($linha) - 2);
+                }
+
+                // do contrário é uma propriedade
+                else {
+                    $propriedade = new ConfiguracaoPropriedade($linha);
+                    if (!empty($secao)) {
+                        $this->_propriedades[$secao][$propriedade->getNome()] = $propriedade->getValor();
+                    } else {
+                        $this->_propriedades[$propriedade->getNome()] = $propriedade->getValor();
+                    }
                 }
             }
         }
+    }
 
-        return $ini_array;
+    public function persistir()
+    {
+        $linhas = [];
+        foreach ($this->_propriedades as $chave => $valor) {
+            if (is_array($valor)) {
+                $this->persistirValorEmVetor($chave, $valor, $linhas);
+            } else {
+                $this->persistirValor($chave, $valor, $linhas);
+            }
+        }
+
+        $this->salvarArquivo($this->_arquivo, implode("\r\n", $linhas));
+    }
+
+    private function persistirValorEmVetor($chave, $valor, &$linhas)
+    {
+        if (count($linhas) > 0) {
+            if (!empty($linhas[count($linhas) - 1])) {
+                // linha em branco
+                $linhas[] = '';
+            }
+        }
+
+        $linhas[] = '[' . $chave . ']';
+        foreach ($valor as $schave => $svalor) {
+            $propriedade = $schave . ' = ';
+
+            if (is_numeric($svalor)) {
+                $propriedade .= $svalor;
+            } elseif (is_bool($svalor)) {
+                $propriedade .= $svalor ? 'true' : 'false';
+            } else {
+                $propriedade .= $svalor;
+            }
+
+            $linhas[] = $propriedade;
+        }
+
+        // linha em branco
+        $linhas[] = '';
+    }
+
+    private function persistirValor($chave, $valor, &$linhas)
+    {
+        $propriedade = $chave . ' = ';
+
+        if (is_numeric($valor)) {
+            $propriedade .= $valor;
+        } elseif (is_bool($valor)) {
+            $propriedade .= $valor ? 'true' : 'false';
+        } else {
+            $propriedade .= $valor;
+        }
+
+        $linhas[] = $propriedade;
+    }
+
+    /**
+     * Salva o arquivo de configuração.
+     * 
+     * @param string $arquivo Arquivo de Configuração
+     * @param string $dados Dados a serem salvos no Arquivo de Configuração
+     */
+    private function salvarArquivo($arquivo, $dados)
+    {
+        $apontamento = fopen($arquivo, 'w');
+        if ($apontamento) {
+            $inicio = microtime();
+
+            do {
+                $podeEscrever = flock($apontamento, LOCK_EX);
+
+                // se o bloqueio não for obtido entre 0 a 100 milisegundos, para
+                // previnir colisão e carregamento pela CPU
+                if (!$podeEscrever) {
+                    usleep(round(rand(0, 100) * 1000));
+                }
+            } while ((!$podeEscrever) && ((microtime() - $inicio) < 1000));
+
+            // o arquivo estava bloqueado então agora podemos armazenar as
+            // informações
+            if ($podeEscrever) {
+                fwrite($apontamento, $dados);
+                flock($apontamento, LOCK_UN);
+            }
+
+            fclose($apontamento);
+        }
     }
 
 }

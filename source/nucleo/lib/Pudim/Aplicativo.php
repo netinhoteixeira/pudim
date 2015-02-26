@@ -719,7 +719,7 @@ class Aplicativo
 
             // atualiza as informações do arquivo de configuração
             $this->_configuracao->set('acesso.primeiro', false);
-            $this->_configuracao->persist();
+            $this->_configuracao->persistir();
 
             exit();
         }
