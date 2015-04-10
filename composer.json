@@ -17,14 +17,14 @@
         "slim/slim": ">=2.5.0",
         "doctrine/orm": "2.5.*",
         "doctrine/mongodb-odm": "dev-master",
-        "sybio/image-workshop": "2.0.5",
+        "sybio/image-workshop": "2.0.*",
         "phpmailer/phpmailer": "v5.2.8",
         "tijsverkoyen/css-to-inline-styles": "1.5.2",
         "united-prototype/php-ga": "dev-composer",
         "smarty/smarty": "~3.1"
     },
     "autoload": {
-        "psr-0": {
+        "psr-4": {
             "Pudim\\": "source/nucleo/lib",
             "Pudim\\Respostas\\": "source/respostas/lib",
             "Pudim\\Excecoes\\": "source/excecoes/lib",
