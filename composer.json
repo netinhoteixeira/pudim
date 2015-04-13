@@ -14,7 +14,7 @@
     ],
     "require": {
         "php": ">=5.5.0",
-        "slim/slim": ">=2.5.0",
+        "slim/slim": ">=2.6.2",
         "doctrine/orm": "2.5.*",
         "doctrine/mongodb-odm": "dev-master",
         "sybio/image-workshop": "2.0.*",
