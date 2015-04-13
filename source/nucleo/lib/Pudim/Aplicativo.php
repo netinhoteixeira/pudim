@@ -235,14 +235,14 @@ class Aplicativo
      */
     function definirRotasParaCadastro($nome)
     {
-        $nomeFuncao = ucfirst($nome);
+        $nomeClasse = ucfirst($nome);
 
-        $this->definirRotaObtencao('/cadastro/' . $nome . '/', $nomeFuncao . 'Listar');
-        $this->definirRotaObtencao('/cadastro/' . $nome . '/:id', $nomeFuncao . 'Obter');
-        $this->definirRotaPostagem('/cadastro/' . $nome . '', $nomeFuncao . 'Salvar');
-        $this->definirRotaPostagem('/cadastro/' . $nome . '/:id', $nomeFuncao . 'Salvar');
-        $this->definirRotaSubstituicao('/cadastro/' . $nome . '/:id', $nomeFuncao . 'Salvar');
-        $this->definirRotaRemocao('/cadastro/' . $nome . '/:id', $nomeFuncao . 'Remover');
+        $this->definirRotaObtencao('/cadastro/' . $nome . '/', '\Controllers\\' . $nomeClasse . ':listar');
+        $this->definirRotaObtencao('/cadastro/' . $nome . '/:id', '\Controllers\\' . $nomeClasse . ':obter');
+        $this->definirRotaPostagem('/cadastro/' . $nome . '', '\Controllers\\' . $nomeClasse . ':salvar');
+        $this->definirRotaPostagem('/cadastro/' . $nome . '/:id', '\Controllers\\' . $nomeClasse . ':salvar');
+        $this->definirRotaSubstituicao('/cadastro/' . $nome . '/:id', '\Controllers\\' . $nomeClasse . ':salvar');
+        $this->definirRotaRemocao('/cadastro/' . $nome . '/:id', '\Controllers\\' . $nomeClasse . ':remover');
     }
 
     /**
@@ -254,12 +254,6 @@ class Aplicativo
      */
     function definirRotaObtencao($caminho, $funcao)
     {
-        if (!function_exists($funcao)) {
-            throw new FuncaoNaoEncontradaExcecao('A função \'' . $funcao .
-            '\' definida para a rota obter \'' . $caminho .
-            '\' não existe.');
-        }
-
         $this->_slimApp->get($caminho, $funcao);
     }
 
@@ -272,12 +266,6 @@ class Aplicativo
      */
     function definirRotaPostagem($caminho, $funcao)
     {
-        if (!function_exists($funcao)) {
-            throw new FuncaoNaoEncontradaExcecao('A função \'' . $funcao .
-            '\' definida para a rota postagem \'' . $caminho .
-            '\' não existe.');
-        }
-
         $this->_slimApp->post($caminho, $funcao);
     }
 
@@ -290,12 +278,6 @@ class Aplicativo
      */
     function definirRotaSubstituicao($caminho, $funcao)
     {
-        if (!function_exists($funcao)) {
-            throw new FuncaoNaoEncontradaExcecao('A função \'' . $funcao .
-            '\' definida para a rota substituição \'' . $caminho .
-            '\' não existe.');
-        }
-
         $this->_slimApp->put($caminho, $funcao);
     }
 
@@ -308,12 +290,6 @@ class Aplicativo
      */
     function definirRotaRemocao($caminho, $funcao)
     {
-        if (!function_exists($funcao)) {
-            throw new FuncaoNaoEncontradaExcecao('A função \'' . $funcao .
-            '\' definida para a rota postagem \'' . $caminho .
-            '\' não existe.');
-        }
-
         $this->_slimApp->delete($caminho, $funcao);
     }
 
@@ -325,11 +301,6 @@ class Aplicativo
      */
     function seRotaNaoForEncontrada($funcao)
     {
-        if (!function_exists($funcao)) {
-            throw new FuncaoNaoEncontradaExcecao('A função \'' .
-            $funcao . '\' não existe.');
-        }
-
         $this->_slimApp->notFound($funcao);
     }
 
@@ -546,7 +517,7 @@ class Aplicativo
 
         $tipo = explode(':', $this->_configuracao->get($this->_servidor . '.persistencia_uri'));
         $tipo = $tipo[0];
-        
+
         $doctrine_models_dir = implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'app', 'models']);
         $doctrine_entities_dir = implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'app', 'models', 'Domain', 'Entity']);
         $doctrine_proxies_dir = implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'tmp', 'models', 'Domain', 'Entity', 'Proxies']);
@@ -581,7 +552,7 @@ class Aplicativo
                         \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES \'' . $this->_configuracao->get($this->_servidor . '.persistencia_charset') . '\''
                     );
                     break;
-                
+
                 // em teste funciona para quase todos os tipos de PDO
                 default:
                     $parametrosConexao = array(
@@ -656,15 +627,15 @@ class Aplicativo
             $configuracao = new \Doctrine\ODM\MongoDB\Configuration();
             $metadata = AnnotationDriver::create($doctrine_entities_dir);
             $configuracao->setMetadataDriverImpl($metadata);
-            
+
             $configuracao->setAutoGenerateProxyClasses(!((boolean) PROJECT_STAGE));
             $configuracao->setProxyDir($doctrine_proxies_dir);
             $configuracao->setProxyNamespace('Proxies');
-            
+
             $configuracao->setAutoGenerateHydratorClasses(!((boolean) PROJECT_STAGE));
             $configuracao->setHydratorDir($doctrine_hydrators_dir);
             $configuracao->setHydratorNamespace('Hydrators');
-            
+
             $configuracao->setDefaultDB($this->_configuracao->get($this->_servidor . '.persistencia_banco'));
 
             //$configuracao->setLoggerCallable(function (array $log) { print_r($log); });
@@ -817,7 +788,7 @@ class Aplicativo
             Arquivo::criarDiretorio(LOGDIR);
             ini_set('log_errors', 1);
             ini_set('error_log', LOGDIR . DIRECTORY_SEPARATOR . $logfile . '-php.log');
-            
+
             // cria o arquivo vazio
             touch(LOGDIR . DIRECTORY_SEPARATOR . $logfile . '-php.log');
         }
