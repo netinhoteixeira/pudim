@@ -446,13 +446,16 @@ class Aplicativo
      * 
      * @param Object $jsonfy Objeto a ser codificado em JSON
      */
-    function saida($jsonfy = null)
+    function saida($jsonfy)
     {
-        if (!is_null($jsonfy)) {
-            $this->_slimApp->contentType('application/json; charset=utf-8');
-
-            echo json_encode($jsonfy);
-        }
+        // DONE: Problemas por estar usando o exit()
+        //$this->_slimApp->contentType('application/json; charset=utf-8');
+        header('Content-Type: application/json; charset=utf-8');
+        
+        echo json_encode($jsonfy);
+        
+        // causa o SlimApp para de fornecer o tipo do cabeçalho
+        exit();
     }
 
     private function iniciarSlimApp()
