@@ -66,6 +66,7 @@ class Aplicativo
         $this->definirFusoHorario();
         $this->definirControleDeAcessoDaOrigemDaRequisicao();
         $this->carregarControladores();
+        $this->carregarUtilitarios();
     }
 
     /**
@@ -941,6 +942,17 @@ class Aplicativo
         $controladores = implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'app', 'controllers']);
         if (file_exists($controladores)) {
             Arquivo::requererDiretorio($controladores);
+        }
+    }
+
+    /**
+     * Carrega todos os utilitários.
+     */
+    private function carregarUtilitarios()
+    {
+        $utilitarios = implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'app', 'util']);
+        if (file_exists($utilitarios)) {
+            Arquivo::requererDiretorio($utilitarios);
         }
     }
 
