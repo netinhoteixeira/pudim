@@ -27,6 +27,7 @@ class RespostaSalvo implements \JsonSerializable
 {
 
     private $_salvo = true;
+    private $_id = null;
     private $_mensagem = null;
 
     /**
@@ -37,6 +38,16 @@ class RespostaSalvo implements \JsonSerializable
     public function getSalvo()
     {
         return $this->_salvo;
+    }
+    
+    /**
+     * Obtém a identificação (se houver).
+     * 
+     * @return Object
+     */
+    public function getId()
+    {
+        return $this->_id;
     }
 
     /**
@@ -58,6 +69,16 @@ class RespostaSalvo implements \JsonSerializable
     {
         $this->_salvo = $salvo;
     }
+    
+    /**
+     * Define a identificação (se houver).
+     * 
+     * @param Object $id Identificação
+     */
+    public function setId($id)
+    {
+        $this->_id = $id;
+    }
 
     /**
      * Define a mensagem.
@@ -78,6 +99,7 @@ class RespostaSalvo implements \JsonSerializable
     {
         return array(
             'salvo' => $this->_salvo,
+            'id' => $this->_id,
             'mensagem' => $this->_mensagem
         );
     }
