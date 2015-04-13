@@ -15,20 +15,20 @@ class AplicativoTest extends PHPUnit_Framework_TestCase
     {
         $aplicativo = \Pudim\Aplicativo::getInstance(__DIR__ . DIRECTORY_SEPARATOR .'../');
 
-        // cadastra um funcionário
-        $funcionario = new \Domain\Entity\Funcionario();
+        // cadastra um colaborador
+        $colaborador = new \Domain\Entity\Colaborador();
 
-        $funcionario->setCadastro(new \DateTime());
-        $funcionario->setNome('Joao');
-        $funcionario->setNascimento(new \DateTime());
-        $funcionario->setSexo('M');
-        $funcionario->setCpf('05486864401');
-        $funcionario->setEstadocivil('S');
-        $funcionario->setPerfil('F');
-        $funcionario->setAtivo(true);
+        $colaborador->setCadastro(new \DateTime());
+        $colaborador->setNome('Joao');
+        $colaborador->setNascimento(new \DateTime());
+        $colaborador->setSexo('M');
+        $colaborador->setCpf('05486864401');
+        $colaborador->setEstadocivil('S');
+        $colaborador->setPerfil('F');
+        $colaborador->setAtivo(true);
 
         try {
-            $aplicativo->getConexao()->persist($funcionario);
+            $aplicativo->getConexao()->persist($colaborador);
             $aplicativo->getConexao()->flush();
 
             echo 'Cadastrado com sucesso!';
