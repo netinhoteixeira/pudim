@@ -239,7 +239,7 @@ class Aplicativo
 
         $this->definirRotaObtencao('/cadastro/' . $nome . '/', '\Controllers\\' . $nomeClasse . ':listar');
         $this->definirRotaObtencao('/cadastro/' . $nome . '/:id', '\Controllers\\' . $nomeClasse . ':obter');
-        $this->definirRotaPostagem('/cadastro/' . $nome . '', '\Controllers\\' . $nomeClasse . ':salvar');
+        $this->definirRotaPostagem('/cadastro/' . $nome . '/', '\Controllers\\' . $nomeClasse . ':salvar');
         $this->definirRotaPostagem('/cadastro/' . $nome . '/:id', '\Controllers\\' . $nomeClasse . ':salvar');
         $this->definirRotaSubstituicao('/cadastro/' . $nome . '/:id', '\Controllers\\' . $nomeClasse . ':salvar');
         $this->definirRotaRemocao('/cadastro/' . $nome . '/:id', '\Controllers\\' . $nomeClasse . ':remover');
