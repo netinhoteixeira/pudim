@@ -102,6 +102,11 @@ class Aplicativo
                     $_SERVER['HTTPS'] != 'off' ? 'https' : 'http', $_SERVER['SERVER_NAME'], $_SERVER['SERVER_PORT'], $this->_configuracao->get($this->_servidor . '.contexto'));
         }
         $this->_email = $this->_configuracao->get('email.conta');
+
+        // habilita o serviço dos Correios, caso esteja habilitado
+        if ($this->_configuracao->get('correios.cep')) {
+            $this->definirRotaObtencao('/servico/correios/cep/:cep', '\Pudim\\Correios:consultarCep');
+        }
     }
 
     private function obterServidor()
