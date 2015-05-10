@@ -105,7 +105,7 @@ class Aplicativo
 
         // habilita o serviço dos Correios, caso esteja habilitado
         if ($this->_configuracao->get('correios.cep')) {
-            $this->definirRotaObtencao('/servico/correios/cep/:cep', '\Pudim\\Correios:consultarCep');
+            $this->definirRotaObtencao('/servico/correios/cep/:cep', '\Pudim\\CorreiosControlador:consultarCep');
         }
     }
 
