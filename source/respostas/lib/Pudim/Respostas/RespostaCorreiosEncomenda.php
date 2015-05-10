@@ -21,6 +21,8 @@
 namespace Pudim\Respostas;
 
 use Pudim\Correios;
+use Pudim\CorreiosServicos;
+use Pudim\CorreiosPaises;
 use Pudim\Excecoes\CorreiosEncomendaInvalidaExcecao;
 
 /**
@@ -51,9 +53,9 @@ class RespostaCorreiosEncomenda implements \JsonSerializable
         // valida o serviço, e a origem do código
         // O serviço é representado pelas duas primeiras letras do código.
         // A origem é reepresentada pelas duas últimas letras do código.
-        if (!isset(Correios::$servicos[$servico])) {
+        if (!array_key_exists($servico, CorreiosServicos::$lista)) {
             throw new CorreiosEncomendaInvalidaExcecao('Código inválido! Serviço "' . $servico . '" inexistente.');
-        } elseif (!isset(Correios::$paises[$origem])) {
+        } elseif (!array_key_exists($origem, CorreiosPaises::$lista)) {
             throw new CorreiosEncomendaInvalidaExcecao('Código inválido! Origem "' . $origem . '" inexistente.');
         }
 
