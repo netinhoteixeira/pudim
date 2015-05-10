@@ -427,9 +427,9 @@ class Aplicativo
         // DONE: Problemas por estar usando o exit()
         //$this->_slimApp->contentType('application/json; charset=utf-8');
         header('Content-Type: application/json; charset=utf-8');
-        
+
         echo json_encode($jsonfy);
-        
+
         // causa o SlimApp para de fornecer o tipo do cabeçalho
         exit();
     }
