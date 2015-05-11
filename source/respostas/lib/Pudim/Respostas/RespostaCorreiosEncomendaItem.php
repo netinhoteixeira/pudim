@@ -100,13 +100,13 @@ class RespostaCorreiosEncomendaItem implements \JsonSerializable
      */
     public function jsonSerialize()
     {
-        return array(
+        return [
             'data' => $this->_data,
             'local' => $this->_local,
             'situacao' => $this->_situacao,
             'detalhe' => $this->_detalhe,
             'cor' => $this->_cor
-        );
+        ];
     }
 
 }

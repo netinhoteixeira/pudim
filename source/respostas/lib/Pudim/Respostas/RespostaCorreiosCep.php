@@ -120,14 +120,14 @@ class RespostaCorreiosCep implements \JsonSerializable
      */
     public function jsonSerialize()
     {
-        return array(
+        return [
             'encontrou' => $this->_encontrou,
             'logradouro' => $this->_logradouro,
             'bairro' => $this->_bairro,
             'cidade' => $this->_cidade,
             'uf' => $this->_uf,
             'cep' => $this->_cep
-        );
+        ];
     }
 
 }

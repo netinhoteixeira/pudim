@@ -55,9 +55,9 @@ class Resposta implements \JsonSerializable
      */
     public function jsonSerialize()
     {
-        return array(
+        return [
             'mensagem' => mensagem
-        );
+        ];
     }
 
 }

@@ -56,10 +56,10 @@ class RespostaEncontrado implements \JsonSerializable
      */
     public function jsonSerialize()
     {
-        return array(
+        return [
             'encontrou' => $this->_encontrou,
             'mensagem' => $this->_mensagem
-        );
+        ];
     }
 
 }

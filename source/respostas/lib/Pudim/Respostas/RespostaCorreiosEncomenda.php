@@ -104,12 +104,12 @@ class RespostaCorreiosEncomenda implements \JsonSerializable
      */
     public function jsonSerialize()
     {
-        return array(
+        return [
             'codigo' => $this->_codigo,
             'servico' => $this->_servico,
             'origem' => $this->_origem,
             'historico' => array_reverse($this->_historico)
-        );
+        ];
     }
 
 }
