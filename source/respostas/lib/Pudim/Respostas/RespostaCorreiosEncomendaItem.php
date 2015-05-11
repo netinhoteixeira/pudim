@@ -21,6 +21,7 @@
 namespace Pudim\Respostas;
 
 use Pudim\Correios;
+use Pudim\CorreiosSituacoesEncomenda;
 
 /**
  * Classe RespostaCorreiosEncomendaItem.
@@ -75,7 +76,7 @@ class RespostaCorreiosEncomendaItem implements \JsonSerializable
 
         $this->_cor = null;
         $situacao = strtoupper($situacao);
-        foreach (Correios::$situacoes as $chave => $valor) {
+        foreach (CorreiosSituacoesEncomenda::$lista as $chave => $valor) {
             if (strpos($situacao, $chave) !== false) {
                 $this->_cor = $valor;
                 break;
@@ -83,7 +84,7 @@ class RespostaCorreiosEncomendaItem implements \JsonSerializable
         }
 
         if (!isset($this->_cor)) {
-            $this->_cor = Correios::$situacoes['DESCONHECIDO'];
+            $this->_cor = CorreiosSituacoesEncomenda::$lista['DESCONHECIDO'];
         }
     }
 
