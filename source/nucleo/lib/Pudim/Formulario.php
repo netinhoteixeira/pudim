@@ -289,7 +289,7 @@ class Formulario
      */
     public static function validarCpf($cpf)
     {
-        require_once(__DIR__ . '/../../library/ValidarChaveFiscal.php');
+        require_once(implode(DIRECTORY_SEPARATOR, [__DIR__, '..', '..', '..', '..', 'library', 'ValidarChaveFiscal.php']));
 
         $validador = new \ValidarChaveFiscal($cpf, 'cpf');
 
