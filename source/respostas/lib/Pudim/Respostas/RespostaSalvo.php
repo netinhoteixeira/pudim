@@ -39,7 +39,7 @@ class RespostaSalvo implements \JsonSerializable
     {
         return $this->_salvo;
     }
-    
+
     /**
      * Obtém a identificação (se houver).
      * 
@@ -69,7 +69,7 @@ class RespostaSalvo implements \JsonSerializable
     {
         $this->_salvo = $salvo;
     }
-    
+
     /**
      * Define a identificação (se houver).
      * 

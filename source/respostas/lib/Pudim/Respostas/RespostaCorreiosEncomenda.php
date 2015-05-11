@@ -20,7 +20,6 @@
 
 namespace Pudim\Respostas;
 
-use Pudim\Correios;
 use Pudim\CorreiosServicos;
 use Pudim\CorreiosPaises;
 use Pudim\Excecoes\CorreiosEncomendaInvalidaExcecao;
