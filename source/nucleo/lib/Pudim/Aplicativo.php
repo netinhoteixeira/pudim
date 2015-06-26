@@ -175,7 +175,11 @@ class Aplicativo
 
     public function getLog()
     {
-        return $this->_slimApp->getLog();
+        if (!is_null($this->_slimApp)) {
+            return $this->_slimApp->getLog();
+        } else {
+            return null;
+        }
     }
 
     /**
