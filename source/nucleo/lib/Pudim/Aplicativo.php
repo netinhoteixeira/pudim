@@ -50,23 +50,25 @@ class Aplicativo
      */
     public function __construct($appdir = null)
     {
-        define('__APPDIR__', is_null($appdir) ? implode(DIRECTORY_SEPARATOR, [__DIR__, '..', '..', '..', '..', '..', '..', '..']) : $appdir);
+        if (!defined('__APPDIR__')) {
+            define('__APPDIR__', is_null($appdir) ? implode(DIRECTORY_SEPARATOR, [__DIR__, '..', '..', '..', '..', '..', '..', '..']) : $appdir);
 
-        $this->obterServidor();
-        $this->_configuracao = new Configuracao(implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'config', 'configuracao.ini']));
+            $this->obterServidor();
+            $this->_configuracao = new Configuracao(implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'config', 'configuracao.ini']));
 
-        define('PROJECT_STAGE', $this->_configuracao->get($this->_servidor . '.producao'));
+            define('PROJECT_STAGE', $this->_configuracao->get($this->_servidor . '.producao'));
 
-        $this->inicializarVariaveis();
-        $this->corrigirRequisicaoVariaveisPostagem();
-        $this->_analiseTrafego = $this->iniciarAnaliseTrafego();
-        $this->verificarPrimeiroAcesso();
-        $this->configurarSessaoNoRedis();
-        $this->iniciarSessao();
-        $this->definirFusoHorario();
-        $this->definirControleDeAcessoDaOrigemDaRequisicao();
-        $this->carregarControladores();
-        $this->carregarUtilitarios();
+            $this->inicializarVariaveis();
+            $this->corrigirRequisicaoVariaveisPostagem();
+            $this->_analiseTrafego = $this->iniciarAnaliseTrafego();
+            $this->verificarPrimeiroAcesso();
+            $this->configurarSessaoNoRedis();
+            $this->iniciarSessao();
+            $this->definirFusoHorario();
+            $this->definirControleDeAcessoDaOrigemDaRequisicao();
+            $this->carregarControladores();
+            $this->carregarUtilitarios();
+        }
     }
 
     /**
