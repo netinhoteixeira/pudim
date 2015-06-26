@@ -41,30 +41,12 @@ class Texto
     {
         $retorno = trim($nomeFornecido);
 
-        $primeiroNome = function ($nome) {
-            $palavras = explode(' ', $nome);
-            return $palavras[0];
-        };
-
-        $ultimoNome = function ($nome) {
-            $palavras = explode(' ', $nome);
-
-            return (object) array(
-                        'palavras' => $palavras,
-                        'posicao' => count($palavras) - 1,
-                        'nome' => trim($palavras[count($palavras) - 1])
-            );
-        };
-
         // caso o nome fornecido seja maior que o permitido
         if (strlen($nomeFornecido) > ($tamanhoMaximo - 2)) {
             $nomeFornecido = trim(strip_tags($nomeFornecido));
 
-            // obtém o primeiro nome
-            $nome = $primeiroNome($nomeFornecido);
-
-            // obtém o último nome
-            $sobrenome = $ultimoNome($nomeFornecido);
+            $nome = self::obterPrimeiroNome($nomeFornecido);
+            $sobrenome = self::obterUltimoNome($nomeFornecido);
 
             // variável para receber os nomes do meio abreviados
             $meio = '';
@@ -84,6 +66,35 @@ class Texto
         }
 
         return $retorno;
+    }
+
+    /**
+     * Obtém o primeiro nome.
+     * 
+     * @param string $nome Nome completo
+     * @return string Primeiro nome
+     */
+    private static function obterPrimeiroNome($nome)
+    {
+        $palavras = explode(' ', $nome);
+        return $palavras[0];
+    }
+
+    /**
+     * Obtém o último nome.
+     * 
+     * @param string $nome Nome completo
+     * @return string Último nome
+     */
+    private static function obterUltimoNome($nome)
+    {
+        $palavras = explode(' ', $nome);
+
+        return (object) array(
+                    'palavras' => $palavras,
+                    'posicao' => count($palavras) - 1,
+                    'nome' => trim($palavras[count($palavras) - 1])
+        );
     }
 
     /**
