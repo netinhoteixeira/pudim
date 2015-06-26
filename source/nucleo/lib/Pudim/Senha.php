@@ -39,64 +39,121 @@ class Senha
      * Nota: a opção $adicionarHifens irá aumentar o tamanho da senha por floor(sqrt(N))
      * caracteres.
      *
-     * @param type $tamanho
-     * @param type $adicionarHifens
-     * @param type $availableSets
-     * @return type
+     * @param int $tamanho
+     * @param boolean $adicionarHifens
+     * @param string $grupoCaracteres
+     * @return string Senha gerada
      */
-    public static function gerar($tamanho = 9, $adicionarHifens = false, $availableSets = 'luds')
+    public static function gerar($tamanho = 9, $adicionarHifens = false, $grupoCaracteres = 'luds')
     {
-        $sets = array();
-        if (strpos($availableSets, 'l') !== false) {
-            $sets[] = 'abcdefghjkmnpqrstuvwxyz';
-        }
+        $senhaGerada = self::gerarSenha($tamanho, $grupoCaracteres);
 
-        if (strpos($availableSets, 'u') !== false) {
-            $sets[] = 'ABCDEFGHJKMNPQRSTUVWXYZ';
-        }
-
-        if (strpos($availableSets, 'd') !== false) {
-            $sets[] = '23456789';
-        }
-
-        if (strpos($availableSets, 's') !== false) {
-            $sets[] = '!@#$%&*?';
-        }
-
-        $all = '';
-        $password = '';
-        foreach ($sets as $set) {
-            $password .= $set[array_rand(str_split($set))];
-            $all .= $set;
-        }
-
-        $all = str_split($all);
-        for ($i = 0; $i < $tamanho - count($sets); $i++) {
-            $password .= $all[array_rand($all)];
-        }
-
-        $password = str_shuffle($password);
-
-        if (!$adicionarHifens) {
-            return $password;
-        }
-
-        $dashLength = floor(sqrt($tamanho));
-        $dashString = '';
-
-        while (strlen($password) > $dashLength) {
-            $dashString .= substr($password, 0, $dashLength) . '-';
-            $password = substr($password, $dashLength);
-        }
-
-        $dashString .= $password;
-
-        return $dashString;
+        return (!$adicionarHifens) ? $senhaGerada :
+                self::adicionarHifens($senhaGerada, $tamanho);
     }
 
-    public static function gerarCriptografada($tamanho = 9, $adicionarHifens = false, $availableSets = 'luds')
+    /**
+     * Cria uma senha forte de tamanho N contendo no mínimo uma letra minúscula,
+     * uma letra maiúscula, um número e um caractere especial. Os caracteres
+     * restante da senha são escolhidas de uma de quatro tipos.
+     *
+     * Os caracteres disponíveis em casa tipo são amigáveis para o usuário - não
+     * há caracteres ambíguos como i, l, 1, o, O, etc. Estes, em conjunto da
+     * opção $adicionarHifens, são muito fáceis para os usuários digitarem ou
+     * falarem suas senhas.
+     *
+     * Nota: a opção $adicionarHifens irá aumentar o tamanho da senha por floor(sqrt(N))
+     * caracteres.
+     *
+     * @param int $tamanho
+     * @param boolean $adicionarHifens
+     * @param string $grupoCaracteres
+     * @return string Senha gerada
+     */
+    public static function gerarCriptografada($tamanho = 9, $adicionarHifens = false, $grupoCaracteres = 'luds')
     {
-        return sha1(Senha::gerar($tamanho, $adicionarHifens, $availableSets));
+        return sha1(Senha::gerar($tamanho, $adicionarHifens, $grupoCaracteres));
+    }
+
+    /**
+     * Detecta os grupos de caracteres disponíveis:
+     * - l: Letras minúsculas
+     * - u: Letras maiúsculas
+     * - d: Números
+     * - s: Caracteres especiais
+     * 
+     * @param string $grupoCaracteres Grupos de caracteres permitidos
+     * @return array Grupos disponíveis
+     */
+    private static function detectarGruposCaracteres($grupoCaracteres)
+    {
+        $grupos = [];
+
+        if (strpos($grupoCaracteres, 'l') !== false) {
+            $grupos[] = 'abcdefghjkmnpqrstuvwxyz';
+        }
+
+        if (strpos($grupoCaracteres, 'u') !== false) {
+            $grupos[] = 'ABCDEFGHJKMNPQRSTUVWXYZ';
+        }
+
+        if (strpos($grupoCaracteres, 'd') !== false) {
+            $grupos[] = '23456789';
+        }
+
+        if (strpos($grupoCaracteres, 's') !== false) {
+            $grupos[] = '!@#$%&*?';
+        }
+
+        return $grupos;
+    }
+
+    /**
+     * Gera a senha.
+     * 
+     * @param int $tamanho Tamanho da Senha
+     * @param string $grupoCaracteres Grupos de caracteres permitidos
+     * @return string Senha gerada
+     */
+    private static function gerarSenha($tamanho, $grupoCaracteres)
+    {
+        $caracteres = self::detectarGruposCaracteres($grupoCaracteres);
+
+        $todos = '';
+        $senha = '';
+        foreach ($caracteres as $caracter) {
+            $senha .= $caracter[array_rand(str_split($caracter))];
+            $todos .= $caracter;
+        }
+
+        $todosEmVetor = str_split($todos);
+        for ($i = 0; $i < $tamanho - count($caracteres); $i++) {
+            $senha .= $todosEmVetor[array_rand($todosEmVetor)];
+        }
+
+        return str_shuffle($senha);
+    }
+
+    /**
+     * Adiciona hífens à senha.
+     * 
+     * @param string $senha
+     * @param int $tamanho
+     * @return string Senha com hífen
+     */
+    private static function adicionarHifens($senha, $tamanho)
+    {
+        $tamanhoComHifen = floor(sqrt($tamanho));
+        $senhaComHifen = '';
+
+        while (strlen($senha) > $tamanhoComHifen) {
+            $senhaComHifen .= substr($senha, 0, $tamanhoComHifen) . '-';
+            $senha = substr($senha, $tamanhoComHifen);
+        }
+
+        $senhaComHifen .= $senha;
+
+        return $senhaComHifen;
     }
 
 }
