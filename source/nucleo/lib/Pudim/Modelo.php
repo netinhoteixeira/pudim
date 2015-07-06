@@ -42,7 +42,7 @@ class Modelo
      */
     function __construct($nome, $estilo = null)
     {
-        $file = implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'app', 'views', $nome . '.html']);
+        $file = implode(DIRECTORY_SEPARATOR, array(__APPDIR__, 'app', 'views', $nome . '.html'));
 
         if (!file_exists($file)) {
             throw new ArquivoNaoEncontradoExcecao('Modelo ' . $nome . ' não encontrado.');
@@ -50,7 +50,7 @@ class Modelo
 
         $this->_content = file_get_contents($file);
         $this->setTitulo();
-        $this->_values = [];
+        $this->_values = array();
 
         if (!is_null($estilo)) {
             $styleFile = __APPDIR__ . DIRECTORY_SEPARATOR . 'Templates' . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . $estilo . '.css';

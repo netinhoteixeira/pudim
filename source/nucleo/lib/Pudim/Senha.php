@@ -35,6 +35,12 @@ class Senha
      * há caracteres ambíguos como i, l, 1, o, O, etc. Estes, em conjunto da
      * opção $adicionarHifens, são muito fáceis para os usuários digitarem ou
      * falarem suas senhas.
+     * 
+     * Grupos de caracteres disponíveis:
+     * - l: Letras minúsculas
+     * - u: Letras maiúsculas
+     * - d: Números
+     * - s: Caracteres especiais
      *
      * Nota: a opção $adicionarHifens irá aumentar o tamanho da senha por floor(sqrt(N))
      * caracteres.
@@ -61,6 +67,12 @@ class Senha
      * há caracteres ambíguos como i, l, 1, o, O, etc. Estes, em conjunto da
      * opção $adicionarHifens, são muito fáceis para os usuários digitarem ou
      * falarem suas senhas.
+     * 
+     * Grupos de caracteres disponíveis:
+     * - l: Letras minúsculas
+     * - u: Letras maiúsculas
+     * - d: Números
+     * - s: Caracteres especiais
      *
      * Nota: a opção $adicionarHifens irá aumentar o tamanho da senha por floor(sqrt(N))
      * caracteres.
@@ -87,7 +99,7 @@ class Senha
      */
     private static function detectarGruposCaracteres($grupoCaracteres)
     {
-        $grupos = [];
+        $grupos = array();
 
         if (strpos($grupoCaracteres, 'l') !== false) {
             $grupos[] = 'abcdefghjkmnpqrstuvwxyz';

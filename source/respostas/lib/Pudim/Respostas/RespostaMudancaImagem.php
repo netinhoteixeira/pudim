@@ -76,10 +76,10 @@ class RespostaMudancaImagem implements \JsonSerializable
      */
     public function jsonSerialize()
     {
-        return [
+        return array(
             'mudou' => $this->_mudou,
             'arquivoTemporario' => $this->_arquivoTemporario
-        ];
+        );
     }
 
 }

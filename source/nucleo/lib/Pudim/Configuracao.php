@@ -33,7 +33,7 @@ class Configuracao
 {
 
     private $_arquivo;
-    private $_propriedades = [];
+    private $_propriedades = array();
 
     /**
      * Construtor da classe.
@@ -152,7 +152,7 @@ class Configuracao
 
     public function persistir()
     {
-        $linhas = [];
+        $linhas = array();
         foreach ($this->_propriedades as $chave => $valor) {
             if (is_array($valor)) {
                 $this->persistirValorEmVetor($chave, $valor, $linhas);

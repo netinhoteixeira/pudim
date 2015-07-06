@@ -97,11 +97,11 @@ class RespostaSalvo implements \JsonSerializable
      */
     public function jsonSerialize()
     {
-        return [
+        return array(
             'salvo' => $this->_salvo,
             'id' => $this->_id,
             'mensagem' => $this->_mensagem
-        ];
+        );
     }
 
 }
