@@ -30,7 +30,7 @@ class Correios
 
     private static function requisitar($url, $post, $regex)
     {
-        require_once(implode(DIRECTORY_SEPARATOR, [__DIR__, '..', '..', '..', '..', 'library', 'curl_exec_utf8.func.php']));
+        require_once(implode(DIRECTORY_SEPARATOR, array(__DIR__, '..', '..', '..', '..', 'library', 'curl_exec_utf8.func.php')));
         
         // efetua a consulta ao CEP
         $ch = curl_init();

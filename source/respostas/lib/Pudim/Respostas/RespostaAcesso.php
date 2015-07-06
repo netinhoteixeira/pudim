@@ -56,10 +56,10 @@ class RespostaAcesso implements \JsonSerializable
      */
     public function jsonSerialize()
     {
-        return [
+        return array(
             'acessou' => $this->_acessou,
             'acessoid' => $this->_identificao
-        ];
+        );
     }
 
 }

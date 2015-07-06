@@ -41,7 +41,7 @@ class ModeloSmarty
     {
         $this->_nome = $nome;
 
-        $file = implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'app', 'views', $nome . '.tpl']);
+        $file = implode(DIRECTORY_SEPARATOR, array(__APPDIR__, 'app', 'views', $nome . '.tpl'));
 
         if (!file_exists($file)) {
             throw new ArquivoNaoEncontradoExcecao('Modelo ' . $nome . ' não encontrado.');
@@ -49,14 +49,14 @@ class ModeloSmarty
 
         $this->_smarty = new \Smarty();
 
-        $this->_smarty->setTemplateDir(implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'app', 'views']));
-        Arquivo::criarDiretorio(implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'tmp', 'views', 'compiled']));
-        $this->_smarty->setCompileDir(implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'tmp', 'views', 'compiled']));
-        $this->_smarty->setConfigDir(implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'config']));
-        Arquivo::criarDiretorio(implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'tmp', 'views', 'cache']));
-        $this->_smarty->setCacheDir(implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'tmp', 'views', 'cache']));
+        $this->_smarty->setTemplateDir(implode(DIRECTORY_SEPARATOR, array(__APPDIR__, 'app', 'views')));
+        Arquivo::criarDiretorio(implode(DIRECTORY_SEPARATOR, array(__APPDIR__, 'tmp', 'views', 'compiled')));
+        $this->_smarty->setCompileDir(implode(DIRECTORY_SEPARATOR, array(__APPDIR__, 'tmp', 'views', 'compiled')));
+        $this->_smarty->setConfigDir(implode(DIRECTORY_SEPARATOR, array(__APPDIR__, 'config')));
+        Arquivo::criarDiretorio(implode(DIRECTORY_SEPARATOR, array(__APPDIR__, 'tmp', 'views', 'cache')));
+        $this->_smarty->setCacheDir(implode(DIRECTORY_SEPARATOR, array(__APPDIR__, 'tmp', 'views', 'cache')));
 
-        $this->_values = [];
+        $this->_values = array();
     }
 
     /**

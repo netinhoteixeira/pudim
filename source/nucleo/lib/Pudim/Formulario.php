@@ -58,7 +58,7 @@ class Formulario
      */
     private static function imagemSanitizarPrefixo(&$imagemBase64)
     {
-        $prefixes = ['png', 'jpeg', 'webp'];
+        $prefixes = array('png', 'jpeg', 'webp');
         foreach ($prefixes as $prefix) {
             $prefix = 'data:image/' . $prefix . ';base64,';
 
@@ -289,7 +289,7 @@ class Formulario
      */
     public static function validarCpf($cpf)
     {
-        require_once(implode(DIRECTORY_SEPARATOR, [__DIR__, '..', '..', '..', '..', 'library', 'ValidarChaveFiscal.php']));
+        require_once(implode(DIRECTORY_SEPARATOR, array(__DIR__, '..', '..', '..', '..', 'library', 'ValidarChaveFiscal.php')));
 
         $validador = new \ValidarChaveFiscal($cpf, 'cpf');
 

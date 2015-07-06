@@ -51,10 +51,10 @@ class Aplicativo
     public function __construct($appdir = null)
     {
         if (!defined('__APPDIR__')) {
-            define('__APPDIR__', is_null($appdir) ? implode(DIRECTORY_SEPARATOR, [__DIR__, '..', '..', '..', '..', '..', '..', '..']) : $appdir);
+            define('__APPDIR__', is_null($appdir) ? implode(DIRECTORY_SEPARATOR, array(__DIR__, '..', '..', '..', '..', '..', '..', '..')) : $appdir);
 
             $this->obterServidor();
-            $this->_configuracao = new Configuracao(implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'config', 'configuracao.ini']));
+            $this->_configuracao = new Configuracao(implode(DIRECTORY_SEPARATOR, array(__APPDIR__, 'config', 'configuracao.ini')));
 
             define('PROJECT_STAGE', $this->_configuracao->get($this->_servidor . '.producao'));
 
@@ -231,8 +231,8 @@ class Aplicativo
     {
         $arquivoSeguranca = __APPDIR__ . DIRECTORY_SEPARATOR . 'HttpBasicAuthRouteDatabaseCustom.inc.php';
         if (file_exists($arquivoSeguranca)) {
-            require_once implode(DIRECTORY_SEPARATOR, [__DIR__, '..', '..', '..', '..', 'library', 'slim', 'HttpBasicAuthDatabase.php']);
-            require_once implode(DIRECTORY_SEPARATOR, [__DIR__, '..', '..', '..', '..', 'library', 'slim', 'HttpBasicAuthRouteDatabase.php']);
+            require_once implode(DIRECTORY_SEPARATOR, array(__DIR__, '..', '..', '..', '..', 'library', 'slim', 'HttpBasicAuthDatabase.php'));
+            require_once implode(DIRECTORY_SEPARATOR, array(__DIR__, '..', '..', '..', '..', 'library', 'slim', 'HttpBasicAuthRouteDatabase.php'));
             require_once $arquivoSeguranca;
 
             $this->_slimApp->add(new \HttpBasicAuthRouteDatabaseCustom($nome));
@@ -438,7 +438,7 @@ class Aplicativo
 
     private function iniciarSlimApp()
     {
-        $config = [];
+        $config = array();
 
         $logfile = $this->_configuracao->get('aplicativo.log');
         if (!is_null($logfile)) {
@@ -501,8 +501,8 @@ class Aplicativo
         $mail->Body = $mensagem;
         $mail->AddAddress($para);
 
-        $emailLogoFilename = implode(DIRECTORY_SEPARATOR, [__DIR__, 'app',
-            'views', 'email-logo.png']);
+        $emailLogoFilename = implode(DIRECTORY_SEPARATOR, array(__DIR__, 'app',
+            'views', 'email-logo.png'));
         if (file_exists($emailLogoFilename)) {
             $mail->AddEmbeddedImage($emailLogoFilename, 'logo');
         }
@@ -519,16 +519,16 @@ class Aplicativo
     {
         AnnotationDriver::registerAnnotationClasses();
 
-        $classLoader = new ClassLoader('Domain\Entity', implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'app', 'models']));
+        $classLoader = new ClassLoader('Domain\Entity', implode(DIRECTORY_SEPARATOR, array(__APPDIR__, 'app', 'models')));
         $classLoader->register();
 
         $tipo = explode(':', $this->_configuracao->get($this->_servidor . '.persistencia_uri'));
         $tipo = $tipo[0];
 
-        $doctrine_models_dir = implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'app', 'models']);
-        $doctrine_entities_dir = implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'app', 'models', 'Domain', 'Entity']);
-        $doctrine_proxies_dir = implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'tmp', 'models', 'Domain', 'Entity', 'Proxies']);
-        $doctrine_hydrators_dir = implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'tmp', 'models', 'Domain', 'Entity', 'Hydrators']);
+        $doctrine_models_dir = implode(DIRECTORY_SEPARATOR, array(__APPDIR__, 'app', 'models'));
+        $doctrine_entities_dir = implode(DIRECTORY_SEPARATOR, array(__APPDIR__, 'app', 'models', 'Domain', 'Entity'));
+        $doctrine_proxies_dir = implode(DIRECTORY_SEPARATOR, array(__APPDIR__, 'tmp', 'models', 'Domain', 'Entity', 'Proxies'));
+        $doctrine_hydrators_dir = implode(DIRECTORY_SEPARATOR, array(__APPDIR__, 'tmp', 'models', 'Domain', 'Entity', 'Hydrators'));
 
         // cria os diretórios dos proxys e hydrators, caso não haja (necessários
         // para o Doctrine)
@@ -691,7 +691,7 @@ class Aplicativo
     {
 
         if ($this->_configuracao->get($this->_servidor . '.piwik_id')) {
-            require_once(implode(DIRECTORY_SEPARATOR, [__DIR__, '..', '..', '..', '..', 'library', 'PiwikTracker.php']));
+            require_once(implode(DIRECTORY_SEPARATOR, array(__DIR__, '..', '..', '..', '..', 'library', 'PiwikTracker.php')));
 
             $piwikTracker = new \PiwikTracker(
                     $this->_configuracao->get($this->_servidor . '.piwik_id')
