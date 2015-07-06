@@ -76,10 +76,10 @@ class RespostaRemovido implements \JsonSerializable
      */
     public function jsonSerialize()
     {
-        return array(
+        return [
             'removido' => $this->_removido,
             'mensagem' => $this->_mensagem
-        );
+        ];
     }
 
 }

@@ -118,12 +118,12 @@ class RespostaSalvoPerfil implements \JsonSerializable
      */
     public function jsonSerialize()
     {
-        return array(
+        return [
             'salvo' => $this->_salvo,
             'mensagem' => $this->_mensagem,
             'imagem' => $this->_imagem,
             'renovarAcesso' => $this->_renovarAcesso
-        );
+        ];
     }
 
 }

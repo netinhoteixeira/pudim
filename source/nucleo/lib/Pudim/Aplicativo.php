@@ -51,10 +51,10 @@ class Aplicativo
     public function __construct($appdir = null)
     {
         if (!defined('__APPDIR__')) {
-            define('__APPDIR__', is_null($appdir) ? implode(DIRECTORY_SEPARATOR, array(__DIR__, '..', '..', '..', '..', '..', '..', '..')) : $appdir);
+            define('__APPDIR__', is_null($appdir) ? implode(DIRECTORY_SEPARATOR, [__DIR__, '..', '..', '..', '..', '..', '..', '..']) : $appdir);
 
             $this->obterServidor();
-            $this->_configuracao = new Configuracao(implode(DIRECTORY_SEPARATOR, array(__APPDIR__, 'config', 'configuracao.ini')));
+            $this->_configuracao = new Configuracao(implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'config', 'configuracao.ini']));
 
             define('PROJECT_STAGE', $this->_configuracao->get($this->_servidor . '.producao'));
 
@@ -231,8 +231,8 @@ class Aplicativo
     {
         $arquivoSeguranca = __APPDIR__ . DIRECTORY_SEPARATOR . 'HttpBasicAuthRouteDatabaseCustom.inc.php';
         if (file_exists($arquivoSeguranca)) {
-            require_once implode(DIRECTORY_SEPARATOR, array(__DIR__, '..', '..', '..', '..', 'library', 'slim', 'HttpBasicAuthDatabase.php'));
-            require_once implode(DIRECTORY_SEPARATOR, array(__DIR__, '..', '..', '..', '..', 'library', 'slim', 'HttpBasicAuthRouteDatabase.php'));
+            require_once implode(DIRECTORY_SEPARATOR, [__DIR__, '..', '..', '..', '..', 'library', 'slim', 'HttpBasicAuthDatabase.php']);
+            require_once implode(DIRECTORY_SEPARATOR, [__DIR__, '..', '..', '..', '..', 'library', 'slim', 'HttpBasicAuthRouteDatabase.php']);
             require_once $arquivoSeguranca;
 
             $this->_slimApp->add(new \HttpBasicAuthRouteDatabaseCustom($nome));
@@ -438,7 +438,7 @@ class Aplicativo
 
     private function iniciarSlimApp()
     {
-        $config = array();
+        $config = [];
 
         $logfile = $this->_configuracao->get('aplicativo.log');
         if (!is_null($logfile)) {
@@ -501,8 +501,8 @@ class Aplicativo
         $mail->Body = $mensagem;
         $mail->AddAddress($para);
 
-        $emailLogoFilename = implode(DIRECTORY_SEPARATOR, array(__DIR__, 'app',
-            'views', 'email-logo.png'));
+        $emailLogoFilename = implode(DIRECTORY_SEPARATOR, [__DIR__, 'app',
+            'views', 'email-logo.png']);
         if (file_exists($emailLogoFilename)) {
             $mail->AddEmbeddedImage($emailLogoFilename, 'logo');
         }
@@ -519,16 +519,16 @@ class Aplicativo
     {
         AnnotationDriver::registerAnnotationClasses();
 
-        $classLoader = new ClassLoader('Domain\Entity', implode(DIRECTORY_SEPARATOR, array(__APPDIR__, 'app', 'models')));
+        $classLoader = new ClassLoader('Domain\Entity', implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'app', 'models']));
         $classLoader->register();
 
         $tipo = explode(':', $this->_configuracao->get($this->_servidor . '.persistencia_uri'));
         $tipo = $tipo[0];
 
-        $doctrine_models_dir = implode(DIRECTORY_SEPARATOR, array(__APPDIR__, 'app', 'models'));
-        $doctrine_entities_dir = implode(DIRECTORY_SEPARATOR, array(__APPDIR__, 'app', 'models', 'Domain', 'Entity'));
-        $doctrine_proxies_dir = implode(DIRECTORY_SEPARATOR, array(__APPDIR__, 'tmp', 'models', 'Domain', 'Entity', 'Proxies'));
-        $doctrine_hydrators_dir = implode(DIRECTORY_SEPARATOR, array(__APPDIR__, 'tmp', 'models', 'Domain', 'Entity', 'Hydrators'));
+        $doctrine_models_dir = implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'app', 'models']);
+        $doctrine_entities_dir = implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'app', 'models', 'Domain', 'Entity']);
+        $doctrine_proxies_dir = implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'tmp', 'models', 'Domain', 'Entity', 'Proxies']);
+        $doctrine_hydrators_dir = implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'tmp', 'models', 'Domain', 'Entity', 'Hydrators']);
 
         // cria os diretórios dos proxys e hydrators, caso não haja (necessários
         // para o Doctrine)
@@ -543,32 +543,32 @@ class Aplicativo
             // provê algumas informações iniciais do banco de dados
             switch ($tipo) {
                 case 'sqlite':
-                    $parametrosConexao = array(
+                    $parametrosConexao = [
                         'driver' => 'pdo_' . $tipo,
                         'path' => $this->_configuracao->get($this->_servidor . '.persistencia_banco')
-                    );
+                    ];
                     break;
 
                 case 'mysql':
-                    $parametrosConexao = array(
+                    $parametrosConexao = [
                         'driver' => 'pdo_' . $tipo,
                         'user' => $this->_configuracao->get($this->_servidor . '.persistencia_usuario'),
                         'password' => $this->_configuracao->get($this->_servidor . '.persistencia_senha'),
                         'host' => $this->_configuracao->get($this->_servidor . '.persistencia_servidor'),
                         'dbname' => $this->_configuracao->get($this->_servidor . '.persistencia_banco'),
                         \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES \'' . $this->_configuracao->get($this->_servidor . '.persistencia_charset') . '\''
-                    );
+                    ];
                     break;
 
                 // em teste funciona para quase todos os tipos de PDO
                 default:
-                    $parametrosConexao = array(
+                    $parametrosConexao = [
                         'driver' => 'pdo_' . $tipo,
                         'user' => $this->_configuracao->get($this->_servidor . '.persistencia_usuario'),
                         'password' => $this->_configuracao->get($this->_servidor . '.persistencia_senha'),
                         'host' => $this->_configuracao->get($this->_servidor . '.persistencia_servidor'),
                         'dbname' => $this->_configuracao->get($this->_servidor . '.persistencia_banco')
-                    );
+                    ];
                     break;
             }
 
@@ -691,7 +691,7 @@ class Aplicativo
     {
 
         if ($this->_configuracao->get($this->_servidor . '.piwik_id')) {
-            require_once(implode(DIRECTORY_SEPARATOR, array(__DIR__, '..', '..', '..', '..', 'library', 'PiwikTracker.php')));
+            require_once(implode(DIRECTORY_SEPARATOR, [__DIR__, '..', '..', '..', '..', 'library', 'PiwikTracker.php']));
 
             $piwikTracker = new \PiwikTracker(
                     $this->_configuracao->get($this->_servidor . '.piwik_id')
@@ -920,7 +920,7 @@ class Aplicativo
      */
     private function carregarControladores()
     {
-        $controladores = implode(DIRECTORY_SEPARATOR, array(__APPDIR__, 'app', 'controllers'));
+        $controladores = implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'app', 'controllers']);
         if (file_exists($controladores)) {
             Arquivo::requererDiretorio($controladores);
         }
@@ -931,7 +931,7 @@ class Aplicativo
      */
     private function carregarUtilitarios()
     {
-        $utilitarios = implode(DIRECTORY_SEPARATOR, array(__APPDIR__, 'app', 'util'));
+        $utilitarios = implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'app', 'util']);
         if (file_exists($utilitarios)) {
             Arquivo::requererDiretorio($utilitarios);
         }

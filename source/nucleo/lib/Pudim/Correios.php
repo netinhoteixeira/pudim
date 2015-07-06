@@ -30,17 +30,17 @@ class Correios
 
     private static function requisitar($url, $post, $regex)
     {
-        require_once(implode(DIRECTORY_SEPARATOR, array(__DIR__, '..', '..', '..', '..', 'library', 'curl_exec_utf8.func.php')));
+        require_once(implode(DIRECTORY_SEPARATOR, [__DIR__, '..', '..', '..', '..', 'library', 'curl_exec_utf8.func.php']));
         
         // efetua a consulta ao CEP
         $ch = curl_init();
 
-        curl_setopt_array($ch, array(
+        curl_setopt_array($ch, [
             CURLOPT_URL => $url,
             CURLOPT_POST => true,
             CURLOPT_POSTFIELDS => $post,
             CURLOPT_RETURNTRANSFER => true
-        ));
+        ]);
 
         $response = curl_exec_utf8($ch);
         curl_close($ch);
@@ -81,7 +81,7 @@ class Correios
 
         $consulta = self::requisitar('http://websro.correios.com.br/sro_bin/txect01$.QueryList', 'P_LINGUA=001&P_TIPO=001&P_COD_UNI=' . $codigo, '/(rowspan=([0-9])>(.*?)<\/td><td>(.*?)<.*>(.*?)<\/font)|(colspan=([0-9])>(.*?)<)/i');
 
-        $historicos = array();
+        $historicos = [];
         $x = -1;
 
         for ($i = 0; $i < sizeof($consulta[0]); $i++) {

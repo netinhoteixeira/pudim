@@ -33,7 +33,7 @@ class RespostaCorreiosEncomenda implements \JsonSerializable
     private $_codigo;
     private $_servico;
     private $_origem;
-    private $_historico = array();
+    private $_historico = [];
 
     public function __construct($codigo)
     {
@@ -104,12 +104,12 @@ class RespostaCorreiosEncomenda implements \JsonSerializable
      */
     public function jsonSerialize()
     {
-        return array(
+        return [
             'codigo' => $this->_codigo,
             'servico' => $this->_servico,
             'origem' => $this->_origem,
             'historico' => array_reverse($this->_historico)
-        );
+        ];
     }
 
 }

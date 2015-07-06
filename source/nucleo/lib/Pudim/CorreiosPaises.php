@@ -26,7 +26,7 @@ namespace Pudim;
 class CorreiosPaises
 {
 
-    public static $lista = array(
+    public static $lista = [
         'AF' => 'Afeganistão',
         'ZA' => 'África do Sul',
         'AX' => 'Åland, Ilhas',
@@ -271,6 +271,6 @@ class CorreiosPaises
         'WF' => 'Wallis e Futuna',
         'ZM' => 'Zâmbia',
         'ZW' => 'Zimbabwe'
-    );
+    ];
 
 }

@@ -99,7 +99,7 @@ class Senha
      */
     private static function detectarGruposCaracteres($grupoCaracteres)
     {
-        $grupos = array();
+        $grupos = [];
 
         if (strpos($grupoCaracteres, 'l') !== false) {
             $grupos[] = 'abcdefghjkmnpqrstuvwxyz';

@@ -35,7 +35,7 @@ class ConfiguracaoPropriedade
         $this->nome = trim(substr($linha, 0, $posicao));
         $this->valor = trim(substr($linha, $posicao + 1));
 
-        if (in_array(strtolower($this->valor), array('true', 'false'))) {
+        if (in_array(strtolower($this->valor), ['true', 'false'])) {
             $this->valor = (strtolower($this->valor) === 'true');
         } else if (is_numeric($this->valor)) {
             $this->valor += 0;

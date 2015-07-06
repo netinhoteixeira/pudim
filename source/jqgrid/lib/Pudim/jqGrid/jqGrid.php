@@ -105,7 +105,7 @@ class jqGrid
                 ->execute();
 
         // processa os resultados
-        $this->_registros = array();
+        $this->_registros = [];
         foreach ($resultados as $resultado) {
             array_push($this->_registros, $processarResultado($resultado, $documentos));
         }
@@ -118,17 +118,17 @@ class jqGrid
      */
     function obterRegistros()
     {
-        $rows = array();
+        $rows = [];
         foreach ($this->_registros as $registro) {
             array_push($rows, $registro->obter());
         }
 
-        return (object) array(
+        return (object) [
                     'page' => $this->_paginaAtual,
                     'total' => $this->_totalPaginas,
                     'records' => $this->_totalRegistros,
                     'rows' => $rows
-        );
+        ];
     }
 
 }

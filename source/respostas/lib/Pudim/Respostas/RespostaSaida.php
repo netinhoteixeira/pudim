@@ -45,9 +45,9 @@ class RespostaSaida implements \JsonSerializable
      */
     public function jsonSerialize()
     {
-        return array(
+        return [
             'saiu' => $this->_saiu
-        );
+        ];
     }
 
 }

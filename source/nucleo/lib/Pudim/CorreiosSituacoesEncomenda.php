@@ -26,14 +26,14 @@ namespace Pudim;
 class CorreiosSituacoesEncomenda
 {
 
-    public static $lista = array(
+    public static $lista = [
         'POSTADO DEPOIS' => '#e4e490',
         'POSTADO' => '#ffff9f', // acceptance
         'SAIU PARA ENTREGA' => '#ddeffc', // delivering
         'ENTREGA EFETUADA' => '#e8f5b6', // delivered
         'ENCAMINHADO' => '#fff8bb', // enroute
         'DESCONHECIDO' => '#f4e5ff' // unknown
-    );
+    ];
 
     /*
       } else if (data[i].status === 'checked') {

@@ -90,11 +90,11 @@ class Texto
     {
         $palavras = explode(' ', $nome);
 
-        return (object) array(
+        return (object) [
                     'palavras' => $palavras,
                     'posicao' => count($palavras) - 1,
                     'nome' => trim($palavras[count($palavras) - 1])
-        );
+        ];
     }
 
     /**

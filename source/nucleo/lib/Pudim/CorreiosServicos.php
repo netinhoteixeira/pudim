@@ -29,7 +29,7 @@ namespace Pudim;
 class CorreiosServicos
 {
 
-    public static $lista = array(
+    public static $lista = [
         'AL' => 'AGENTES DE LEITURA',
         'AR' => 'AVISO DE RECEBIMENTO',
         'AS' => 'ENCOMENDA PAC – AÇÃO SOCIAL',
@@ -216,6 +216,6 @@ class CorreiosServicos
         'XM' => 'SEDEX MUNDI',
         'XR' => 'ENCOMENDA SUR POSTAL EXPRESSO',
         'XX' => 'ENCOMENDA SUR POSTAL 24 HORAS'
-    );
+    ];
 
 }

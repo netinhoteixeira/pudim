@@ -37,7 +37,7 @@ class jqGridRegistro
     function __construct($id)
     {
         $this->_id = $id;
-        $this->_celulas = array();
+        $this->_celulas = [];
     }
 
     /**
@@ -72,10 +72,10 @@ class jqGridRegistro
 
     function obter()
     {
-        return array(
+        return [
             'id' => $this->_id,
             'cell' => $this->_celulas
-        );
+        ];
     }
 
 }
