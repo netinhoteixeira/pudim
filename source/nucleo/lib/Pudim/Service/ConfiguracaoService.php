@@ -18,38 +18,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Pudim;
+namespace Pudim\Service;
 
-/**
- * Classe ConfiguracaoPropriedade.
- */
-class ConfiguracaoPropriedade
+use Pudim\Model\DataTransferObject\ConfiguracaoPropriedade;
+
+class ConfiguracaoService
 {
 
-    private $nome;
-    private $valor;
-
-    public function __construct($linha)
+    public static function obterPropriedadeDaLinha($linha, $secao)
     {
+        $propriedade = new ConfiguracaoPropriedade();
+        
         $posicao = strpos($linha, '=');
-        $this->nome = trim(substr($linha, 0, $posicao));
-        $this->valor = trim(substr($linha, $posicao + 1));
+        
+        $propriedade->setSecao($secao);
+        $propriedade->setNome(trim(substr($linha, 0, $posicao)));
+        $propriedade->setValor(trim(substr($linha, $posicao + 1)));
 
-        if (in_array(strtolower($this->valor), ['true', 'false'])) {
-            $this->valor = (strtolower($this->valor) === 'true');
-        } else if (is_numeric($this->valor)) {
-            $this->valor += 0;
+        if (in_array(strtolower($propriedade->getValor()), ['true', 'false'])) {
+            $propriedade->setValor((strtolower($propriedade->getValor()) === 'true'));
+        } else if (is_numeric($propriedade->getValor())) {
+            $propriedade->setValor($propriedade->getValor() + 0);
         }
-    }
-
-    function getNome()
-    {
-        return $this->nome;
-    }
-
-    function getValor()
-    {
-        return $this->valor;
+        
+        return $propriedade;
     }
 
 }

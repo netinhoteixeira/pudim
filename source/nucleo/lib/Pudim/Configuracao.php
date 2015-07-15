@@ -20,6 +20,10 @@
 
 namespace Pudim;
 
+use Pudim\Service\ConfiguracaoService;
+use Pudim\Model\DataTransferObject\ConfiguracaoPropriedade;
+use Pudim\Model\DataTransferObject\ConfiguracaoComentario;
+
 /**
  * Classe Configuracao.
  * Lê/Salva um arquivo de configuração no formato INI. Exemplo:
@@ -69,23 +73,31 @@ class Configuracao
     /**
      * Obtém o valor de uma propriedade.
      * 
-     * @param type $nome Nome da propriedade
-     * @return null | anytype | boolean
+     * @param string $nome
+     * @return boolean | object
+     * @throws Exception
      */
     public function get($nome)
     {
-        $propriedades = null;
-
-        if (strpos($nome, '.')) {
-            $propriedade = explode('.', $nome);
-            $secao = &$this->_propriedades[$propriedade[0]];
-            $nome = $propriedade[1];
-        } else {
-            $secao = &$propriedades;
+        if (is_null($nome)) {
+            throw new Exception('O nome da propriedade precisa ser fornecido.');
         }
 
-        if (is_array($secao) && isset($secao[$nome])) {
-            return $secao[$nome];
+        // Caso haja ponto de seção. Ex.: secao.propriedade
+        $secao = null;
+        if (strpos($nome, '.')) {
+            $tmp = explode('.', $nome);
+            $secao = $tmp[0];
+            $nome = $tmp[1];
+        }
+
+        // Varre todas as propriedades
+        foreach ($this->_propriedades as $propriedade) {
+            if ((get_class($propriedade) === 'Pudim\Model\DataTransferObject\ConfiguracaoPropriedade') &&
+                    ($propriedade->getNome() === $nome) &&
+                    ($propriedade->getSecao() === $secao)) {
+                return $propriedade->getValor();
+            }
         }
 
         return false;
@@ -94,17 +106,59 @@ class Configuracao
     /**
      * Define um valor para a propriedade.
      * 
-     * @param string $nome Nome
-     * @param anytype $valor Valor
+     * @param string $nome
+     * @param object $valor
+     * @throws Exception
      */
     public function set($nome, $valor)
     {
-        if (strpos($nome, '.')) {
-            $comSecao = explode('.', $nome);
-            $this->_propriedades[$comSecao[0]][$comSecao[1]] = $valor;
-        } else {
-            $this->_propriedades[$nome] = $valor;
+        if (is_null($nome)) {
+            throw new Exception('O nome da propriedade precisa ser fornecido.');
         }
+
+        // Caso haja ponto de seção. Ex.: secao.propriedade
+        $secao = null;
+        if (strpos($nome, '.')) {
+            $tmp = explode('.', $nome);
+            $secao = $tmp[0];
+            $nome = $tmp[1];
+        }
+
+        if (!$this->definirEmPropriedadeExistente($nome, $valor, $secao)) {
+            // Do contrário, a propriedade não existe
+            $propriedade = new ConfiguracaoPropriedade();
+            $propriedade->setSecao($secao);
+            $propriedade->setNome($nome);
+            $propriedade->setValor($valor);
+
+            $this->_propriedades[] = $propriedade;
+        }
+    }
+
+    /**
+     * 
+     * @param type $nome
+     * @param type $valor
+     * @param type $secao
+     * @return boolean
+     */
+    private function definirEmPropriedadeExistente($nome, $valor, $secao)
+    {
+        // Varre todas as propriedades
+        $total = count($this->_propriedades);
+        if ($total > 0) {
+            for ($i = 0; $i < $total; $i++) {
+                if ((get_class($this->_propriedades[$i]) === 'Pudim\Model\DataTransferObject\ConfiguracaoPropriedade') &&
+                        ($this->_propriedades[$i]->getNome() === $nome) &&
+                        ($this->_propriedades[$i]->getSecao() === $secao)) {
+                    $this->_propriedades[$i]->setValor($valor);
+
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -115,96 +169,124 @@ class Configuracao
     private function abrirArquivo($arquivo)
     {
         if (file_exists($arquivo)) {
-            $secao = '';
-            $linhas = file($arquivo);
+            $this->processarLinhas(file($arquivo));
+        }
+    }
 
-            foreach ($linhas as $linha) {
-                $linha = trim($linha);
+    /**
+     * 
+     * @param type $linhas
+     */
+    private function processarLinhas($linhas)
+    {
+        $this->_propriedades = [];
 
-                // caso a linha for em branco, não há seção
-                if (empty($linha)) {
-                    $secao = '';
-                    continue;
-                }
+        $secao = null;
+        foreach ($linhas as $linha) {
+            $linha = trim($linha);
 
-                // caso a linha for um comentário
-                else if ($linha[0] === ';') {
-                    continue;
-                }
+            // Caso a linha for em branco, não há seção
+            if (empty($linha)) {
+                $secao = null;
+                continue;
+            }
 
-                // caso seja uma seção
-                else if (($linha[0] === '[') && ($linha[strlen($linha) - 1] === ']')) {
-                    $secao = substr($linha, 1, strlen($linha) - 2);
-                }
+            // Caso a linha for um comentário
+            else if ($linha[0] === ';') {
+                $comentario = new ConfiguracaoComentario();
+                $comentario->setSecao($secao);
+                $comentario->setValor($linha);
 
-                // do contrário é uma propriedade
-                else {
-                    $propriedade = new ConfiguracaoPropriedade($linha);
-                    if (!empty($secao)) {
-                        $this->_propriedades[$secao][$propriedade->getNome()] = $propriedade->getValor();
-                    } else {
-                        $this->_propriedades[$propriedade->getNome()] = $propriedade->getValor();
-                    }
-                }
+                $this->_propriedades[] = $comentario;
+                continue;
+            }
+
+            // Caso seja uma seção
+            else if (($linha[0] === '[') && ($linha[strlen($linha) - 1] === ']')) {
+                $secao = $this->processarSecao($linha);
+            }
+
+            // Do contrário é uma propriedade
+            else {
+                $this->_propriedades[] = ConfiguracaoService::obterPropriedadeDaLinha($linha, $secao);
             }
         }
     }
 
+    /**
+     * 
+     * @param type $linha
+     * @return type
+     */
+    private function processarSecao($linha)
+    {
+        $valor = trim(substr($linha, 1, strlen($linha) - 2));
+
+        if (empty($valor)) {
+            return null;
+        } else {
+            return $valor;
+        }
+    }
+
+    /**
+     * Persiste o arquivo de configuração.
+     */
     public function persistir()
     {
         $linhas = [];
-        foreach ($this->_propriedades as $chave => $valor) {
-            if (is_array($valor)) {
-                $this->persistirValorEmVetor($chave, $valor, $linhas);
-            } else {
-                $this->persistirValor($chave, $valor, $linhas);
+
+        $secao = null;
+        foreach ($this->_propriedades as $propriedade) {
+            $this->persistirSecao($propriedade, $secao, $linhas);
+
+            $classe = get_class($propriedade);
+
+            if ($classe === 'Pudim\Model\DataTransferObject\ConfiguracaoPropriedade') {
+                $linhas[] = $propriedade->getNome() . ' = ' . $this->obterValorDaPropriedade($propriedade);
+            } elseif ($classe === 'Pudim\Model\DataTransferObject\ConfiguracaoComentario') {
+                $linhas[] = $propriedade->getValor();
             }
         }
 
         $this->salvarArquivo($this->_arquivo, implode("\r\n", $linhas));
     }
 
-    private function persistirValorEmVetor($chave, $valor, &$linhas)
+    private function persistirSecao($propriedade, &$secao, &$linhas)
     {
-        if (count($linhas) > 0) {
-            if (!empty($linhas[count($linhas) - 1])) {
-                // linha em branco
-                $linhas[] = '';
-            }
+        // Caso a seção da propriedade seja diferente da seção da propriedade
+        // anterior
+        if (($secao !== $propriedade->getSecao()) && (count($linhas) > 0)) {
+            $linhas[] = '';
         }
 
-        $linhas[] = '[' . $chave . ']';
-        foreach ($valor as $schave => $svalor) {
-            $propriedade = $schave . ' = ';
-
-            if (is_numeric($svalor)) {
-                $propriedade .= $svalor;
-            } elseif (is_bool($svalor)) {
-                $propriedade .= $svalor ? 'true' : 'false';
-            } else {
-                $propriedade .= $svalor;
-            }
-
-            $linhas[] = $propriedade;
+        // Caso a seção da propriedade seja diferente da seção da propriedade
+        // anterior e não seja nula
+        if ($secao !== $propriedade->getSecao()) {
+            $secao = $propriedade->getSecao();
+            $this->persistirSecaoNaoNula($secao, $linhas);
         }
-
-        // linha em branco
-        $linhas[] = '';
     }
 
-    private function persistirValor($chave, $valor, &$linhas)
+    private function persistirSecaoNaoNula($secao, &$linhas)
     {
-        $propriedade = $chave . ' = ';
-
-        if (is_numeric($valor)) {
-            $propriedade .= $valor;
-        } elseif (is_bool($valor)) {
-            $propriedade .= $valor ? 'true' : 'false';
-        } else {
-            $propriedade .= $valor;
+        if (!is_null($secao)) {
+            $linhas[] = '[' . $secao . ']';
         }
+    }
 
-        $linhas[] = $propriedade;
+    /**
+     * 
+     * @param ConfiguracaoPropriedade $propriedade
+     * @return string
+     */
+    private function obterValorDaPropriedade($propriedade)
+    {
+        if (is_bool($propriedade->getValor())) {
+            return $propriedade->getValor() ? 'true' : 'false';
+        } else {
+            return '' . $propriedade->getValor();
+        }
     }
 
     /**
