@@ -142,7 +142,7 @@ class Modelo
         $parsedData = $this->_content;
 
         foreach ($this->_values as $key => $value) {
-            $parsedData = str_replace('{' . $key . '}', $value, $parsedData);
+            $parsedData = str_replace('{$' . $key . '}', $value, $parsedData);
         }
 
         if (!is_null($this->_style)) {
