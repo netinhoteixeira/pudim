@@ -20,8 +20,7 @@
         "sybio/image-workshop": "2.0.*",
         "phpmailer/phpmailer": "v5.2.8",
         "tijsverkoyen/css-to-inline-styles": "1.5.2",
-        "united-prototype/php-ga": "dev-composer",
-        "smarty/smarty": "~3.1"
+        "united-prototype/php-ga": "dev-composer"
     },
     "autoload": {
         "psr-0": {
