@@ -31,8 +31,7 @@ use Pudim\Arquivo;
 /**
  * Classe Aplicativo.
  */
-class Aplicativo
-{
+class Aplicativo {
 
     private $_servidor;
     private $_configuracao;
@@ -48,8 +47,7 @@ class Aplicativo
     /**
      * Construtor.
      */
-    public function __construct($appdir = null)
-    {
+    public function __construct($appdir = null) {
         if (!defined('__APPDIR__')) {
             define('__APPDIR__', is_null($appdir) ? implode(DIRECTORY_SEPARATOR, [__DIR__, '..', '..', '..', '..', '..', '..', '..']) : $appdir);
 
@@ -78,8 +76,7 @@ class Aplicativo
      * @global Aplicativo $aplicativo
      * @return \Pudim\Aplicativo
      */
-    public static function getInstance($appdir = null)
-    {
+    public static function getInstance($appdir = null) {
         global $aplicativo;
 
         if (is_null($aplicativo)) {
@@ -89,8 +86,7 @@ class Aplicativo
         return $aplicativo;
     }
 
-    private function inicializarVariaveis()
-    {
+    private function inicializarVariaveis() {
         $this->criarDiretorioTemporario();
         $this->criarDiretorioLog();
         $this->iniciarSlimApp();
@@ -111,8 +107,7 @@ class Aplicativo
         }
     }
 
-    private function obterServidor()
-    {
+    private function obterServidor() {
         if (is_null($this->_servidor)) {
             $servidor = filter_input(INPUT_SERVER, 'SERVER_NAME');
             if (($servidor === '127.0.0.1') || ($servidor === '0.0.0.0')) {
@@ -132,8 +127,7 @@ class Aplicativo
      * 
      * @return string
      */
-    public function getVersao()
-    {
+    public function getVersao() {
         return $this->_versao;
     }
 
@@ -142,8 +136,7 @@ class Aplicativo
      * 
      * @return \Pudim\Configuracao
      */
-    public function getConfiguracao()
-    {
+    public function getConfiguracao() {
         return $this->_configuracao;
     }
 
@@ -152,8 +145,7 @@ class Aplicativo
      * 
      * @return \Doctrine\ORM\EntityManager
      */
-    public function getConexao()
-    {
+    public function getConexao() {
         return $this->_conexao;
     }
 
@@ -163,18 +155,15 @@ class Aplicativo
      * @return \Doctrine\ODM\MongoDB\DocumentManager
      * @deprecated
      */
-    public function getDocumentos()
-    {
+    public function getDocumentos() {
         return $this->_conexao;
     }
 
-    public function getSlimApp()
-    {
+    public function getSlimApp() {
         return $this->_slimApp;
     }
 
-    public function getLog()
-    {
+    public function getLog() {
         if (!is_null($this->_slimApp)) {
             return $this->_slimApp->getLog();
         } else {
@@ -187,8 +176,7 @@ class Aplicativo
      * 
      * @return string
      */
-    public function getNome()
-    {
+    public function getNome() {
         return $this->_nome;
     }
 
@@ -197,8 +185,7 @@ class Aplicativo
      * 
      * @return string
      */
-    public function getIcone()
-    {
+    public function getIcone() {
         return $this->_icone;
     }
 
@@ -207,8 +194,7 @@ class Aplicativo
      * 
      * @return string
      */
-    public function getEnderecoBase()
-    {
+    public function getEnderecoBase() {
         return $this->_enderecoBase;
     }
 
@@ -217,8 +203,7 @@ class Aplicativo
      * 
      * @return string
      */
-    public function getEmail()
-    {
+    public function getEmail() {
         return $this->_email;
     }
 
@@ -227,8 +212,7 @@ class Aplicativo
      *
      * @param string $nome Nome da rota a ser protegida. Ex.: /acessorestrito
      */
-    public function protegerRota($nome)
-    {
+    public function protegerRota($nome) {
         $arquivoSeguranca = __APPDIR__ . DIRECTORY_SEPARATOR . 'HttpBasicAuthRouteDatabaseCustom.inc.php';
         if (file_exists($arquivoSeguranca)) {
             require_once implode(DIRECTORY_SEPARATOR, [__DIR__, '..', '..', '..', '..', 'library', 'slim', 'HttpBasicAuthDatabase.php']);
@@ -244,8 +228,7 @@ class Aplicativo
      *
      * @param type $nome Nome da rota. Ex.: pessoa
      */
-    function definirRotasParaCadastro($nome)
-    {
+    function definirRotasParaCadastro($nome) {
         $nomeClasse = ucfirst($nome);
 
         $this->definirRotaObtencao('/cadastro/' . $nome . '/', '\Controllers\\' . $nomeClasse . ':listar');
@@ -263,8 +246,7 @@ class Aplicativo
      * @param function $funcao Função a ser chamada
      * @throws FuncaoNaoEncontradaExcecao
      */
-    function definirRotaObtencao($caminho, $funcao)
-    {
+    function definirRotaObtencao($caminho, $funcao) {
         $this->_slimApp->get($caminho, $funcao);
     }
 
@@ -275,8 +257,7 @@ class Aplicativo
      * @param function $funcao Função a ser chamada
      * @throws FuncaoNaoEncontradaExcecao
      */
-    function definirRotaPostagem($caminho, $funcao)
-    {
+    function definirRotaPostagem($caminho, $funcao) {
         $this->_slimApp->post($caminho, $funcao);
     }
 
@@ -287,8 +268,7 @@ class Aplicativo
      * @param function $funcao Função a ser chamada
      * @throws FuncaoNaoEncontradaExcecao
      */
-    function definirRotaSubstituicao($caminho, $funcao)
-    {
+    function definirRotaSubstituicao($caminho, $funcao) {
         $this->_slimApp->put($caminho, $funcao);
     }
 
@@ -299,8 +279,7 @@ class Aplicativo
      * @param function $funcao Função a ser chamada
      * @throws FuncaoNaoEncontradaExcecao
      */
-    function definirRotaRemocao($caminho, $funcao)
-    {
+    function definirRotaRemocao($caminho, $funcao) {
         $this->_slimApp->delete($caminho, $funcao);
     }
 
@@ -310,8 +289,7 @@ class Aplicativo
      * @param function $funcao Função a ser chamada
      * @throws FuncaoNaoEncontradaExcecao
      */
-    function seRotaNaoForEncontrada($funcao)
-    {
+    function seRotaNaoForEncontrada($funcao) {
         $this->_slimApp->notFound($funcao);
     }
 
@@ -319,8 +297,7 @@ class Aplicativo
      *
      * @return type
      */
-    private function obterRequisicao()
-    {
+    private function obterRequisicao() {
         return $this->_slimApp->request();
     }
 
@@ -329,29 +306,24 @@ class Aplicativo
      * @param type $variavel
      * @return type
      */
-    function requisicaoVariavelObter($variavel)
-    {
+    function requisicaoVariavelObter($variavel) {
         $requisicao = $this->obterRequisicao();
         return $requisicao->get($variavel);
     }
 
-    function existeRequisicaoVariavelObter($variavel)
-    {
+    function existeRequisicaoVariavelObter($variavel) {
         return !is_null($this->requisicaoVariavelObter($variavel));
     }
 
-    function existeRequisicaoVariavelPostagem($variavel)
-    {
+    function existeRequisicaoVariavelPostagem($variavel) {
         return isset($_POST[$variavel]);
     }
 
-    function existeRequisicaoVariavelPostagemNaoVazia($variavel)
-    {
+    function existeRequisicaoVariavelPostagemNaoVazia($variavel) {
         return ((isset($_POST[$variavel])) && (!is_null($_POST[$variavel])) && (!empty($_POST[$variavel])));
     }
 
-    function requisicaoVariavelPostagem($variavel, $podeSerVazia = true)
-    {
+    function requisicaoVariavelPostagem($variavel, $podeSerVazia = true) {
         if (($this->existeRequisicaoVariavelPostagemNaoVazia($variavel)) && (!$podeSerVazia)) {
             return $_POST[$variavel];
         } elseif ($this->existeRequisicaoVariavelPostagem($variavel)) {
@@ -361,23 +333,19 @@ class Aplicativo
         }
     }
 
-    function get($variavel)
-    {
+    function get($variavel) {
         return $this->requisicaoVariavelObter($variavel);
     }
 
-    function getExists($variavel)
-    {
+    function getExists($variavel) {
         return $this->existeRequisicaoVariavelObter($variavel);
     }
 
-    function post($variavel, $podeSerVazia = true)
-    {
+    function post($variavel, $podeSerVazia = true) {
         return $this->requisicaoVariavelPostagem($variavel, $podeSerVazia);
     }
 
-    function postExists($variavel, $podeSerVazia = true)
-    {
+    function postExists($variavel, $podeSerVazia = true) {
         if ($podeSerVazia) {
             return $this->existeRequisicaoVariavelPostagem($variavel);
         } else {
@@ -385,23 +353,19 @@ class Aplicativo
         }
     }
 
-    public static function existeVariavelSessao($variavel)
-    {
+    public static function existeVariavelSessao($variavel) {
         return isset($_SESSION[$variavel]);
     }
 
-    public static function obterVariavelSessao($variavel)
-    {
+    public static function obterVariavelSessao($variavel) {
         return $_SESSION[$variavel];
     }
 
-    public static function definirVariavelSessao($variavel, $valor)
-    {
+    public static function definirVariavelSessao($variavel, $valor) {
         $_SESSION[$variavel] = $valor;
     }
 
-    public static function removerVariavelSessao($variavel)
-    {
+    public static function removerVariavelSessao($variavel) {
         if (self::existeVariavelSessao($variavel)) {
             unset($_SESSION[$variavel]);
         }
@@ -410,8 +374,7 @@ class Aplicativo
     /**
      * Obtém o usuário da sessão.
      */
-    function getUsuarioSessao()
-    {
+    function getUsuarioSessao() {
         if (self::existeVariavelSessao('userid')) {
             return $this->_conexao->createQueryBuilder('Domain\Entity\Usuario')
                             ->field('_id')
@@ -429,19 +392,17 @@ class Aplicativo
      * @param object $jsonfy Objeto a ser codificado em JSON
      * @param integer $statusCode Código da situação da resposta
      */
-    function saida($jsonfy, $statusCode = 200)
-    {
+    function saida($jsonfy, $statusCode = 200) {
         $this->_slimApp->response->setStatus($statusCode);
         $this->_slimApp->response->headers->set('Content-Type', 'application/json; charset=utf-8');
         $this->_slimApp->response->setBody(json_encode($jsonfy));
     }
 
-    private function iniciarSlimApp()
-    {
+    private function iniciarSlimApp() {
         $config = [];
 
         $logfile = $this->_configuracao->get('aplicativo.log');
-        if (!is_null($logfile)) {
+        if (!empty($logfile)) {
             $logfile .= '-slim.log';
             $config['log.enabled'] = true;
             $log = new \Slim\LogWriter(fopen(LOGDIR . DIRECTORY_SEPARATOR . $logfile, 'a'));
@@ -470,8 +431,7 @@ class Aplicativo
      * @param string $mensagem Mensagem
      * @return boolean Se foi enviado ou não
      */
-    public function enviarEmail($para, $assunto, $mensagem)
-    {
+    public function enviarEmail($para, $assunto, $mensagem) {
         // para enviar email com HTML, o cabeçalho Content-type precisa ser
         // definido
         $headers = 'MIME-Version: 1.0' . "\r\n";
@@ -515,8 +475,7 @@ class Aplicativo
      * 
      * @return \Doctrine\ORM\EntityManager | \Doctrine\ODM\MongoDB\DocumentManager
      */
-    private function estabelecerConexao()
-    {
+    private function estabelecerConexao() {
         AnnotationDriver::registerAnnotationClasses();
 
         $classLoader = new ClassLoader('Domain\Entity', implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'app', 'models']));
@@ -525,160 +484,163 @@ class Aplicativo
         $tipo = explode(':', $this->_configuracao->get($this->_servidor . '.persistencia_uri'));
         $tipo = $tipo[0];
 
-        $doctrine_models_dir = implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'app', 'models']);
-        $doctrine_entities_dir = implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'app', 'models', 'Domain', 'Entity']);
-        $doctrine_proxies_dir = implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'tmp', 'models', 'Domain', 'Entity', 'Proxies']);
-        $doctrine_hydrators_dir = implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'tmp', 'models', 'Domain', 'Entity', 'Hydrators']);
+        if (!empty($tipo)) {
 
-        // cria os diretórios dos proxys e hydrators, caso não haja (necessários
-        // para o Doctrine)
-        if (!PROJECT_STAGE) {
-            Arquivo::criarDiretorio($doctrine_proxies_dir);
-            Arquivo::criarDiretorio($doctrine_hydrators_dir);
-        }
+            $doctrine_models_dir = implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'app', 'models']);
+            $doctrine_entities_dir = implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'app', 'models', 'Domain', 'Entity']);
+            $doctrine_proxies_dir = implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'tmp', 'models', 'Domain', 'Entity', 'Proxies']);
+            $doctrine_hydrators_dir = implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'tmp', 'models', 'Domain', 'Entity', 'Hydrators']);
 
-        // verifica se não é MongoDB
-        if ($tipo !== 'mongodb') {
-
-            // provê algumas informações iniciais do banco de dados
-            switch ($tipo) {
-                case 'sqlite':
-                    $parametrosConexao = [
-                        'driver' => 'pdo_' . $tipo,
-                        'path' => $this->_configuracao->get($this->_servidor . '.persistencia_banco')
-                    ];
-                    break;
-
-                case 'mysql':
-                    $parametrosConexao = [
-                        'driver' => 'pdo_' . $tipo,
-                        'user' => $this->_configuracao->get($this->_servidor . '.persistencia_usuario'),
-                        'password' => $this->_configuracao->get($this->_servidor . '.persistencia_senha'),
-                        'host' => $this->_configuracao->get($this->_servidor . '.persistencia_servidor'),
-                        'dbname' => $this->_configuracao->get($this->_servidor . '.persistencia_banco'),
-                        \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES \'' . $this->_configuracao->get($this->_servidor . '.persistencia_charset') . '\''
-                    ];
-                    break;
-
-                // em teste funciona para quase todos os tipos de PDO
-                default:
-                    $parametrosConexao = [
-                        'driver' => 'pdo_' . $tipo,
-                        'user' => $this->_configuracao->get($this->_servidor . '.persistencia_usuario'),
-                        'password' => $this->_configuracao->get($this->_servidor . '.persistencia_senha'),
-                        'host' => $this->_configuracao->get($this->_servidor . '.persistencia_servidor'),
-                        'dbname' => $this->_configuracao->get($this->_servidor . '.persistencia_banco')
-                    ];
-                    break;
+            // cria os diretórios dos proxys e hydrators, caso não haja (necessários
+            // para o Doctrine)
+            if (!PROJECT_STAGE) {
+                Arquivo::criarDiretorio($doctrine_proxies_dir);
+                Arquivo::criarDiretorio($doctrine_hydrators_dir);
             }
 
-            // cria os mapeamentos das entidades do banco de dados, caso não existam
-            if (count(glob($doctrine_entities_dir . '/*.php')) === 0) {
-                $configuracao = new \Doctrine\ORM\Configuration();
-                $configuracao->setMetadataDriverImpl($configuracao->newDefaultAnnotationDriver($doctrine_entities_dir, FALSE));
+            // verifica se não é MongoDB
+            if ($tipo !== 'mongodb') {
+
+                // provê algumas informações iniciais do banco de dados
+                switch ($tipo) {
+                    case 'sqlite':
+                        $parametrosConexao = [
+                            'driver' => 'pdo_' . $tipo,
+                            'path' => $this->_configuracao->get($this->_servidor . '.persistencia_banco')
+                        ];
+                        break;
+
+                    case 'mysql':
+                        $parametrosConexao = [
+                            'driver' => 'pdo_' . $tipo,
+                            'user' => $this->_configuracao->get($this->_servidor . '.persistencia_usuario'),
+                            'password' => $this->_configuracao->get($this->_servidor . '.persistencia_senha'),
+                            'host' => $this->_configuracao->get($this->_servidor . '.persistencia_servidor'),
+                            'dbname' => $this->_configuracao->get($this->_servidor . '.persistencia_banco'),
+                            \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES \'' . $this->_configuracao->get($this->_servidor . '.persistencia_charset') . '\''
+                        ];
+                        break;
+
+                    // em teste funciona para quase todos os tipos de PDO
+                    default:
+                        $parametrosConexao = [
+                            'driver' => 'pdo_' . $tipo,
+                            'user' => $this->_configuracao->get($this->_servidor . '.persistencia_usuario'),
+                            'password' => $this->_configuracao->get($this->_servidor . '.persistencia_senha'),
+                            'host' => $this->_configuracao->get($this->_servidor . '.persistencia_servidor'),
+                            'dbname' => $this->_configuracao->get($this->_servidor . '.persistencia_banco')
+                        ];
+                        break;
+                }
+
+                // cria os mapeamentos das entidades do banco de dados, caso não existam
+                if (count(glob($doctrine_entities_dir . '/*.php')) === 0) {
+                    $configuracao = new \Doctrine\ORM\Configuration();
+                    $configuracao->setMetadataDriverImpl($configuracao->newDefaultAnnotationDriver($doctrine_entities_dir, FALSE));
+                    $configuracao->setProxyDir($doctrine_proxies_dir);
+                    $configuracao->setProxyNamespace('Proxies');
+
+                    $entityManager = \Doctrine\ORM\EntityManager::create($parametrosConexao, $configuracao);
+
+                    // custom datatypes (not mapped for reverse engineering)
+                    $entityManager->getConnection()->getDatabasePlatform()->registerDoctrineTypeMapping('set', 'string');
+                    $entityManager->getConnection()->getDatabasePlatform()->registerDoctrineTypeMapping('enum', 'string');
+
+                    // define namespace
+                    $driver = new \Doctrine\ORM\Mapping\Driver\DatabaseDriver(
+                            $entityManager->getConnection()->getSchemaManager()
+                    );
+                    $driver->setNamespace('Domain\\Entity\\');
+
+                    // define driver with namespace
+                    $entityManager->getConfiguration()->setMetadataDriverImpl($driver);
+
+                    $disconnectedClassMetadataFactory = new \Doctrine\ORM\Tools\DisconnectedClassMetadataFactory();
+                    $disconnectedClassMetadataFactory->setEntityManager($entityManager);
+
+                    $entityGenerator = new \Doctrine\ORM\Tools\EntityGenerator();
+                    $entityGenerator->setUpdateEntityIfExists(true);
+                    $entityGenerator->setGenerateStubMethods(true);
+                    $entityGenerator->setGenerateAnnotations(true);
+                    $entityGenerator->generate($disconnectedClassMetadataFactory->getAllMetadata(), $doctrine_models_dir);
+                }
+
+                // carrega as entidades
+                \Pudim\Arquivo::requererDiretorio($doctrine_entities_dir);
+
+                $configuracao = \Doctrine\ORM\Tools\Setup::createConfiguration(!((boolean) PROJECT_STAGE));
+                $driver = new \Doctrine\ORM\Mapping\Driver\AnnotationDriver(new \Doctrine\Common\Annotations\AnnotationReader(), $doctrine_entities_dir);
+
+                // registering noop annotation autoloader - allow all annotations by default
+                \Doctrine\Common\Annotations\AnnotationRegistry::registerLoader('class_exists');
+                $configuracao->setMetadataDriverImpl($driver);
+
+                $configuracao->setAutoGenerateProxyClasses(!((boolean) PROJECT_STAGE));
                 $configuracao->setProxyDir($doctrine_proxies_dir);
                 $configuracao->setProxyNamespace('Proxies');
 
-                $entityManager = \Doctrine\ORM\EntityManager::create($parametrosConexao, $configuracao);
+                if (PROJECT_STAGE) {
+                    $cache = new \Doctrine\Common\Cache\ArrayCache();
+                } else {
+                    $cache = new \Doctrine\Common\Cache\ApcCache();
+                }
+                $configuracao->setMetadataCacheImpl($cache);
+                $configuracao->setQueryCacheImpl($cache);
 
-                // custom datatypes (not mapped for reverse engineering)
-                $entityManager->getConnection()->getDatabasePlatform()->registerDoctrineTypeMapping('set', 'string');
-                $entityManager->getConnection()->getDatabasePlatform()->registerDoctrineTypeMapping('enum', 'string');
-
-                // define namespace
-                $driver = new \Doctrine\ORM\Mapping\Driver\DatabaseDriver(
-                        $entityManager->getConnection()->getSchemaManager()
-                );
-                $driver->setNamespace('Domain\\Entity\\');
-
-                // define driver with namespace
-                $entityManager->getConfiguration()->setMetadataDriverImpl($driver);
-
-                $disconnectedClassMetadataFactory = new \Doctrine\ORM\Tools\DisconnectedClassMetadataFactory();
-                $disconnectedClassMetadataFactory->setEntityManager($entityManager);
-
-                $entityGenerator = new \Doctrine\ORM\Tools\EntityGenerator();
-                $entityGenerator->setUpdateEntityIfExists(true);
-                $entityGenerator->setGenerateStubMethods(true);
-                $entityGenerator->setGenerateAnnotations(true);
-                $entityGenerator->generate($disconnectedClassMetadataFactory->getAllMetadata(), $doctrine_models_dir);
-            }
-
-            // carrega as entidades
-            \Pudim\Arquivo::requererDiretorio($doctrine_entities_dir);
-
-            $configuracao = \Doctrine\ORM\Tools\Setup::createConfiguration(!((boolean) PROJECT_STAGE));
-            $driver = new \Doctrine\ORM\Mapping\Driver\AnnotationDriver(new \Doctrine\Common\Annotations\AnnotationReader(), $doctrine_entities_dir);
-
-            // registering noop annotation autoloader - allow all annotations by default
-            \Doctrine\Common\Annotations\AnnotationRegistry::registerLoader('class_exists');
-            $configuracao->setMetadataDriverImpl($driver);
-
-            $configuracao->setAutoGenerateProxyClasses(!((boolean) PROJECT_STAGE));
-            $configuracao->setProxyDir($doctrine_proxies_dir);
-            $configuracao->setProxyNamespace('Proxies');
-
-            if (PROJECT_STAGE) {
-                $cache = new \Doctrine\Common\Cache\ArrayCache();
+                // obtaining the entity manager (7)
+                $eventManager = new \Doctrine\Common\EventManager();
+                $conexao = \Doctrine\ORM\EntityManager::create($parametrosConexao, $configuracao, $eventManager);
             } else {
-                $cache = new \Doctrine\Common\Cache\ApcCache();
-            }
-            $configuracao->setMetadataCacheImpl($cache);
-            $configuracao->setQueryCacheImpl($cache);
 
-            // obtaining the entity manager (7)
-            $eventManager = new \Doctrine\Common\EventManager();
-            $conexao = \Doctrine\ORM\EntityManager::create($parametrosConexao, $configuracao, $eventManager);
-        } else {
+                $configuracao = new \Doctrine\ODM\MongoDB\Configuration();
+                $metadata = AnnotationDriver::create($doctrine_entities_dir);
+                $configuracao->setMetadataDriverImpl($metadata);
 
-            $configuracao = new \Doctrine\ODM\MongoDB\Configuration();
-            $metadata = AnnotationDriver::create($doctrine_entities_dir);
-            $configuracao->setMetadataDriverImpl($metadata);
+                $configuracao->setAutoGenerateProxyClasses(!((boolean) PROJECT_STAGE));
+                $configuracao->setProxyDir($doctrine_proxies_dir);
+                $configuracao->setProxyNamespace('Proxies');
 
-            $configuracao->setAutoGenerateProxyClasses(!((boolean) PROJECT_STAGE));
-            $configuracao->setProxyDir($doctrine_proxies_dir);
-            $configuracao->setProxyNamespace('Proxies');
+                $configuracao->setAutoGenerateHydratorClasses(!((boolean) PROJECT_STAGE));
+                $configuracao->setHydratorDir($doctrine_hydrators_dir);
+                $configuracao->setHydratorNamespace('Hydrators');
 
-            $configuracao->setAutoGenerateHydratorClasses(!((boolean) PROJECT_STAGE));
-            $configuracao->setHydratorDir($doctrine_hydrators_dir);
-            $configuracao->setHydratorNamespace('Hydrators');
+                $configuracao->setDefaultDB($this->_configuracao->get($this->_servidor . '.persistencia_banco'));
 
-            $configuracao->setDefaultDB($this->_configuracao->get($this->_servidor . '.persistencia_banco'));
+                //$configuracao->setLoggerCallable(function (array $log) { print_r($log); });
+                $cache_uri = $this->_configuracao->get($this->_servidor . '.cache_uri');
+                if ((PROJECT_STAGE) && (class_exists('Redis')) && ($cache_uri)) {
+                    // trata o $cache_uri pois somente precisamos do servidor e a porta
+                    if (strpos($cache_uri, '//')) {
+                        $cache_uri_parts = explode('//', $cache_uri);
+                        if (strpos($cache_uri_parts[1], ':')) {
+                            list($cache_server,
+                                    $cache_port) = explode(':', $cache_uri_parts[1]);
+                        } else {
+                            $cache_server = $cache_uri_parts[1];
+                            $cache_port = '6379';
+                        }
 
-            //$configuracao->setLoggerCallable(function (array $log) { print_r($log); });
-            $cache_uri = $this->_configuracao->get($this->_servidor . '.cache_uri');
-            if ((PROJECT_STAGE) && (class_exists('Redis')) && ($cache_uri)) {
-                // trata o $cache_uri pois somente precisamos do servidor e a porta
-                if (strpos($cache_uri, '//')) {
-                    $cache_uri_parts = explode('//', $cache_uri);
-                    if (strpos($cache_uri_parts[1], ':')) {
-                        list($cache_server,
-                                $cache_port) = explode(':', $cache_uri_parts[1]);
+                        unset($cache_uri_parts);
                     } else {
-                        $cache_server = $cache_uri_parts[1];
+                        $cache_server = $cache_uri;
                         $cache_port = '6379';
                     }
 
-                    unset($cache_uri_parts);
-                } else {
-                    $cache_server = $cache_uri;
-                    $cache_port = '6379';
+                    $redis = new \Redis();
+                    $redis->pconnect($cache_server, $cache_port);
+                    $metadataCache = new RedisCache();
+                    $metadataCache->setRedis($redis);
+                    $configuracao->setMetadataCacheImpl($metadataCache);
+
+                    unset($cache_server, $cache_port, $redis, $metadataCache);
                 }
 
-                $redis = new \Redis();
-                $redis->pconnect($cache_server, $cache_port);
-                $metadataCache = new RedisCache();
-                $metadataCache->setRedis($redis);
-                $configuracao->setMetadataCacheImpl($metadataCache);
+                $conexao = new Connection($this->_configuracao->get($this->_servidor . '.persistencia_uri'));
+                $conexao = DocumentManager::create($conexao, $configuracao);
 
-                unset($cache_server, $cache_port, $redis, $metadataCache);
+                // FIX: Muito importante pois força a criação dos índices no aplicativo
+                $conexao->getSchemaManager()->ensureIndexes();
             }
-
-            $conexao = new Connection($this->_configuracao->get($this->_servidor . '.persistencia_uri'));
-            $conexao = DocumentManager::create($conexao, $configuracao);
-
-            // FIX: Muito importante pois força a criação dos índices no aplicativo
-            $conexao->getSchemaManager()->ensureIndexes();
         }
 
         return $conexao;
@@ -687,8 +649,7 @@ class Aplicativo
     /**
      * Inicia a análise de tráfego.
      */
-    private function iniciarAnaliseTrafego()
-    {
+    private function iniciarAnaliseTrafego() {
 
         if ($this->_configuracao->get($this->_servidor . '.piwik_id')) {
             require_once(implode(DIRECTORY_SEPARATOR, [__DIR__, '..', '..', '..', '..', 'library', 'PiwikTracker.php']));
@@ -761,24 +722,21 @@ class Aplicativo
      * 
      * @return PiwikTracker
      */
-    public function getAnaliseTrafego()
-    {
+    public function getAnaliseTrafego() {
         return $this->_analiseTrafego;
     }
 
     /**
      * Inicia o aplicativo.
      */
-    public function iniciar()
-    {
+    public function iniciar() {
         $this->_slimApp->run();
     }
 
     /**
      * Cria o diretório temporário.
      */
-    private function criarDiretorioTemporario()
-    {
+    private function criarDiretorioTemporario() {
         define('TMPDIR', __APPDIR__ . DIRECTORY_SEPARATOR . 'tmp');
         Arquivo::criarDiretorio(TMPDIR);
         ini_set('sys_temp_dir', TMPDIR);
@@ -787,10 +745,9 @@ class Aplicativo
     /**
      * Cria o diretório de log.
      */
-    private function criarDiretorioLog()
-    {
+    private function criarDiretorioLog() {
         $logfile = $this->_configuracao->get('aplicativo.log');
-        if (!is_null($logfile)) {
+        if (!empty($logfile)) {
             define('LOGDIR', __APPDIR__ . DIRECTORY_SEPARATOR . 'log');
             Arquivo::criarDiretorio(LOGDIR);
             ini_set('log_errors', 1);
@@ -804,8 +761,7 @@ class Aplicativo
     /**
      * Verifica se é o primeiro acesso, atualiza as configurações.
      */
-    private function verificarPrimeiroAcesso()
-    {
+    private function verificarPrimeiroAcesso() {
         // caso seja o primeiro acesso ao sistema
         if ($this->_configuracao->get('acesso.primeiro')) {
             try {
@@ -826,8 +782,7 @@ class Aplicativo
     /**
      * Cria o primeiro usuário.
      */
-    private function criarPrimeiroUsuario()
-    {
+    private function criarPrimeiroUsuario() {
         $usuario = new \Domain\Entity\Usuario();
         $usuario->setApelido('Netinho');
         $usuario->setEmail('fco.ernesto@gmail.com');
@@ -847,8 +802,7 @@ class Aplicativo
      * "form encoded"). No Slim Framework é necessário a devida requisição dos
      * parâmetros POST do AngularJS.
      */
-    private function corrigirRequisicaoVariaveisPostagem()
-    {
+    private function corrigirRequisicaoVariaveisPostagem() {
         if (isset($_SERVER['CONTENT_TYPE'])) {
             $contentType = $_SERVER['CONTENT_TYPE'];
         } elseif (isset($_SERVER['HTTP_CONTENT_TYPE'])) {
@@ -877,8 +831,7 @@ class Aplicativo
     /**
      * Configura a persistência da sessão no Redis, caso haja.
      */
-    private function configurarSessaoNoRedis()
-    {
+    private function configurarSessaoNoRedis() {
         $cache_uri = $this->_configuracao->get($this->_servidor . '.cache_uri');
         if ((PROJECT_STAGE) && (class_exists('Redis')) && ($cache_uri)) {
             ini_set('session.save_handler', 'redis');
@@ -889,8 +842,7 @@ class Aplicativo
     /**
      * Inicia a sessão.
      */
-    private function iniciarSessao()
-    {
+    private function iniciarSessao() {
         if (!headers_sent()) {
             session_start();
         }
@@ -899,8 +851,7 @@ class Aplicativo
     /**
      * Define o fuso horário.
      */
-    private function definirFusoHorario()
-    {
+    private function definirFusoHorario() {
         date_default_timezone_set(
                 $this->_configuracao->get('aplicativo.fuso_horario'));
     }
@@ -908,8 +859,7 @@ class Aplicativo
     /**
      * Define o controle de acesso da origem da requisição.
      */
-    private function definirControleDeAcessoDaOrigemDaRequisicao()
-    {
+    private function definirControleDeAcessoDaOrigemDaRequisicao() {
         if (!headers_sent()) {
             header('Access-Control-Allow-Origin: *');
         }
@@ -918,8 +868,7 @@ class Aplicativo
     /**
      * Carrega todos os controladores.
      */
-    private function carregarControladores()
-    {
+    private function carregarControladores() {
         $controladores = implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'app', 'controllers']);
         if (file_exists($controladores)) {
             Arquivo::requererDiretorio($controladores);
@@ -929,8 +878,7 @@ class Aplicativo
     /**
      * Carrega todos os utilitários.
      */
-    private function carregarUtilitarios()
-    {
+    private function carregarUtilitarios() {
         $utilitarios = implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'app', 'util']);
         if (file_exists($utilitarios)) {
             Arquivo::requererDiretorio($utilitarios);
