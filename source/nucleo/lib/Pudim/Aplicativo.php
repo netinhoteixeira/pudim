@@ -56,6 +56,14 @@ class Aplicativo {
 
             define('PROJECT_STAGE', $this->_configuracao->get($this->_servidor . '.producao'));
 
+            // FIX: Corrige o problema de não ser definido a região da data/hora
+            $regiao = $this->_configuracao->get('aplicativo.regiao');
+            if (empty($regiao) && empty(ini_get('date.timezone'))) {
+                date_default_timezone_set('America/Sao_Paulo');
+            } else {
+                date_default_timezone_set($regiao);
+            }
+
             $this->inicializarVariaveis();
             $this->corrigirRequisicaoVariaveisPostagem();
             $this->_analiseTrafego = $this->iniciarAnaliseTrafego();
@@ -402,7 +410,7 @@ class Aplicativo {
         $config = [];
 
         $logfile = $this->_configuracao->get('aplicativo.log');
-        if (!empty($logfile)) {
+        if (!is_null($logfile)) {
             $logfile .= '-slim.log';
             $config['log.enabled'] = true;
             $log = new \Slim\LogWriter(fopen(LOGDIR . DIRECTORY_SEPARATOR . $logfile, 'a'));
@@ -484,163 +492,160 @@ class Aplicativo {
         $tipo = explode(':', $this->_configuracao->get($this->_servidor . '.persistencia_uri'));
         $tipo = $tipo[0];
 
-        if (!empty($tipo)) {
+        $doctrine_models_dir = implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'app', 'models']);
+        $doctrine_entities_dir = implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'app', 'models', 'Domain', 'Entity']);
+        $doctrine_proxies_dir = implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'tmp', 'models', 'Domain', 'Entity', 'Proxies']);
+        $doctrine_hydrators_dir = implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'tmp', 'models', 'Domain', 'Entity', 'Hydrators']);
 
-            $doctrine_models_dir = implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'app', 'models']);
-            $doctrine_entities_dir = implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'app', 'models', 'Domain', 'Entity']);
-            $doctrine_proxies_dir = implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'tmp', 'models', 'Domain', 'Entity', 'Proxies']);
-            $doctrine_hydrators_dir = implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'tmp', 'models', 'Domain', 'Entity', 'Hydrators']);
+        // cria os diretórios dos proxys e hydrators, caso não haja (necessários
+        // para o Doctrine)
+        if (!PROJECT_STAGE) {
+            Arquivo::criarDiretorio($doctrine_proxies_dir);
+            Arquivo::criarDiretorio($doctrine_hydrators_dir);
+        }
 
-            // cria os diretórios dos proxys e hydrators, caso não haja (necessários
-            // para o Doctrine)
-            if (!PROJECT_STAGE) {
-                Arquivo::criarDiretorio($doctrine_proxies_dir);
-                Arquivo::criarDiretorio($doctrine_hydrators_dir);
+        // verifica se não é MongoDB
+        if ($tipo !== 'mongodb') {
+
+            // provê algumas informações iniciais do banco de dados
+            switch ($tipo) {
+                case 'sqlite':
+                    $parametrosConexao = [
+                        'driver' => 'pdo_' . $tipo,
+                        'path' => $this->_configuracao->get($this->_servidor . '.persistencia_banco')
+                    ];
+                    break;
+
+                case 'mysql':
+                    $parametrosConexao = [
+                        'driver' => 'pdo_' . $tipo,
+                        'user' => $this->_configuracao->get($this->_servidor . '.persistencia_usuario'),
+                        'password' => $this->_configuracao->get($this->_servidor . '.persistencia_senha'),
+                        'host' => $this->_configuracao->get($this->_servidor . '.persistencia_servidor'),
+                        'dbname' => $this->_configuracao->get($this->_servidor . '.persistencia_banco'),
+                        \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES \'' . $this->_configuracao->get($this->_servidor . '.persistencia_charset') . '\''
+                    ];
+                    break;
+
+                // em teste funciona para quase todos os tipos de PDO
+                default:
+                    $parametrosConexao = [
+                        'driver' => 'pdo_' . $tipo,
+                        'user' => $this->_configuracao->get($this->_servidor . '.persistencia_usuario'),
+                        'password' => $this->_configuracao->get($this->_servidor . '.persistencia_senha'),
+                        'host' => $this->_configuracao->get($this->_servidor . '.persistencia_servidor'),
+                        'dbname' => $this->_configuracao->get($this->_servidor . '.persistencia_banco')
+                    ];
+                    break;
             }
 
-            // verifica se não é MongoDB
-            if ($tipo !== 'mongodb') {
-
-                // provê algumas informações iniciais do banco de dados
-                switch ($tipo) {
-                    case 'sqlite':
-                        $parametrosConexao = [
-                            'driver' => 'pdo_' . $tipo,
-                            'path' => $this->_configuracao->get($this->_servidor . '.persistencia_banco')
-                        ];
-                        break;
-
-                    case 'mysql':
-                        $parametrosConexao = [
-                            'driver' => 'pdo_' . $tipo,
-                            'user' => $this->_configuracao->get($this->_servidor . '.persistencia_usuario'),
-                            'password' => $this->_configuracao->get($this->_servidor . '.persistencia_senha'),
-                            'host' => $this->_configuracao->get($this->_servidor . '.persistencia_servidor'),
-                            'dbname' => $this->_configuracao->get($this->_servidor . '.persistencia_banco'),
-                            \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES \'' . $this->_configuracao->get($this->_servidor . '.persistencia_charset') . '\''
-                        ];
-                        break;
-
-                    // em teste funciona para quase todos os tipos de PDO
-                    default:
-                        $parametrosConexao = [
-                            'driver' => 'pdo_' . $tipo,
-                            'user' => $this->_configuracao->get($this->_servidor . '.persistencia_usuario'),
-                            'password' => $this->_configuracao->get($this->_servidor . '.persistencia_senha'),
-                            'host' => $this->_configuracao->get($this->_servidor . '.persistencia_servidor'),
-                            'dbname' => $this->_configuracao->get($this->_servidor . '.persistencia_banco')
-                        ];
-                        break;
-                }
-
-                // cria os mapeamentos das entidades do banco de dados, caso não existam
-                if (count(glob($doctrine_entities_dir . '/*.php')) === 0) {
-                    $configuracao = new \Doctrine\ORM\Configuration();
-                    $configuracao->setMetadataDriverImpl($configuracao->newDefaultAnnotationDriver($doctrine_entities_dir, FALSE));
-                    $configuracao->setProxyDir($doctrine_proxies_dir);
-                    $configuracao->setProxyNamespace('Proxies');
-
-                    $entityManager = \Doctrine\ORM\EntityManager::create($parametrosConexao, $configuracao);
-
-                    // custom datatypes (not mapped for reverse engineering)
-                    $entityManager->getConnection()->getDatabasePlatform()->registerDoctrineTypeMapping('set', 'string');
-                    $entityManager->getConnection()->getDatabasePlatform()->registerDoctrineTypeMapping('enum', 'string');
-
-                    // define namespace
-                    $driver = new \Doctrine\ORM\Mapping\Driver\DatabaseDriver(
-                            $entityManager->getConnection()->getSchemaManager()
-                    );
-                    $driver->setNamespace('Domain\\Entity\\');
-
-                    // define driver with namespace
-                    $entityManager->getConfiguration()->setMetadataDriverImpl($driver);
-
-                    $disconnectedClassMetadataFactory = new \Doctrine\ORM\Tools\DisconnectedClassMetadataFactory();
-                    $disconnectedClassMetadataFactory->setEntityManager($entityManager);
-
-                    $entityGenerator = new \Doctrine\ORM\Tools\EntityGenerator();
-                    $entityGenerator->setUpdateEntityIfExists(true);
-                    $entityGenerator->setGenerateStubMethods(true);
-                    $entityGenerator->setGenerateAnnotations(true);
-                    $entityGenerator->generate($disconnectedClassMetadataFactory->getAllMetadata(), $doctrine_models_dir);
-                }
-
-                // carrega as entidades
-                \Pudim\Arquivo::requererDiretorio($doctrine_entities_dir);
-
-                $configuracao = \Doctrine\ORM\Tools\Setup::createConfiguration(!((boolean) PROJECT_STAGE));
-                $driver = new \Doctrine\ORM\Mapping\Driver\AnnotationDriver(new \Doctrine\Common\Annotations\AnnotationReader(), $doctrine_entities_dir);
-
-                // registering noop annotation autoloader - allow all annotations by default
-                \Doctrine\Common\Annotations\AnnotationRegistry::registerLoader('class_exists');
-                $configuracao->setMetadataDriverImpl($driver);
-
-                $configuracao->setAutoGenerateProxyClasses(!((boolean) PROJECT_STAGE));
+            // cria os mapeamentos das entidades do banco de dados, caso não existam
+            if (count(glob($doctrine_entities_dir . '/*.php')) === 0) {
+                $configuracao = new \Doctrine\ORM\Configuration();
+                $configuracao->setMetadataDriverImpl($configuracao->newDefaultAnnotationDriver($doctrine_entities_dir, FALSE));
                 $configuracao->setProxyDir($doctrine_proxies_dir);
                 $configuracao->setProxyNamespace('Proxies');
 
-                if (PROJECT_STAGE) {
-                    $cache = new \Doctrine\Common\Cache\ArrayCache();
-                } else {
-                    $cache = new \Doctrine\Common\Cache\ApcCache();
-                }
-                $configuracao->setMetadataCacheImpl($cache);
-                $configuracao->setQueryCacheImpl($cache);
+                $entityManager = \Doctrine\ORM\EntityManager::create($parametrosConexao, $configuracao);
 
-                // obtaining the entity manager (7)
-                $eventManager = new \Doctrine\Common\EventManager();
-                $conexao = \Doctrine\ORM\EntityManager::create($parametrosConexao, $configuracao, $eventManager);
+                // custom datatypes (not mapped for reverse engineering)
+                $entityManager->getConnection()->getDatabasePlatform()->registerDoctrineTypeMapping('set', 'string');
+                $entityManager->getConnection()->getDatabasePlatform()->registerDoctrineTypeMapping('enum', 'string');
+
+                // define namespace
+                $driver = new \Doctrine\ORM\Mapping\Driver\DatabaseDriver(
+                        $entityManager->getConnection()->getSchemaManager()
+                );
+                $driver->setNamespace('Domain\\Entity\\');
+
+                // define driver with namespace
+                $entityManager->getConfiguration()->setMetadataDriverImpl($driver);
+
+                $disconnectedClassMetadataFactory = new \Doctrine\ORM\Tools\DisconnectedClassMetadataFactory();
+                $disconnectedClassMetadataFactory->setEntityManager($entityManager);
+
+                $entityGenerator = new \Doctrine\ORM\Tools\EntityGenerator();
+                $entityGenerator->setUpdateEntityIfExists(true);
+                $entityGenerator->setGenerateStubMethods(true);
+                $entityGenerator->setGenerateAnnotations(true);
+                $entityGenerator->generate($disconnectedClassMetadataFactory->getAllMetadata(), $doctrine_models_dir);
+            }
+
+            // carrega as entidades
+            \Pudim\Arquivo::requererDiretorio($doctrine_entities_dir);
+
+            $configuracao = \Doctrine\ORM\Tools\Setup::createConfiguration(!((boolean) PROJECT_STAGE));
+            $driver = new \Doctrine\ORM\Mapping\Driver\AnnotationDriver(new \Doctrine\Common\Annotations\AnnotationReader(), $doctrine_entities_dir);
+
+            // registering noop annotation autoloader - allow all annotations by default
+            \Doctrine\Common\Annotations\AnnotationRegistry::registerLoader('class_exists');
+            $configuracao->setMetadataDriverImpl($driver);
+
+            $configuracao->setAutoGenerateProxyClasses(!((boolean) PROJECT_STAGE));
+            $configuracao->setProxyDir($doctrine_proxies_dir);
+            $configuracao->setProxyNamespace('Proxies');
+
+            if (PROJECT_STAGE) {
+                $cache = new \Doctrine\Common\Cache\ArrayCache();
             } else {
+                $cache = new \Doctrine\Common\Cache\ApcCache();
+            }
+            $configuracao->setMetadataCacheImpl($cache);
+            $configuracao->setQueryCacheImpl($cache);
 
-                $configuracao = new \Doctrine\ODM\MongoDB\Configuration();
-                $metadata = AnnotationDriver::create($doctrine_entities_dir);
-                $configuracao->setMetadataDriverImpl($metadata);
+            // obtaining the entity manager (7)
+            $eventManager = new \Doctrine\Common\EventManager();
+            $conexao = \Doctrine\ORM\EntityManager::create($parametrosConexao, $configuracao, $eventManager);
+        } else {
 
-                $configuracao->setAutoGenerateProxyClasses(!((boolean) PROJECT_STAGE));
-                $configuracao->setProxyDir($doctrine_proxies_dir);
-                $configuracao->setProxyNamespace('Proxies');
+            $configuracao = new \Doctrine\ODM\MongoDB\Configuration();
+            $metadata = AnnotationDriver::create($doctrine_entities_dir);
+            $configuracao->setMetadataDriverImpl($metadata);
 
-                $configuracao->setAutoGenerateHydratorClasses(!((boolean) PROJECT_STAGE));
-                $configuracao->setHydratorDir($doctrine_hydrators_dir);
-                $configuracao->setHydratorNamespace('Hydrators');
+            $configuracao->setAutoGenerateProxyClasses(!((boolean) PROJECT_STAGE));
+            $configuracao->setProxyDir($doctrine_proxies_dir);
+            $configuracao->setProxyNamespace('Proxies');
 
-                $configuracao->setDefaultDB($this->_configuracao->get($this->_servidor . '.persistencia_banco'));
+            $configuracao->setAutoGenerateHydratorClasses(!((boolean) PROJECT_STAGE));
+            $configuracao->setHydratorDir($doctrine_hydrators_dir);
+            $configuracao->setHydratorNamespace('Hydrators');
 
-                //$configuracao->setLoggerCallable(function (array $log) { print_r($log); });
-                $cache_uri = $this->_configuracao->get($this->_servidor . '.cache_uri');
-                if ((PROJECT_STAGE) && (class_exists('Redis')) && ($cache_uri)) {
-                    // trata o $cache_uri pois somente precisamos do servidor e a porta
-                    if (strpos($cache_uri, '//')) {
-                        $cache_uri_parts = explode('//', $cache_uri);
-                        if (strpos($cache_uri_parts[1], ':')) {
-                            list($cache_server,
-                                    $cache_port) = explode(':', $cache_uri_parts[1]);
-                        } else {
-                            $cache_server = $cache_uri_parts[1];
-                            $cache_port = '6379';
-                        }
+            $configuracao->setDefaultDB($this->_configuracao->get($this->_servidor . '.persistencia_banco'));
 
-                        unset($cache_uri_parts);
+            //$configuracao->setLoggerCallable(function (array $log) { print_r($log); });
+            $cache_uri = $this->_configuracao->get($this->_servidor . '.cache_uri');
+            if ((PROJECT_STAGE) && (class_exists('Redis')) && ($cache_uri)) {
+                // trata o $cache_uri pois somente precisamos do servidor e a porta
+                if (strpos($cache_uri, '//')) {
+                    $cache_uri_parts = explode('//', $cache_uri);
+                    if (strpos($cache_uri_parts[1], ':')) {
+                        list($cache_server,
+                                $cache_port) = explode(':', $cache_uri_parts[1]);
                     } else {
-                        $cache_server = $cache_uri;
+                        $cache_server = $cache_uri_parts[1];
                         $cache_port = '6379';
                     }
 
-                    $redis = new \Redis();
-                    $redis->pconnect($cache_server, $cache_port);
-                    $metadataCache = new RedisCache();
-                    $metadataCache->setRedis($redis);
-                    $configuracao->setMetadataCacheImpl($metadataCache);
-
-                    unset($cache_server, $cache_port, $redis, $metadataCache);
+                    unset($cache_uri_parts);
+                } else {
+                    $cache_server = $cache_uri;
+                    $cache_port = '6379';
                 }
 
-                $conexao = new Connection($this->_configuracao->get($this->_servidor . '.persistencia_uri'));
-                $conexao = DocumentManager::create($conexao, $configuracao);
+                $redis = new \Redis();
+                $redis->pconnect($cache_server, $cache_port);
+                $metadataCache = new RedisCache();
+                $metadataCache->setRedis($redis);
+                $configuracao->setMetadataCacheImpl($metadataCache);
 
-                // FIX: Muito importante pois força a criação dos índices no aplicativo
-                $conexao->getSchemaManager()->ensureIndexes();
+                unset($cache_server, $cache_port, $redis, $metadataCache);
             }
+
+            $conexao = new Connection($this->_configuracao->get($this->_servidor . '.persistencia_uri'));
+            $conexao = DocumentManager::create($conexao, $configuracao);
+
+            // FIX: Muito importante pois força a criação dos índices no aplicativo
+            $conexao->getSchemaManager()->ensureIndexes();
         }
 
         return $conexao;
@@ -747,7 +752,7 @@ class Aplicativo {
      */
     private function criarDiretorioLog() {
         $logfile = $this->_configuracao->get('aplicativo.log');
-        if (!empty($logfile)) {
+        if (!is_null($logfile)) {
             define('LOGDIR', __APPDIR__ . DIRECTORY_SEPARATOR . 'log');
             Arquivo::criarDiretorio(LOGDIR);
             ini_set('log_errors', 1);
