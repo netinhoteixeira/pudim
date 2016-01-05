@@ -410,12 +410,15 @@ class Aplicativo {
         $config = [];
 
         $logfile = $this->_configuracao->get('aplicativo.log');
-        if (!is_null($logfile)) {
+        if (!empty($logfile)) {
             $logfile .= '-slim.log';
-            $config['log.enabled'] = true;
-            $log = new \Slim\LogWriter(fopen(LOGDIR . DIRECTORY_SEPARATOR . $logfile, 'a'));
-            $config['log.writer'] = $log;
+        } else {
+            $logfile = 'slim.log';
         }
+
+        $config['log.enabled'] = true;
+        $log = new \Slim\LogWriter(fopen(LOGDIR . DIRECTORY_SEPARATOR . $logfile, 'a'));
+        $config['log.writer'] = $log;
 
         $config['debug'] = ($this->_configuracao->get('aplicativo.debug') === TRUE);
         if ($config['debug']) {
@@ -754,15 +757,19 @@ class Aplicativo {
      */
     private function criarDiretorioLog() {
         $logfile = $this->_configuracao->get('aplicativo.log');
-        if (!is_null($logfile)) {
-            define('LOGDIR', __APPDIR__ . DIRECTORY_SEPARATOR . 'log');
-            Arquivo::criarDiretorio(LOGDIR);
-            ini_set('log_errors', 1);
-            ini_set('error_log', LOGDIR . DIRECTORY_SEPARATOR . $logfile . '-php.log');
-
-            // cria o arquivo vazio
-            touch(LOGDIR . DIRECTORY_SEPARATOR . $logfile . '-php.log');
+        if (!empty($logfile)) {
+            $logfile .= '-php.log';
+        } else {
+            $logfile .= 'php.log';
         }
+
+        define('LOGDIR', __APPDIR__ . DIRECTORY_SEPARATOR . 'log');
+        Arquivo::criarDiretorio(LOGDIR);
+        ini_set('log_errors', 1);
+        ini_set('error_log', LOGDIR . DIRECTORY_SEPARATOR . $logfile);
+
+        // cria o arquivo vazio
+        touch(LOGDIR . DIRECTORY_SEPARATOR . $logfile);
     }
 
     /**
