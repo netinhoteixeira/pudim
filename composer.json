@@ -12,6 +12,7 @@
             "homepage": "http://francisco.pro"
         }
     ],
+    "minimum-stability": "dev",
     "require": {
         "php": ">=5.5.0",
         "slim/slim": ">=2.6.2",
