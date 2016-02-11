@@ -21,10 +21,6 @@
 namespace Pudim;
 
 use Doctrine\Common\ClassLoader;
-use Doctrine\MongoDB\Connection;
-use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
-use Doctrine\Common\Cache\RedisCache;
 use Pudim\Excecoes\FuncaoNaoEncontradaExcecao;
 use Pudim\Arquivo;
 
@@ -487,15 +483,17 @@ class Aplicativo {
      * @return \Doctrine\ORM\EntityManager | \Doctrine\ODM\MongoDB\DocumentManager
      */
     private function estabelecerConexao() {
-        AnnotationDriver::registerAnnotationClasses();
-
-        $classLoader = new ClassLoader('Domain\Entity', implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'app', 'models']));
-        $classLoader->register();
-
         $tipo = explode(':', $this->_configuracao->get($this->_servidor . '.persistencia_uri'));
         $tipo = $tipo[0];
 
         if (!empty($tipo)) {
+            if ($tipo === 'mongodb') {
+                \Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver::registerAnnotationClasses();
+            }
+
+            $classLoader = new ClassLoader('Domain\Entity', implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'app', 'models']));
+            $classLoader->register();
+
             $doctrine_models_dir = implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'app', 'models']);
             $doctrine_entities_dir = implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'app', 'models', 'Domain', 'Entity']);
             $doctrine_proxies_dir = implode(DIRECTORY_SEPARATOR, [__APPDIR__, 'tmp', 'models', 'Domain', 'Entity', 'Proxies']);
@@ -638,15 +636,15 @@ class Aplicativo {
 
                     $redis = new \Redis();
                     $redis->pconnect($cache_server, $cache_port);
-                    $metadataCache = new RedisCache();
+                    $metadataCache = new \Doctrine\Common\Cache\RedisCache();
                     $metadataCache->setRedis($redis);
                     $configuracao->setMetadataCacheImpl($metadataCache);
 
                     unset($cache_server, $cache_port, $redis, $metadataCache);
                 }
 
-                $conexao = new Connection($this->_configuracao->get($this->_servidor . '.persistencia_uri'));
-                $conexao = DocumentManager::create($conexao, $configuracao);
+                $conexao = new \Doctrine\MongoDB\Connection($this->_configuracao->get($this->_servidor . '.persistencia_uri'));
+                $conexao = \Doctrine\ODM\MongoDB\DocumentManager::create($conexao, $configuracao);
 
                 // FIX: Muito importante pois força a criação dos índices no aplicativo
                 $conexao->getSchemaManager()->ensureIndexes();
