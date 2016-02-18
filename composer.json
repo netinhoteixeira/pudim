@@ -24,7 +24,8 @@
         "united-prototype/php-ga": "dev-composer"
     },
     "suggested": {
-        "doctrine/mongodb-odm": "dev-master"
+        "doctrine/mongodb-odm": "dev-master",
+        "amenadiel/slim-phpconsole": "~0.0.7"
     },
     "autoload": {
         "psr-0": {
