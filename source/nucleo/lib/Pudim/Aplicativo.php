@@ -52,21 +52,13 @@ class Aplicativo {
 
             define('PROJECT_STAGE', $this->_configuracao->get($this->_servidor . '.producao'));
 
-            // FIX: Corrige o problema de não ser definido a região da data/hora
-            $regiao = $this->_configuracao->get('aplicativo.regiao');
-            if (empty($regiao) && empty(ini_get('date.timezone'))) {
-                date_default_timezone_set('America/Sao_Paulo');
-            } else {
-                date_default_timezone_set($regiao);
-            }
-
             $this->inicializarVariaveis();
             $this->corrigirRequisicaoVariaveisPostagem();
             $this->_analiseTrafego = $this->iniciarAnaliseTrafego();
             $this->verificarPrimeiroAcesso();
             $this->configurarSessaoNoRedis();
             $this->iniciarSessao();
-            $this->definirFusoHorario();
+            $this->definirRegiaoFusoHorario();
             $this->definirControleDeAcessoDaOrigemDaRequisicao();
             $this->carregarControladores();
             $this->carregarUtilitarios();
@@ -861,11 +853,16 @@ class Aplicativo {
     }
 
     /**
-     * Define o fuso horário.
+     * Define a região do fuso horário.
      */
-    private function definirFusoHorario() {
-        date_default_timezone_set(
-                $this->_configuracao->get('aplicativo.fuso_horario'));
+    private function definirRegiaoFusoHorario() {
+        // FIX: Corrige o problema de não ser definido a região da data/hora
+        $regiao = $this->_configuracao->get('aplicativo.regiao');
+        if (empty($regiao) && empty(ini_get('date.timezone'))) {
+            date_default_timezone_set('America/Sao_Paulo');
+        } else {
+            date_default_timezone_set($regiao);
+        }
     }
 
     /**
