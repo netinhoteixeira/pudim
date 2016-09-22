@@ -26,57 +26,62 @@ use Pudim\CorreiosSituacoesEncomenda;
 /**
  * Classe RespostaCorreiosEncomendaItem.
  */
-class RespostaCorreiosEncomendaItem implements \JsonSerializable
-{
+class RespostaCorreiosEncomendaItem implements \JsonSerializable {
 
     private $_data;
     private $_local;
+    private $_situacaoCodigo;
     private $_situacao;
     private $_detalhe;
     private $_cor;
 
-    public function getData()
-    {
+    public function getData() {
         return $this->_data;
     }
 
-    public function getLocal()
-    {
+    public function getLocal() {
         return $this->_local;
     }
 
-    public function getSituacao()
-    {
+    public function getSituacao() {
         return $this->_situacao;
     }
 
-    public function getDetalhe()
-    {
+    public function getDetalhe() {
         return $this->_detalhe;
     }
 
-    public function getCor()
-    {
+    public function getCor() {
         return $this->_cor;
     }
 
-    public function setData($data)
-    {
+    public function setData($data) {
         $this->_data = $data;
     }
 
-    public function setLocal($local)
-    {
+    public function setLocal($local) {
         $this->_local = $local;
     }
 
-    public function setSituacao($situacao)
-    {
+    public function setSituacao($situacao) {
         $this->_situacao = $situacao;
 
-        $this->_cor = null;
         $situacao = strtoupper($situacao);
-        foreach (CorreiosSituacoesEncomenda::$lista as $chave => $valor) {
+        
+        $this->_situacaoCodigo = null;
+        foreach (CorreiosSituacoesEncomenda::$codigo as $chave => $valor) {
+            if (strpos($situacao, $chave) !== false) {
+                $this->_situacaoCodigo = $valor;
+                break;
+            }
+        }
+
+        if (!isset($this->_situacaoCodigo)) {
+            $this->_situacaoCodigo = CorreiosSituacoesEncomenda::$codigo['DESCONHECIDO'];
+        }
+
+        $this->_cor = null;
+        foreach (CorreiosSituacoesEncomenda::$cor as $chave => $valor) {
             if (strpos($situacao, $chave) !== false) {
                 $this->_cor = $valor;
                 break;
@@ -84,12 +89,11 @@ class RespostaCorreiosEncomendaItem implements \JsonSerializable
         }
 
         if (!isset($this->_cor)) {
-            $this->_cor = CorreiosSituacoesEncomenda::$lista['DESCONHECIDO'];
+            $this->_cor = CorreiosSituacoesEncomenda::$cor['DESCONHECIDO'];
         }
     }
 
-    public function setDetalhe($detalhe)
-    {
+    public function setDetalhe($detalhe) {
         $this->_detalhe = $detalhe;
     }
 
@@ -98,11 +102,11 @@ class RespostaCorreiosEncomendaItem implements \JsonSerializable
      * 
      * @return array
      */
-    public function jsonSerialize()
-    {
+    public function jsonSerialize() {
         return [
             'data' => $this->_data,
             'local' => $this->_local,
+            'situacaoCodigo' => $this->_situacaoCodigo,
             'situacao' => $this->_situacao,
             'detalhe' => $this->_detalhe,
             'cor' => $this->_cor

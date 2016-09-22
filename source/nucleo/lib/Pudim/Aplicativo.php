@@ -101,9 +101,13 @@ class Aplicativo {
         if ($this->_configuracao->get('correios.cep')) {
             $this->definirRotaObtencao('/servico/correios/cep/:cep', '\Pudim\\CorreiosControlador:consultarCep');
         }
+        
+        if ($this->_configuracao->get('correios.encomenda')) {
+            $this->definirRotaObtencao('/servico/correios/encomenda/:rastreamento', '\Pudim\\CorreiosControlador:consultarEncomenda');
+        }
     }
 
-    private function obterServidor() {
+    public function obterServidor() {
         if (is_null($this->_servidor)) {
             $servidor = filter_input(INPUT_SERVER, 'SERVER_NAME');
             if (($servidor === '127.0.0.1') || ($servidor === '0.0.0.0')) {
@@ -522,7 +526,7 @@ class Aplicativo {
                             'password' => $this->_configuracao->get($this->_servidor . '.persistencia_senha'),
                             'host' => $this->_configuracao->get($this->_servidor . '.persistencia_servidor'),
                             'dbname' => $this->_configuracao->get($this->_servidor . '.persistencia_banco'),
-                            \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES \'' . $this->_configuracao->get($this->_servidor . '.persistencia_charset') . '\''
+                            \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES \'' . $this->_configuracao->get($this->_servidor . '.persistencia_charset') . '\'; SET CHARACTER SET \'' . $this->_configuracao->get($this->_servidor . '.persistencia_charset') . '\'; SET character_set_connection=\'' . $this->_configuracao->get($this->_servidor . '.persistencia_charset') . '\'; SET character_set_client=\'' . $this->_configuracao->get($this->_servidor . '.persistencia_charset') . '\'; SET character_set_results=\'' . $this->_configuracao->get($this->_servidor . '.persistencia_charset') . '\';'
                         ];
                         break;
 
