@@ -484,6 +484,7 @@ class Aplicativo {
      * @return \Doctrine\ORM\EntityManager | \Doctrine\ODM\MongoDB\DocumentManager
      */
     private function estabelecerConexao() {
+        $conexao = null;
         $tipo = explode(':', $this->_configuracao->get($this->_servidor . '.persistencia_uri'));
         $tipo = $tipo[0];
 
